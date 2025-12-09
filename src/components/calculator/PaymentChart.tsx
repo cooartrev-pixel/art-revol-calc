@@ -1,0 +1,175 @@
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip, BarChart, Bar, XAxis, YAxis, CartesianGrid } from "recharts";
+import type { MortgageResult, AmortizationRow } from "@/lib/mortgage-calculations";
+import { formatCurrency } from "@/lib/mortgage-calculations";
+
+interface PaymentChartProps {
+  result: MortgageResult;
+  schedule: AmortizationRow[];
+  isGovernmentProgram: boolean;
+}
+
+const COLORS = {
+  principal: 'hsl(var(--primary))',
+  interest: 'hsl(var(--destructive))',
+  commission: 'hsl(var(--muted))',
+  government: 'hsl(var(--government))',
+  commercial: 'hsl(var(--secondary))',
+};
+
+export function PaymentChart({ result, schedule, isGovernmentProgram }: PaymentChartProps) {
+  // Дані для кругової діаграми
+  const pieData = [
+    { name: 'Тіло кредиту', value: result.loanAmount, fill: COLORS.principal },
+    { name: 'Відсотки', value: result.totalInterest, fill: COLORS.interest },
+  ];
+  
+  if (result.oneTimeCommissionAmount + result.totalMonthlyCommissions > 0) {
+    pieData.push({
+      name: 'Комісії',
+      value: result.oneTimeCommissionAmount + result.totalMonthlyCommissions,
+      fill: COLORS.commission,
+    });
+  }
+
+  // Дані для графіка порівняння (кожен 12-й місяць для річного огляду)
+  const yearlyData = schedule.filter((_, idx) => idx % 12 === 11 || idx === schedule.length - 1)
+    .map((row, idx) => ({
+      year: `${idx + 1} рік`,
+      principal: row.principalPayment * 12,
+      interest: row.interestPayment * 12,
+    }))
+    .slice(0, Math.min(10, Math.ceil(schedule.length / 12)));
+
+  const CustomTooltip = ({ active, payload }: any) => {
+    if (active && payload && payload.length) {
+      return (
+        <div className="bg-popover border border-border rounded-lg p-3 shadow-lg">
+          <p className="font-medium">{payload[0].name}</p>
+          <p className="text-sm text-muted-foreground">
+            {formatCurrency(payload[0].value)}
+          </p>
+        </div>
+      );
+    }
+    return null;
+  };
+
+  return (
+    <div className="space-y-6">
+      {/* Кругова діаграма */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg">Структура виплат</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="h-[300px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={pieData}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={60}
+                  outerRadius={100}
+                  paddingAngle={2}
+                  dataKey="value"
+                  label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                  labelLine={false}
+                >
+                  {pieData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.fill} />
+                  ))}
+                </Pie>
+                <Tooltip content={<CustomTooltip />} />
+                <Legend />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Графік розподілу по роках */}
+      {yearlyData.length > 1 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg">Розподіл платежів по роках</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="h-[300px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={yearlyData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                  <XAxis 
+                    dataKey="year" 
+                    stroke="hsl(var(--muted-foreground))"
+                    fontSize={12}
+                  />
+                  <YAxis 
+                    stroke="hsl(var(--muted-foreground))"
+                    fontSize={12}
+                    tickFormatter={(value) => `${(value / 1000).toFixed(0)}k`}
+                  />
+                  <Tooltip 
+                    formatter={(value: number) => formatCurrency(value)}
+                    contentStyle={{
+                      backgroundColor: 'hsl(var(--popover))',
+                      border: '1px solid hsl(var(--border))',
+                      borderRadius: '8px',
+                    }}
+                  />
+                  <Legend />
+                  <Bar 
+                    dataKey="principal" 
+                    name="Тіло кредиту" 
+                    fill={COLORS.principal}
+                    radius={[4, 4, 0, 0]}
+                  />
+                  <Bar 
+                    dataKey="interest" 
+                    name="Відсотки" 
+                    fill={COLORS.interest}
+                    radius={[4, 4, 0, 0]}
+                  />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Порівняння з комерційним кредитом */}
+      {isGovernmentProgram && result.savingsVsCommercial > 0 && (
+        <Card className="border-government">
+          <CardHeader>
+            <CardTitle className="text-lg text-government">
+              Економія за програмою "ЄОселя"
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 gap-6">
+              <div className="text-center p-4 bg-muted/30 rounded-lg">
+                <p className="text-sm text-muted-foreground mb-1">Комерційний кредит (18%)</p>
+                <p className="text-xl font-semibold">
+                  {formatCurrency(result.totalPayment + result.savingsVsCommercial)}
+                </p>
+              </div>
+              <div className="text-center p-4 bg-government/10 rounded-lg border border-government/20">
+                <p className="text-sm text-muted-foreground mb-1">Програма "ЄОселя"</p>
+                <p className="text-xl font-semibold text-government">
+                  {formatCurrency(result.totalPayment)}
+                </p>
+              </div>
+            </div>
+            <div className="mt-4 p-4 bg-success/10 rounded-lg text-center">
+              <p className="text-sm text-muted-foreground">Ваша економія</p>
+              <p className="text-2xl font-bold text-success">
+                {formatCurrency(result.savingsVsCommercial)}
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+    </div>
+  );
+}
