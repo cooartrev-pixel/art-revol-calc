@@ -1,9 +1,11 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { Bot, AlertTriangle, CheckCircle2, Info, Building2, Users, MapPin, FileText } from "lucide-react";
+import { Bot, AlertTriangle, CheckCircle2, Info, Building2, Users, MapPin, FileText, ExternalLink } from "lucide-react";
 import type { MortgageInput, MortgageResult } from "@/lib/mortgage-calculations";
 import { formatCurrency } from "@/lib/mortgage-calculations";
+import { OFFICIAL_YEOSELYA_URL } from "@/lib/banks-data";
 
 interface AIAssistantProps {
   input: MortgageInput;
@@ -188,18 +190,30 @@ export function AIAssistant({ input, result }: AIAssistantProps) {
               </div>
             </AccordionTrigger>
             <AccordionContent className="text-muted-foreground">
-              <p>Основні банки-учасники програми "ЄОселя":</p>
+              <p>Банки-учасники програми "ЄОселя" (станом на 2025 рік):</p>
               <ul className="list-disc list-inside ml-2 mt-2 space-y-1">
                 <li>Ощадбанк</li>
                 <li>ПриватБанк</li>
                 <li>Укргазбанк</li>
-                <li>Креді Агріколь Банк</li>
-                <li>А-Банк</li>
                 <li>Глобус Банк</li>
+                <li>Скай Банк</li>
+                <li>Сенс Банк</li>
+                <li>Банк Кредит Дніпро</li>
+                <li>ТАСКОМБАНК</li>
+                <li>BISBANK</li>
+                <li>РАДАБАНК</li>
               </ul>
-              <p className="mt-2 text-sm italic">
-                * Повний перелік та актуальні умови дивіться на офіційному сайті програми.
-              </p>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="mt-3" 
+                asChild
+              >
+                <a href={OFFICIAL_YEOSELYA_URL} target="_blank" rel="noopener noreferrer">
+                  <ExternalLink className="h-3 w-3 mr-2" />
+                  Офіційний сайт програми
+                </a>
+              </Button>
             </AccordionContent>
           </AccordionItem>
 
