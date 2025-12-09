@@ -1,4 +1,5 @@
 import { Building, Phone, Mail } from "lucide-react";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 export function Header() {
   return (
@@ -29,6 +30,7 @@ export function Header() {
               <Mail className="h-4 w-4" />
               info@revolution.ua
             </a>
+            <ThemeToggle />
           </div>
         </div>
       </div>
