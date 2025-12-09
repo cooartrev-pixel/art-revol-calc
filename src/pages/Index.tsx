@@ -1,15 +1,17 @@
 import { useState, useMemo } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Calculator, BarChart3, Table, Bot } from "lucide-react";
+import { Calculator, BarChart3, Table, Bot, Building2 } from "lucide-react";
 import { Header } from "@/components/calculator/Header";
 import { CalculatorInputs } from "@/components/calculator/CalculatorInputs";
 import { ResultsDisplay } from "@/components/calculator/ResultsDisplay";
 import { PaymentChart } from "@/components/calculator/PaymentChart";
 import { AmortizationTable } from "@/components/calculator/AmortizationTable";
 import { AIAssistant } from "@/components/calculator/AIAssistant";
+import { BankComparison } from "@/components/calculator/BankComparison";
 import { 
   calculateMortgage, 
   generateAmortizationSchedule,
+  calculateDownPaymentAmount,
   type MortgageInput 
 } from "@/lib/mortgage-calculations";
 
@@ -31,6 +33,15 @@ const Index = () => {
 
   const result = useMemo(() => calculateMortgage(input), [input]);
   const schedule = useMemo(() => generateAmortizationSchedule(input), [input]);
+  
+  const loanAmount = useMemo(() => {
+    const downPaymentAmount = calculateDownPaymentAmount(
+      input.propertyValue,
+      input.downPayment,
+      input.downPaymentType
+    );
+    return input.propertyValue - downPaymentAmount;
+  }, [input.propertyValue, input.downPayment, input.downPaymentType]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -66,10 +77,14 @@ const Index = () => {
 
             {/* Табы з деталями */}
             <Tabs defaultValue="charts" className="w-full">
-              <TabsList className="grid w-full grid-cols-3">
+              <TabsList className="grid w-full grid-cols-4">
                 <TabsTrigger value="charts" className="flex items-center gap-2">
                   <BarChart3 className="h-4 w-4" />
                   <span className="hidden sm:inline">Графіки</span>
+                </TabsTrigger>
+                <TabsTrigger value="banks" className="flex items-center gap-2">
+                  <Building2 className="h-4 w-4" />
+                  <span className="hidden sm:inline">Банки</span>
                 </TabsTrigger>
                 <TabsTrigger value="table" className="flex items-center gap-2">
                   <Table className="h-4 w-4" />
@@ -86,6 +101,15 @@ const Index = () => {
                   result={result} 
                   schedule={schedule}
                   isGovernmentProgram={input.isGovernmentProgram}
+                />
+              </TabsContent>
+
+              <TabsContent value="banks" className="mt-6">
+                <BankComparison 
+                  loanAmount={loanAmount}
+                  loanTermYears={input.loanTermYears}
+                  isGovernmentProgram={input.isGovernmentProgram}
+                  governmentRate={input.governmentRate}
                 />
               </TabsContent>
 
