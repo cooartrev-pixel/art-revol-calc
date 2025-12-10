@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Calculator, BarChart3, Table, Bot, Building2 } from "lucide-react";
+import { BarChart3, Table, Bot, Building2, MessageSquare } from "lucide-react";
 import { Header } from "@/components/calculator/Header";
 import { CalculatorInputs } from "@/components/calculator/CalculatorInputs";
 import { ResultsDisplay } from "@/components/calculator/ResultsDisplay";
@@ -8,6 +8,7 @@ import { PaymentChart } from "@/components/calculator/PaymentChart";
 import { AmortizationTable } from "@/components/calculator/AmortizationTable";
 import { AIAssistant } from "@/components/calculator/AIAssistant";
 import { BankComparison } from "@/components/calculator/BankComparison";
+import { ConsultationForm } from "@/components/calculator/ConsultationForm";
 import { 
   calculateMortgage, 
   generateAmortizationSchedule,
@@ -77,7 +78,7 @@ const Index = () => {
 
             {/* Табы з деталями */}
             <Tabs defaultValue="charts" className="w-full">
-              <TabsList className="grid w-full grid-cols-4">
+              <TabsList className="grid w-full grid-cols-5">
                 <TabsTrigger value="charts" className="flex items-center gap-2">
                   <BarChart3 className="h-4 w-4" />
                   <span className="hidden sm:inline">Графіки</span>
@@ -93,6 +94,10 @@ const Index = () => {
                 <TabsTrigger value="assistant" className="flex items-center gap-2">
                   <Bot className="h-4 w-4" />
                   <span className="hidden sm:inline">Помічник</span>
+                </TabsTrigger>
+                <TabsTrigger value="consultation" className="flex items-center gap-2">
+                  <MessageSquare className="h-4 w-4" />
+                  <span className="hidden sm:inline">Заявка</span>
                 </TabsTrigger>
               </TabsList>
 
@@ -119,6 +124,16 @@ const Index = () => {
 
               <TabsContent value="assistant" className="mt-6">
                 <AIAssistant input={input} result={result} />
+              </TabsContent>
+
+              <TabsContent value="consultation" className="mt-6">
+                <ConsultationForm
+                  propertyValue={input.propertyValue}
+                  loanAmount={loanAmount}
+                  loanTerm={input.loanTermYears}
+                  interestRate={input.isGovernmentProgram ? input.governmentRate : input.interestRate}
+                  isGovernmentProgram={input.isGovernmentProgram}
+                />
               </TabsContent>
             </Tabs>
           </div>

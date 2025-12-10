@@ -14,7 +14,51 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      consultation_requests: {
+        Row: {
+          created_at: string
+          email: string | null
+          id: string
+          interest_rate: number | null
+          is_yeoselya: boolean | null
+          loan_amount: number | null
+          loan_term: number | null
+          message: string | null
+          name: string
+          phone: string
+          property_value: number | null
+          selected_bank: string | null
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          interest_rate?: number | null
+          is_yeoselya?: boolean | null
+          loan_amount?: number | null
+          loan_term?: number | null
+          message?: string | null
+          name: string
+          phone: string
+          property_value?: number | null
+          selected_bank?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          interest_rate?: number | null
+          is_yeoselya?: boolean | null
+          loan_amount?: number | null
+          loan_term?: number | null
+          message?: string | null
+          name?: string
+          phone?: string
+          property_value?: number | null
+          selected_bank?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
