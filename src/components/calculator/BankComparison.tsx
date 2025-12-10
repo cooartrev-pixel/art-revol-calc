@@ -5,11 +5,11 @@ import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ExternalLink, Building2, Clock, Percent, ArrowUpDown, Check, Star, Info } from "lucide-react";
+import { ExternalLink, Building2, Clock, Percent, ArrowUpDown, Check, Info } from "lucide-react";
 import { banks, formatMoney, OFFICIAL_YEOSELYA_URL, type BankInfo } from "@/lib/banks-data";
-import type { MortgageResult } from "@/lib/mortgage-calculations";
 import { formatCurrency } from "@/lib/mortgage-calculations";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { BankLogo } from "./BankLogo";
 
 interface BankComparisonProps {
   loanAmount: number;
@@ -218,8 +218,8 @@ export function BankComparison({
                         return (
                           <TableRow key={bank.id} className={!isEligible ? 'opacity-60' : ''}>
                             <TableCell>
-                              <div className="flex items-center gap-2">
-                                <span className="text-xl">{bank.logo}</span>
+                              <div className="flex items-center gap-3">
+                                <BankLogo bankId={bank.id} className="w-10 h-10" />
                                 <div>
                                   <p className="font-medium">{bank.name}</p>
                                   {!isEligible && (
@@ -292,8 +292,8 @@ export function BankComparison({
                     <Card key={bank.id} className={!isEligible ? 'opacity-60' : ''}>
                       <CardContent className="pt-4">
                         <div className="flex items-center justify-between mb-3">
-                          <div className="flex items-center gap-2">
-                            <span className="text-2xl">{bank.logo}</span>
+                          <div className="flex items-center gap-3">
+                            <BankLogo bankId={bank.id} className="w-10 h-10" />
                             <span className="font-semibold">{bank.name}</span>
                           </div>
                           <Badge variant={rate === 3 ? "default" : "secondary"} 
