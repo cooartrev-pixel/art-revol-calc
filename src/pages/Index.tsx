@@ -73,7 +73,9 @@ const Index = () => {
             {/* Основні результати */}
             <ResultsDisplay 
               result={result} 
-              isGovernmentProgram={input.isGovernmentProgram} 
+              isGovernmentProgram={input.isGovernmentProgram}
+              input={input}
+              schedule={schedule}
             />
 
             {/* Табы з деталями */}
