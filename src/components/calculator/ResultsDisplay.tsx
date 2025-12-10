@@ -1,15 +1,40 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { TrendingUp, TrendingDown, Wallet, PiggyBank, Calculator, Percent } from "lucide-react";
-import type { MortgageResult } from "@/lib/mortgage-calculations";
-import { formatCurrency, formatPercent } from "@/lib/mortgage-calculations";
+import { Button } from "@/components/ui/button";
+import { TrendingUp, TrendingDown, Wallet, PiggyBank, Calculator, Percent, FileDown } from "lucide-react";
+import type { MortgageResult, MortgageInput, AmortizationRow } from "@/lib/mortgage-calculations";
+import { formatCurrency, formatPercent, calculateDownPaymentAmount } from "@/lib/mortgage-calculations";
+import { exportToPDF } from "@/lib/pdf-export";
 
 interface ResultsDisplayProps {
   result: MortgageResult;
   isGovernmentProgram: boolean;
+  input: MortgageInput;
+  schedule: AmortizationRow[];
 }
 
-export function ResultsDisplay({ result, isGovernmentProgram }: ResultsDisplayProps) {
+export function ResultsDisplay({ result, isGovernmentProgram, input, schedule }: ResultsDisplayProps) {
+  const handleExportPDF = () => {
+    const downPaymentAmount = calculateDownPaymentAmount(
+      input.propertyValue,
+      input.downPayment,
+      input.downPaymentType
+    );
+    
+    exportToPDF({
+      propertyValue: input.propertyValue,
+      downPayment: downPaymentAmount,
+      loanAmount: result.loanAmount,
+      loanTermYears: input.loanTermYears,
+      interestRate: isGovernmentProgram ? input.governmentRate : input.interestRate,
+      paymentType: input.paymentType,
+      isGovernmentProgram,
+      governmentRate: input.governmentRate,
+      result,
+      schedule,
+    });
+  };
+
   return (
     <div className="space-y-4">
       {/* Головний результат */}
@@ -26,6 +51,17 @@ export function ResultsDisplay({ result, isGovernmentProgram }: ResultsDisplayPr
                 Економія vs комерційний: {formatCurrency(result.savingsVsCommercial)}
               </Badge>
             )}
+          </div>
+          <div className="mt-4 flex justify-center">
+            <Button 
+              variant="secondary" 
+              size="sm" 
+              onClick={handleExportPDF}
+              className="gap-2"
+            >
+              <FileDown className="h-4 w-4" />
+              Зберегти PDF
+            </Button>
           </div>
         </CardContent>
       </Card>
