@@ -153,7 +153,7 @@ const Index = () => {
       </main>
 
       {/* Floating Widgets */}
-      <TelegramWidget botUsername="revolution_realty_bot" />
+      <TelegramWidget botUsername="reviipotek_bot" />
       <CallbackWidget />
     </div>
   );
