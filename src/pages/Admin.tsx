@@ -22,7 +22,7 @@ import {
 } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
-import { Calculator, LogOut, Search, ArrowLeft, Filter, RefreshCw } from 'lucide-react';
+import { Calculator, LogOut, Search, ArrowLeft, Filter, RefreshCw, Download, FileJson } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { format } from 'date-fns';
 import { uk } from 'date-fns/locale';
@@ -132,6 +132,63 @@ export default function Admin() {
     navigate('/');
   };
 
+  const exportToCSV = () => {
+    const headers = ['Дата', 'Ім\'я', 'Телефон', 'Email', 'Програма', 'Банк', 'Сума кредиту', 'Вартість нерухомості', 'Термін (років)', 'Ставка (%)', 'Повідомлення'];
+    const rows = filteredRequests.map(r => [
+      format(new Date(r.created_at), 'dd.MM.yyyy HH:mm'),
+      r.name,
+      r.phone,
+      r.email || '',
+      r.is_yeoselya ? 'єОселя' : 'Комерційна',
+      r.selected_bank || '',
+      r.loan_amount?.toString() || '',
+      r.property_value?.toString() || '',
+      r.loan_term?.toString() || '',
+      r.interest_rate?.toString() || '',
+      r.message || ''
+    ]);
+
+    const csvContent = [headers, ...rows]
+      .map(row => row.map(cell => `"${cell.replace(/"/g, '""')}"`).join(','))
+      .join('\n');
+
+    const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `zajavky_${format(new Date(), 'yyyy-MM-dd_HH-mm')}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+    
+    toast({ title: 'CSV експортовано успішно' });
+  };
+
+  const exportToJSON = () => {
+    const data = filteredRequests.map(r => ({
+      date: r.created_at,
+      name: r.name,
+      phone: r.phone,
+      email: r.email,
+      program: r.is_yeoselya ? 'єОселя' : 'Комерційна',
+      bank: r.selected_bank,
+      loan_amount: r.loan_amount,
+      property_value: r.property_value,
+      loan_term_years: r.loan_term,
+      interest_rate: r.interest_rate,
+      message: r.message
+    }));
+
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `zajavky_${format(new Date(), 'yyyy-MM-dd_HH-mm')}.json`;
+    link.click();
+    URL.revokeObjectURL(url);
+    
+    toast({ title: 'JSON експортовано успішно' });
+  };
+
   if (authLoading || (user && !isAdmin && loading)) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -218,14 +275,24 @@ export default function Admin() {
         </Card>
 
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between">
+          <CardHeader className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <CardTitle>
               Заявки на консультацію ({filteredRequests.length})
             </CardTitle>
-            <Button variant="outline" size="sm" onClick={fetchRequests} disabled={loading}>
-              <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
-              Оновити
-            </Button>
+            <div className="flex flex-wrap gap-2">
+              <Button variant="outline" size="sm" onClick={exportToCSV} disabled={filteredRequests.length === 0}>
+                <Download className="h-4 w-4 mr-2" />
+                CSV
+              </Button>
+              <Button variant="outline" size="sm" onClick={exportToJSON} disabled={filteredRequests.length === 0}>
+                <FileJson className="h-4 w-4 mr-2" />
+                JSON
+              </Button>
+              <Button variant="outline" size="sm" onClick={fetchRequests} disabled={loading}>
+                <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+                Оновити
+              </Button>
+            </div>
           </CardHeader>
           <CardContent>
             {loading ? (
