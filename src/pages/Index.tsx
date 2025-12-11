@@ -15,6 +15,8 @@ import {
   calculateDownPaymentAmount,
   type MortgageInput 
 } from "@/lib/mortgage-calculations";
+import { TelegramWidget } from "@/components/widgets/TelegramWidget";
+import { CallbackWidget } from "@/components/widgets/CallbackWidget";
 
 const defaultInput: MortgageInput = {
   propertyValue: 2000000,
@@ -149,6 +151,10 @@ const Index = () => {
           </p>
         </footer>
       </main>
+
+      {/* Floating Widgets */}
+      <TelegramWidget botUsername="revolution_realty_bot" />
+      <CallbackWidget />
     </div>
   );
 };
