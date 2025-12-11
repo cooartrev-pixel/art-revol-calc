@@ -1,7 +1,12 @@
-import { Building, Phone, Mail } from "lucide-react";
+import { Building, Phone, Mail, Shield } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { Link } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
+import { Button } from "@/components/ui/button";
 
 export function Header() {
+  const { user, isAdmin } = useAuth();
+
   return (
     <header className="bg-card border-b">
       <div className="container mx-auto px-4 py-4">
@@ -30,6 +35,19 @@ export function Header() {
               <Mail className="h-4 w-4" />
               info@revolution.ua
             </a>
+            {isAdmin && (
+              <Button variant="outline" size="sm" asChild>
+                <Link to="/admin">
+                  <Shield className="h-4 w-4 mr-2" />
+                  Адмін
+                </Link>
+              </Button>
+            )}
+            {!user && (
+              <Button variant="ghost" size="sm" asChild>
+                <Link to="/auth">Вхід</Link>
+              </Button>
+            )}
             <ThemeToggle />
           </div>
         </div>
