@@ -38,7 +38,7 @@ export function ResultsDisplay({ result, isGovernmentProgram, input, schedule }:
   return (
     <div className="space-y-4">
       {/* Головний результат */}
-      <Card className="bg-primary text-primary-foreground">
+      <Card className="bg-primary text-primary-foreground transition-all duration-300 hover:shadow-xl hover:scale-[1.01] hover:-translate-y-1">
         <CardContent className="pt-6">
           <div className="text-center">
             <p className="text-primary-foreground/80 text-sm mb-1">Щомісячний платіж</p>
