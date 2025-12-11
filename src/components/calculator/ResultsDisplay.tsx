@@ -68,10 +68,10 @@ export function ResultsDisplay({ result, isGovernmentProgram, input, schedule }:
 
       {/* Деталі */}
       <div className="grid grid-cols-2 gap-4">
-        <Card>
+        <Card className="transition-all duration-300 hover:shadow-lg hover:scale-[1.02] hover:-translate-y-1 cursor-default">
           <CardContent className="pt-4">
             <div className="flex items-start gap-3">
-              <div className="p-2 rounded-lg bg-primary/10">
+              <div className="p-2 rounded-lg bg-primary/10 transition-colors duration-300 group-hover:bg-primary/20">
                 <Calculator className="h-4 w-4 text-primary" />
               </div>
               <div>
@@ -82,10 +82,10 @@ export function ResultsDisplay({ result, isGovernmentProgram, input, schedule }:
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="transition-all duration-300 hover:shadow-lg hover:scale-[1.02] hover:-translate-y-1 cursor-default">
           <CardContent className="pt-4">
             <div className="flex items-start gap-3">
-              <div className="p-2 rounded-lg bg-destructive/10">
+              <div className="p-2 rounded-lg bg-destructive/10 transition-colors duration-300">
                 <TrendingUp className="h-4 w-4 text-destructive" />
               </div>
               <div>
@@ -96,10 +96,10 @@ export function ResultsDisplay({ result, isGovernmentProgram, input, schedule }:
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="transition-all duration-300 hover:shadow-lg hover:scale-[1.02] hover:-translate-y-1 cursor-default">
           <CardContent className="pt-4">
             <div className="flex items-start gap-3">
-              <div className="p-2 rounded-lg bg-accent">
+              <div className="p-2 rounded-lg bg-accent transition-colors duration-300">
                 <Wallet className="h-4 w-4 text-accent-foreground" />
               </div>
               <div>
@@ -110,10 +110,10 @@ export function ResultsDisplay({ result, isGovernmentProgram, input, schedule }:
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="transition-all duration-300 hover:shadow-lg hover:scale-[1.02] hover:-translate-y-1 cursor-default">
           <CardContent className="pt-4">
             <div className="flex items-start gap-3">
-              <div className="p-2 rounded-lg bg-secondary/20">
+              <div className="p-2 rounded-lg bg-secondary/20 transition-colors duration-300">
                 <Percent className="h-4 w-4 text-secondary" />
               </div>
               <div>
