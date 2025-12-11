@@ -89,6 +89,24 @@ export function ConsultationForm({
 
       if (error) throw error;
 
+      // Send notifications (non-blocking)
+      supabase.functions.invoke("notify-consultation", {
+        body: {
+          name: formData.name.trim(),
+          phone: formData.phone.trim(),
+          email: formData.email.trim() || undefined,
+          propertyValue: formData.includeCalculation ? propertyValue : undefined,
+          loanAmount: formData.includeCalculation ? loanAmount : undefined,
+          loanTerm: formData.includeCalculation ? loanTerm : undefined,
+          interestRate: formData.includeCalculation ? interestRate : undefined,
+          isYeoselya: isGovernmentProgram,
+          selectedBank: formData.selectedBank || undefined,
+          message: formData.message.trim() || undefined,
+        },
+      }).catch((notifyError) => {
+        console.error("Notification error:", notifyError);
+      });
+
       setIsSubmitted(true);
       toast({
         title: "Заявку надіслано!",
