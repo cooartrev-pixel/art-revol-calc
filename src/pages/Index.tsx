@@ -52,7 +52,7 @@ const Index = () => {
       
       <main className="container mx-auto px-4 py-8">
         {/* Hero Section */}
-        <div className="text-center mb-8">
+        <div className="text-center mb-8 animate-fade-in">
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-3">
             Іпотечний Калькулятор
           </h1>
@@ -64,7 +64,7 @@ const Index = () => {
 
         <div className="grid lg:grid-cols-12 gap-8">
           {/* Ліва колонка - Введення */}
-          <div className="lg:col-span-5 xl:col-span-4">
+          <div className="lg:col-span-5 xl:col-span-4 animate-fade-in [animation-delay:100ms]">
             <div className="lg:sticky lg:top-8">
               <CalculatorInputs values={input} onChange={setInput} />
             </div>
@@ -73,15 +73,17 @@ const Index = () => {
           {/* Права колонка - Результати */}
           <div className="lg:col-span-7 xl:col-span-8 space-y-8">
             {/* Основні результати */}
-            <ResultsDisplay 
-              result={result} 
-              isGovernmentProgram={input.isGovernmentProgram}
-              input={input}
-              schedule={schedule}
-            />
+            <div className="animate-fade-in [animation-delay:200ms]">
+              <ResultsDisplay 
+                result={result} 
+                isGovernmentProgram={input.isGovernmentProgram}
+                input={input}
+                schedule={schedule}
+              />
+            </div>
 
             {/* Табы з деталями */}
-            <Tabs defaultValue="charts" className="w-full">
+            <Tabs defaultValue="charts" className="w-full animate-fade-in [animation-delay:300ms]">
               <TabsList className="grid w-full grid-cols-5">
                 <TabsTrigger value="charts" className="flex items-center gap-2">
                   <BarChart3 className="h-4 w-4" />
@@ -105,7 +107,7 @@ const Index = () => {
                 </TabsTrigger>
               </TabsList>
 
-              <TabsContent value="charts" className="mt-6">
+              <TabsContent value="charts" className="mt-6 animate-fade-in">
                 <PaymentChart 
                   result={result} 
                   schedule={schedule}
@@ -113,7 +115,7 @@ const Index = () => {
                 />
               </TabsContent>
 
-              <TabsContent value="banks" className="mt-6">
+              <TabsContent value="banks" className="mt-6 animate-fade-in">
                 <BankComparison 
                   loanAmount={loanAmount}
                   loanTermYears={input.loanTermYears}
@@ -122,15 +124,15 @@ const Index = () => {
                 />
               </TabsContent>
 
-              <TabsContent value="table" className="mt-6">
+              <TabsContent value="table" className="mt-6 animate-fade-in">
                 <AmortizationTable schedule={schedule} />
               </TabsContent>
 
-              <TabsContent value="assistant" className="mt-6">
+              <TabsContent value="assistant" className="mt-6 animate-fade-in">
                 <AIAssistant input={input} result={result} />
               </TabsContent>
 
-              <TabsContent value="consultation" className="mt-6">
+              <TabsContent value="consultation" className="mt-6 animate-fade-in">
                 <ConsultationForm
                   propertyValue={input.propertyValue}
                   loanAmount={loanAmount}
@@ -144,7 +146,7 @@ const Index = () => {
         </div>
 
         {/* Footer */}
-        <footer className="mt-16 pt-8 border-t text-center text-sm text-muted-foreground">
+        <footer className="mt-16 pt-8 border-t text-center text-sm text-muted-foreground animate-fade-in [animation-delay:400ms]">
           <p>© 2024 Revolution - Агентство нерухомості. Всі права захищені.</p>
           <p className="mt-2">
             Калькулятор надає орієнтовні розрахунки. Точні умови кредитування уточнюйте у банку.
