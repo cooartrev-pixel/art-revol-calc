@@ -1,1 +1,4 @@
 project_id = "bsnpgnnxvsarebbvpaua"
+
+[functions.notify-consultation]
+verify_jwt = false
