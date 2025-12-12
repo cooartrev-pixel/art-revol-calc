@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Calculator, ExternalLink, CheckCircle2 } from "lucide-react";
+import { ArrowRight, Calculator, ExternalLink, CheckCircle2, Scale } from "lucide-react";
 import { Header } from "@/components/calculator/Header";
 import { TelegramWidget } from "@/components/widgets/TelegramWidget";
 import { CallbackWidget } from "@/components/widgets/CallbackWidget";
@@ -96,25 +96,52 @@ const Programs = () => {
           ))}
         </div>
 
-        {/* Quick Access to Main Calculator */}
-        <Card className="bg-gradient-to-r from-primary/10 to-primary/5 border-primary/20 animate-fade-in">
-          <CardContent className="py-8">
-            <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-              <div className="text-center md:text-left">
-                <h2 className="text-2xl font-bold mb-2">Універсальний Калькулятор</h2>
-                <p className="text-muted-foreground">
-                  Розрахуйте іпотеку за будь-якою програмою або комерційними умовами
-                </p>
+        {/* Compare & Calculator CTAs */}
+        <div className="grid md:grid-cols-2 gap-6 animate-fade-in">
+          <Card className="bg-gradient-to-r from-secondary/20 to-secondary/5 border-secondary/30">
+            <CardContent className="py-8">
+              <div className="flex flex-col items-center text-center gap-4">
+                <div className="h-12 w-12 rounded-full bg-secondary/20 flex items-center justify-center">
+                  <Scale className="h-6 w-6 text-secondary-foreground" />
+                </div>
+                <div>
+                  <h2 className="text-xl font-bold mb-2">Порівняти Програми</h2>
+                  <p className="text-muted-foreground text-sm">
+                    Порівняйте умови кількох програм одночасно
+                  </p>
+                </div>
+                <Button variant="secondary" size="lg" asChild>
+                  <Link to="/compare">
+                    Порівняти
+                    <ArrowRight className="h-4 w-4 ml-2" />
+                  </Link>
+                </Button>
               </div>
-              <Button size="lg" asChild>
-                <Link to="/calculator/yeoselya">
-                  Відкрити калькулятор
-                  <ArrowRight className="h-4 w-4 ml-2" />
-                </Link>
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-gradient-to-r from-primary/10 to-primary/5 border-primary/20">
+            <CardContent className="py-8">
+              <div className="flex flex-col items-center text-center gap-4">
+                <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
+                  <Calculator className="h-6 w-6 text-primary" />
+                </div>
+                <div>
+                  <h2 className="text-xl font-bold mb-2">Універсальний Калькулятор</h2>
+                  <p className="text-muted-foreground text-sm">
+                    Розрахуйте іпотеку за програмою ЄОселя
+                  </p>
+                </div>
+                <Button size="lg" asChild>
+                  <Link to="/calculator/yeoselya">
+                    Відкрити калькулятор
+                    <ArrowRight className="h-4 w-4 ml-2" />
+                  </Link>
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
 
         {/* Footer */}
         <footer className="mt-16 pt-8 border-t text-center text-sm text-muted-foreground animate-fade-in">
