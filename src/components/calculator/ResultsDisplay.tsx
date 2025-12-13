@@ -5,6 +5,7 @@ import { TrendingUp, TrendingDown, Wallet, PiggyBank, Calculator, Percent, FileD
 import type { MortgageResult, MortgageInput, AmortizationRow } from "@/lib/mortgage-calculations";
 import { formatCurrency, formatPercent, calculateDownPaymentAmount } from "@/lib/mortgage-calculations";
 import { exportToPDF } from "@/lib/pdf-export";
+import { useLanguage } from "@/lib/i18n";
 
 interface ResultsDisplayProps {
   result: MortgageResult;
@@ -14,6 +15,8 @@ interface ResultsDisplayProps {
 }
 
 export function ResultsDisplay({ result, isGovernmentProgram, input, schedule }: ResultsDisplayProps) {
+  const { t, language } = useLanguage();
+  
   const handleExportPDF = () => {
     const downPaymentAmount = calculateDownPaymentAmount(
       input.propertyValue,
@@ -32,6 +35,7 @@ export function ResultsDisplay({ result, isGovernmentProgram, input, schedule }:
       governmentRate: input.governmentRate,
       result,
       schedule,
+      language,
     });
   };
 
@@ -41,14 +45,14 @@ export function ResultsDisplay({ result, isGovernmentProgram, input, schedule }:
       <Card className="bg-primary text-primary-foreground transition-all duration-300 hover:shadow-xl hover:scale-[1.01] hover:-translate-y-1">
         <CardContent className="pt-6">
           <div className="text-center">
-            <p className="text-primary-foreground/80 text-sm mb-1">Щомісячний платіж</p>
+            <p className="text-primary-foreground/80 text-sm mb-1">{t('results.monthlyPayment')}</p>
             <p className="text-4xl md:text-5xl font-bold tracking-tight">
               {formatCurrency(result.monthlyPayment)}
             </p>
             {isGovernmentProgram && result.savingsVsCommercial > 0 && (
               <Badge className="mt-3 bg-success text-success-foreground">
                 <TrendingDown className="h-3 w-3 mr-1" />
-                Економія vs комерційний: {formatCurrency(result.savingsVsCommercial)}
+                {t('results.savingsYeoselya')}: {formatCurrency(result.savingsVsCommercial)}
               </Badge>
             )}
           </div>
@@ -60,7 +64,7 @@ export function ResultsDisplay({ result, isGovernmentProgram, input, schedule }:
               className="gap-2"
             >
               <FileDown className="h-4 w-4" />
-              Зберегти PDF
+              {t('results.exportPDF')}
             </Button>
           </div>
         </CardContent>
