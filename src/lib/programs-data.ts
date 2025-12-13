@@ -94,7 +94,7 @@ export const programs: GovernmentProgram[] = [
     description: 'Державна програма забезпечення житлом учасників бойових дій та членів сімей загиблих захисників.',
     icon: '🎖️',
     color: 'primary',
-    officialUrl: 'https://www.kmu.gov.ua/npas/deyaki-pitannya-zabezpechennya-zhitlom-uchasnikiv-boyovih-dij-ta-chleniv-simej-zagiblih-zahisnikiv-280-',
+    officialUrl: 'https://zakon.rada.gov.ua/laws/show/280-2018-%D0%BF',
     eligibility: [
       'Учасники бойових дій',
       'Особи з інвалідністю внаслідок війни',
@@ -149,7 +149,7 @@ export const programs: GovernmentProgram[] = [
     description: 'Програма житлових субсидій та компенсацій для окремих категорій громадян на придбання або будівництво житла.',
     icon: '📋',
     color: 'secondary',
-    officialUrl: 'https://www.kmu.gov.ua/npas/poryadok-nadannya-zhitlovih-subsidij-ta-kompensacij-s719-280623',
+    officialUrl: 'https://zakon.rada.gov.ua/laws/show/719-2018-%D0%BF',
     eligibility: [
       'Громадяни, які перебувають на квартирному обліку',
       'Державні службовці з правом на поліпшення житлових умов',
@@ -198,7 +198,7 @@ export const programs: GovernmentProgram[] = [
     description: 'Програма компенсації за пошкоджене або знищене житло внаслідок збройної агресії для придбання нового житла.',
     icon: '🏗️',
     color: 'destructive',
-    officialUrl: 'https://diia.gov.ua/services/yevidnovlennya',
+    officialUrl: 'https://erecovery.diia.gov.ua/',
     eligibility: [
       'Власники пошкодженого житла',
       'Власники знищеного житла',
