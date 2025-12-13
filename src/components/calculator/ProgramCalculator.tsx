@@ -194,30 +194,30 @@ const ProgramCalculatorContent = ({ program }: ProgramCalculatorProps) => {
 
             {/* Tabs */}
             <Tabs defaultValue="assistant" className="w-full animate-fade-in [animation-delay:300ms]">
-              <TabsList className="grid w-full grid-cols-5">
-                <TabsTrigger value="assistant" className="flex items-center gap-2">
-                  <Bot className="h-4 w-4" />
-                  <span className="hidden sm:inline">Помічник</span>
+              <TabsList className="grid w-full grid-cols-5 sticky top-2 z-10">
+                <TabsTrigger value="assistant" className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2">
+                  <Bot className="h-4 w-4 md:h-5 md:w-5" />
+                  <span className="text-[10px] sm:text-xs md:text-sm">Помічник</span>
                 </TabsTrigger>
                 {!isSubsidyProgram && (
                   <>
-                    <TabsTrigger value="charts" className="flex items-center gap-2">
-                      <BarChart3 className="h-4 w-4" />
-                      <span className="hidden sm:inline">Графіки</span>
+                    <TabsTrigger value="charts" className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2">
+                      <BarChart3 className="h-4 w-4 md:h-5 md:w-5" />
+                      <span className="text-[10px] sm:text-xs md:text-sm">Графіки</span>
                     </TabsTrigger>
-                    <TabsTrigger value="banks" className="flex items-center gap-2">
-                      <Building2 className="h-4 w-4" />
-                      <span className="hidden sm:inline">Банки</span>
+                    <TabsTrigger value="banks" className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2">
+                      <Building2 className="h-4 w-4 md:h-5 md:w-5" />
+                      <span className="text-[10px] sm:text-xs md:text-sm">Банки</span>
                     </TabsTrigger>
-                    <TabsTrigger value="table" className="flex items-center gap-2">
-                      <Table className="h-4 w-4" />
-                      <span className="hidden sm:inline">Таблиця</span>
+                    <TabsTrigger value="table" className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2">
+                      <Table className="h-4 w-4 md:h-5 md:w-5" />
+                      <span className="text-[10px] sm:text-xs md:text-sm">Таблиця</span>
                     </TabsTrigger>
                   </>
                 )}
-                <TabsTrigger value="consultation" className="flex items-center gap-2">
-                  <MessageSquare className="h-4 w-4" />
-                  <span className="hidden sm:inline">Заявка</span>
+                <TabsTrigger value="consultation" className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2">
+                  <MessageSquare className="h-4 w-4 md:h-5 md:w-5" />
+                  <span className="text-[10px] sm:text-xs md:text-sm">Заявка</span>
                 </TabsTrigger>
               </TabsList>
 
