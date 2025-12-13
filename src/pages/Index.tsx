@@ -9,6 +9,7 @@ import { AmortizationTable } from "@/components/calculator/AmortizationTable";
 import { AIAssistant } from "@/components/calculator/AIAssistant";
 import { BankComparison } from "@/components/calculator/BankComparison";
 import { ConsultationForm } from "@/components/calculator/ConsultationForm";
+import { useLanguage } from "@/lib/i18n";
 import { 
   calculateMortgage, 
   generateAmortizationSchedule,
@@ -32,6 +33,7 @@ const defaultInput: MortgageInput = {
 };
 
 const Index = () => {
+  const { t } = useLanguage();
   const [input, setInput] = useState<MortgageInput>(defaultInput);
 
   const result = useMemo(() => calculateMortgage(input), [input]);
@@ -87,23 +89,23 @@ const Index = () => {
               <TabsList className="grid w-full grid-cols-5 sticky top-2 z-10">
                 <TabsTrigger value="charts" className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2">
                   <BarChart3 className="h-4 w-4 md:h-5 md:w-5" />
-                  <span className="text-[10px] sm:text-xs md:text-sm">Графіки</span>
+                  <span className="text-[10px] sm:text-xs md:text-sm">{t('tabs.charts')}</span>
                 </TabsTrigger>
                 <TabsTrigger value="banks" className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2">
                   <Building2 className="h-4 w-4 md:h-5 md:w-5" />
-                  <span className="text-[10px] sm:text-xs md:text-sm">Банки</span>
+                  <span className="text-[10px] sm:text-xs md:text-sm">{t('tabs.banks')}</span>
                 </TabsTrigger>
                 <TabsTrigger value="table" className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2">
                   <Table className="h-4 w-4 md:h-5 md:w-5" />
-                  <span className="text-[10px] sm:text-xs md:text-sm">Таблиця</span>
+                  <span className="text-[10px] sm:text-xs md:text-sm">{t('tabs.table')}</span>
                 </TabsTrigger>
                 <TabsTrigger value="assistant" className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2">
                   <Bot className="h-4 w-4 md:h-5 md:w-5" />
-                  <span className="text-[10px] sm:text-xs md:text-sm">Помічник</span>
+                  <span className="text-[10px] sm:text-xs md:text-sm">{t('tabs.assistant')}</span>
                 </TabsTrigger>
                 <TabsTrigger value="consultation" className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2">
                   <MessageSquare className="h-4 w-4 md:h-5 md:w-5" />
-                  <span className="text-[10px] sm:text-xs md:text-sm">Заявка</span>
+                  <span className="text-[10px] sm:text-xs md:text-sm">{t('tabs.application')}</span>
                 </TabsTrigger>
               </TabsList>
 

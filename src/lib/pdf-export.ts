@@ -1,7 +1,8 @@
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { MortgageResult, AmortizationRow, formatCurrency, formatPercent } from "./mortgage-calculations";
-import { banks, BankInfo } from "./banks-data";
+import { banks } from "./banks-data";
+import { getTranslations, Language } from "./i18n";
 
 interface PDFExportData {
   propertyValue: number;
@@ -14,6 +15,7 @@ interface PDFExportData {
   governmentRate: number;
   result: MortgageResult;
   schedule: AmortizationRow[];
+  language?: Language;
 }
 
 // Helper to calculate monthly payment for a bank
@@ -30,6 +32,8 @@ function calculateBankMonthlyPayment(
 }
 
 export function exportToPDF(data: PDFExportData): void {
+  const lang = data.language || 'uk';
+  const t = getTranslations(lang);
   const doc = new jsPDF();
   const pageWidth = doc.internal.pageSize.getWidth();
   let yPosition = 20;
@@ -37,36 +41,37 @@ export function exportToPDF(data: PDFExportData): void {
   // Title
   doc.setFontSize(20);
   doc.setFont("helvetica", "bold");
-  doc.text("Rozrahunok Ipotechnogo Kredytu", pageWidth / 2, yPosition, { align: "center" });
+  doc.text(t['pdf.title'], pageWidth / 2, yPosition, { align: "center" });
   yPosition += 10;
 
   // Subtitle
   doc.setFontSize(12);
   doc.setFont("helvetica", "normal");
-  doc.text("Revolution - Agentstvo Neruhomosti", pageWidth / 2, yPosition, { align: "center" });
+  doc.text(t['pdf.agency'], pageWidth / 2, yPosition, { align: "center" });
   yPosition += 5;
   
   doc.setFontSize(10);
-  doc.text(`Data: ${new Date().toLocaleDateString("uk-UA")}`, pageWidth / 2, yPosition, { align: "center" });
+  const dateLocale = lang === 'uk' ? 'uk-UA' : 'en-GB';
+  doc.text(`${t['pdf.date']}: ${new Date().toLocaleDateString(dateLocale)}`, pageWidth / 2, yPosition, { align: "center" });
   yPosition += 15;
 
   // Input Parameters Section
   doc.setFontSize(14);
   doc.setFont("helvetica", "bold");
-  doc.text("Vhidni Parametry", 14, yPosition);
+  doc.text(t['pdf.inputParams'], 14, yPosition);
   yPosition += 8;
 
   doc.setFontSize(10);
   doc.setFont("helvetica", "normal");
   
   const inputData = [
-    ["Vartist ob'ekta", formatCurrency(data.propertyValue)],
-    ["Pershyy vnesok", formatCurrency(data.downPayment)],
-    ["Suma kredytu", formatCurrency(data.loanAmount)],
-    ["Termin kredytu", `${data.loanTermYears} rokiv`],
-    ["Richna stavka", formatPercent(data.interestRate)],
-    ["Typ platezhu", data.paymentType === "annuity" ? "Anuitentnyy" : "Klasychnyy"],
-    ["Derzhavna programa", data.isGovernmentProgram ? `YeOselya (${data.governmentRate}%)` : "Ni"],
+    [t['pdf.propertyValue'], formatCurrency(data.propertyValue)],
+    [t['pdf.downPayment'], formatCurrency(data.downPayment)],
+    [t['pdf.loanAmount'], formatCurrency(data.loanAmount)],
+    [t['pdf.loanTerm'], `${data.loanTermYears} ${t['pdf.yearsSuffix']}`],
+    [t['pdf.annualRate'], formatPercent(data.interestRate)],
+    [t['pdf.paymentType'], data.paymentType === "annuity" ? t['pdf.annuity'] : t['pdf.classic']],
+    [t['pdf.governmentProgram'], data.isGovernmentProgram ? `YeOselya (${data.governmentRate}%)` : t['pdf.no']],
   ];
 
   autoTable(doc, {
@@ -76,8 +81,8 @@ export function exportToPDF(data: PDFExportData): void {
     theme: "plain",
     styles: { fontSize: 10, cellPadding: 2 },
     columnStyles: {
-      0: { fontStyle: "bold", cellWidth: 60 },
-      1: { cellWidth: 80 },
+      0: { fontStyle: "bold", cellWidth: 70 },
+      1: { cellWidth: 70 },
     },
   });
 
@@ -86,20 +91,20 @@ export function exportToPDF(data: PDFExportData): void {
   // Results Section
   doc.setFontSize(14);
   doc.setFont("helvetica", "bold");
-  doc.text("Rezultaty Rozrahunku", 14, yPosition);
+  doc.text(t['pdf.results'], 14, yPosition);
   yPosition += 8;
 
   const resultsData = [
-    ["Shchomisyachnyy platizh", formatCurrency(data.result.monthlyPayment)],
-    ["Zagalna suma vyplat", formatCurrency(data.result.totalPayment)],
-    ["Zagalni vidsotky (pereplata)", formatCurrency(data.result.totalInterest)],
-    ["Efektyvna richna stavka", formatPercent(data.result.effectiveRate)],
-    ["Odnorazova komisiya", formatCurrency(data.result.oneTimeCommissionAmount)],
-    ["Zagalna shchomisyachna komisiya", formatCurrency(data.result.totalMonthlyCommissions)],
+    [t['pdf.monthlyPayment'], formatCurrency(data.result.monthlyPayment)],
+    [t['pdf.totalPayment'], formatCurrency(data.result.totalPayment)],
+    [t['pdf.totalInterest'], formatCurrency(data.result.totalInterest)],
+    [t['pdf.effectiveRate'], formatPercent(data.result.effectiveRate)],
+    [t['pdf.oneTimeCommission'], formatCurrency(data.result.oneTimeCommissionAmount)],
+    [t['pdf.totalMonthlyCommissions'], formatCurrency(data.result.totalMonthlyCommissions)],
   ];
 
   if (data.isGovernmentProgram && data.result.savingsVsCommercial > 0) {
-    resultsData.push(["Ekonomiya za YeOselya", formatCurrency(data.result.savingsVsCommercial)]);
+    resultsData.push([t['pdf.savingsYeoselya'], formatCurrency(data.result.savingsVsCommercial)]);
   }
 
   autoTable(doc, {
@@ -109,8 +114,8 @@ export function exportToPDF(data: PDFExportData): void {
     theme: "striped",
     styles: { fontSize: 10, cellPadding: 3 },
     columnStyles: {
-      0: { fontStyle: "bold", cellWidth: 80 },
-      1: { cellWidth: 60 },
+      0: { fontStyle: "bold", cellWidth: 90 },
+      1: { cellWidth: 50 },
     },
   });
 
@@ -119,10 +124,16 @@ export function exportToPDF(data: PDFExportData): void {
   // Bank Comparison Section
   doc.setFontSize(14);
   doc.setFont("helvetica", "bold");
-  doc.text("Porivnyannya Bankiv-Uchasnykiv YeOselya", 14, yPosition);
+  doc.text(t['pdf.bankComparison'], 14, yPosition);
   yPosition += 8;
 
-  const bankHeaders = ["Bank", "Stavka 3%", "Stavka 7%", "Min. vnesok", "Shchomis. platizh"];
+  const bankHeaders = [
+    t['banks.name'], 
+    t['banks.rate3'], 
+    t['banks.rate7'], 
+    t['banks.minDownPayment'], 
+    t['banks.monthlyPayment']
+  ];
   
   const bankData = banks.map((bank) => {
     const rate = data.isGovernmentProgram ? data.governmentRate : 7;
@@ -130,8 +141,8 @@ export function exportToPDF(data: PDFExportData): void {
     
     return [
       bank.name,
-      bank.rates.privileged === 3 ? "Tak" : "Ni",
-      bank.rates.standard === 7 ? "Tak" : "Ni",
+      bank.rates.privileged === 3 ? t['banks.yes'] : t['banks.no'],
+      bank.rates.standard === 7 ? t['banks.yes'] : t['banks.no'],
       `${bank.minDownPayment}%`,
       formatCurrency(monthlyPayment),
     ];
@@ -157,10 +168,16 @@ export function exportToPDF(data: PDFExportData): void {
   // Amortization Table (first 24 months or less)
   doc.setFontSize(14);
   doc.setFont("helvetica", "bold");
-  doc.text("Grafik Platezhiv (pershi 24 misyatsi)", 14, yPosition);
+  doc.text(t['pdf.scheduleTitle'], 14, yPosition);
   yPosition += 8;
 
-  const scheduleHeaders = ["#", "Tilo", "Vidsotky", "Platizh", "Zalyshok"];
+  const scheduleHeaders = [
+    t['schedule.month'], 
+    t['schedule.principal'], 
+    t['schedule.interest'], 
+    t['schedule.payment'], 
+    t['schedule.balance']
+  ];
   const scheduleData = data.schedule.slice(0, 24).map((row) => [
     row.month.toString(),
     formatCurrency(row.principalPayment),
@@ -185,13 +202,13 @@ export function exportToPDF(data: PDFExportData): void {
     doc.setFontSize(8);
     doc.setFont("helvetica", "normal");
     doc.text(
-      "Kalkulyator nadaye oriyentovni rozrahunky. Tochni umovy kredytuvannya utochnyuyte u banku.",
+      t['pdf.footer'],
       pageWidth / 2,
       doc.internal.pageSize.getHeight() - 10,
       { align: "center" }
     );
     doc.text(
-      `Storinka ${i} z ${totalPages}`,
+      `${t['pdf.page']} ${i} ${t['pdf.of']} ${totalPages}`,
       pageWidth - 20,
       doc.internal.pageSize.getHeight() - 10,
       { align: "right" }
@@ -199,6 +216,8 @@ export function exportToPDF(data: PDFExportData): void {
   }
 
   // Save the PDF
-  const fileName = `ipoteka-rozrahunok-${new Date().toISOString().split("T")[0]}.pdf`;
+  const fileName = lang === 'uk' 
+    ? `ipoteka-rozrahunok-${new Date().toISOString().split("T")[0]}.pdf`
+    : `mortgage-calculation-${new Date().toISOString().split("T")[0]}.pdf`;
   doc.save(fileName);
 }
