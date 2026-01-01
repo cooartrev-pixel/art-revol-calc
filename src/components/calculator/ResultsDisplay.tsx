@@ -79,7 +79,7 @@ export function ResultsDisplay({ result, isGovernmentProgram, input, schedule }:
                 <Calculator className="h-4 w-4 text-primary" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Сума кредиту</p>
+                <p className="text-sm text-muted-foreground">{t('results.loanAmount')}</p>
                 <p className="text-lg font-semibold">{formatCurrency(result.loanAmount)}</p>
               </div>
             </div>
@@ -93,7 +93,7 @@ export function ResultsDisplay({ result, isGovernmentProgram, input, schedule }:
                 <TrendingUp className="h-4 w-4 text-destructive" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Переплата</p>
+                <p className="text-sm text-muted-foreground">{t('results.overpayment')}</p>
                 <p className="text-lg font-semibold">{formatCurrency(result.totalInterest)}</p>
               </div>
             </div>
@@ -107,7 +107,7 @@ export function ResultsDisplay({ result, isGovernmentProgram, input, schedule }:
                 <Wallet className="h-4 w-4 text-accent-foreground" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Загальна сума</p>
+                <p className="text-sm text-muted-foreground">{t('results.totalSum')}</p>
                 <p className="text-lg font-semibold">{formatCurrency(result.totalPayment)}</p>
               </div>
             </div>
@@ -121,7 +121,7 @@ export function ResultsDisplay({ result, isGovernmentProgram, input, schedule }:
                 <Percent className="h-4 w-4 text-secondary" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Ефективна ставка</p>
+                <p className="text-sm text-muted-foreground">{t('results.effectiveRate')}</p>
                 <p className="text-lg font-semibold">{formatPercent(result.effectiveRate)}</p>
               </div>
             </div>
@@ -135,19 +135,19 @@ export function ResultsDisplay({ result, isGovernmentProgram, input, schedule }:
           <CardHeader className="pb-2">
             <CardTitle className="text-base flex items-center gap-2">
               <PiggyBank className="h-4 w-4" />
-              Комісії
+              {t('results.commissions')}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-2">
             {result.oneTimeCommissionAmount > 0 && (
               <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Одноразова комісія:</span>
+                <span className="text-muted-foreground">{t('results.oneTimeCommission')}:</span>
                 <span className="font-medium">{formatCurrency(result.oneTimeCommissionAmount)}</span>
               </div>
             )}
             {result.totalMonthlyCommissions > 0 && (
               <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Щомісячні комісії (всього):</span>
+                <span className="text-muted-foreground">{t('results.monthlyCommissions')}:</span>
                 <span className="font-medium">{formatCurrency(result.totalMonthlyCommissions)}</span>
               </div>
             )}

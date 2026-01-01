@@ -6,17 +6,26 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { ChevronDown, ChevronUp, Download, FileSpreadsheet } from "lucide-react";
 import type { AmortizationRow } from "@/lib/mortgage-calculations";
 import { formatCurrency } from "@/lib/mortgage-calculations";
+import { useLanguage } from "@/lib/i18n";
 
 interface AmortizationTableProps {
   schedule: AmortizationRow[];
 }
 
 export function AmortizationTable({ schedule }: AmortizationTableProps) {
+  const { t } = useLanguage();
   const [isExpanded, setIsExpanded] = useState(false);
   const displayedRows = isExpanded ? schedule : schedule.slice(0, 12);
 
   const exportToCSV = () => {
-    const headers = ['Місяць', 'Початковий залишок', 'Тіло кредиту', 'Відсотки', 'Загальний платіж', 'Кінцевий залишок'];
+    const headers = [
+      t('schedule.csvMonth'),
+      t('schedule.csvOpeningBalance'),
+      t('schedule.csvPrincipal'),
+      t('schedule.csvInterest'),
+      t('schedule.csvPayment'),
+      t('schedule.csvClosingBalance')
+    ];
     const csvContent = [
       headers.join(';'),
       ...schedule.map(row => [
@@ -41,11 +50,11 @@ export function AmortizationTable({ schedule }: AmortizationTableProps) {
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle className="text-lg flex items-center gap-2">
           <FileSpreadsheet className="h-5 w-5" />
-          Таблиця амортизації
+          {t('schedule.title')}
         </CardTitle>
         <Button variant="outline" size="sm" onClick={exportToCSV}>
           <Download className="h-4 w-4 mr-2" />
-          Експорт
+          {t('schedule.export')}
         </Button>
       </CardHeader>
       <CardContent>
@@ -53,12 +62,12 @@ export function AmortizationTable({ schedule }: AmortizationTableProps) {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="w-[60px]">№</TableHead>
-                <TableHead className="text-right">Поч. залишок</TableHead>
-                <TableHead className="text-right">Тіло</TableHead>
-                <TableHead className="text-right">Відсотки</TableHead>
-                <TableHead className="text-right">Платіж</TableHead>
-                <TableHead className="text-right">Кін. залишок</TableHead>
+                <TableHead className="w-[60px]">{t('schedule.month')}</TableHead>
+                <TableHead className="text-right">{t('schedule.openingBalance')}</TableHead>
+                <TableHead className="text-right">{t('schedule.principal')}</TableHead>
+                <TableHead className="text-right">{t('schedule.interest')}</TableHead>
+                <TableHead className="text-right">{t('schedule.payment')}</TableHead>
+                <TableHead className="text-right">{t('schedule.closingBalance')}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -96,12 +105,12 @@ export function AmortizationTable({ schedule }: AmortizationTableProps) {
               {isExpanded ? (
                 <>
                   <ChevronUp className="h-4 w-4 mr-2" />
-                  Згорнути таблицю
+                  {t('schedule.collapse')}
                 </>
               ) : (
                 <>
                   <ChevronDown className="h-4 w-4 mr-2" />
-                  Показати всі {schedule.length} місяців
+                  {t('schedule.showAll', { months: schedule.length })}
                 </>
               )}
             </Button>
