@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Home, Percent, Calendar, Building2, Flag } from "lucide-react";
 import type { MortgageInput } from "@/lib/mortgage-calculations";
 import { calculateDownPaymentAmount, formatCurrency } from "@/lib/mortgage-calculations";
+import { useLanguage } from "@/lib/i18n";
 
 interface CalculatorInputsProps {
   values: MortgageInput;
@@ -16,6 +17,8 @@ interface CalculatorInputsProps {
 }
 
 export function CalculatorInputs({ values, onChange }: CalculatorInputsProps) {
+  const { t } = useLanguage();
+  
   const updateValue = <K extends keyof MortgageInput>(key: K, value: MortgageInput[K]) => {
     onChange({ ...values, [key]: value });
   };
@@ -37,7 +40,7 @@ export function CalculatorInputs({ values, onChange }: CalculatorInputsProps) {
         <CardHeader className="pb-3">
           <CardTitle className="flex items-center gap-2 text-lg">
             <Home className="h-5 w-5 text-primary" />
-            Вартість об'єкта
+            {t('input.propertyValue')}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -49,7 +52,7 @@ export function CalculatorInputs({ values, onChange }: CalculatorInputsProps) {
               className="text-lg font-medium"
               placeholder="0"
             />
-            <span className="text-muted-foreground whitespace-nowrap">грн</span>
+            <span className="text-muted-foreground whitespace-nowrap">{t('input.currency')}</span>
           </div>
           <Slider
             value={[values.propertyValue]}
@@ -60,8 +63,8 @@ export function CalculatorInputs({ values, onChange }: CalculatorInputsProps) {
             className="mt-2"
           />
           <div className="flex justify-between text-sm text-muted-foreground">
-            <span>100 тис</span>
-            <span>20 млн</span>
+            <span>{t('input.min')}</span>
+            <span>{t('input.max')}</span>
           </div>
         </CardContent>
       </Card>
@@ -71,7 +74,7 @@ export function CalculatorInputs({ values, onChange }: CalculatorInputsProps) {
         <CardHeader className="pb-3">
           <CardTitle className="flex items-center gap-2 text-lg">
             <Percent className="h-5 w-5 text-primary" />
-            Перший внесок
+            {t('input.downPayment')}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -80,8 +83,8 @@ export function CalculatorInputs({ values, onChange }: CalculatorInputsProps) {
             onValueChange={(v) => updateValue('downPaymentType', v as 'amount' | 'percent')}
           >
             <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="percent">Відсоток</TabsTrigger>
-              <TabsTrigger value="amount">Сума</TabsTrigger>
+              <TabsTrigger value="percent">{t('input.percent')}</TabsTrigger>
+              <TabsTrigger value="amount">{t('input.amount')}</TabsTrigger>
             </TabsList>
             <TabsContent value="percent" className="mt-4">
               <div className="flex items-center gap-4">
@@ -114,18 +117,18 @@ export function CalculatorInputs({ values, onChange }: CalculatorInputsProps) {
                   className="text-lg font-medium"
                   placeholder="0"
                 />
-                <span className="text-muted-foreground whitespace-nowrap">грн</span>
+                <span className="text-muted-foreground whitespace-nowrap">{t('input.currency')}</span>
               </div>
             </TabsContent>
           </Tabs>
           
           <div className="p-3 bg-muted/30 rounded-lg">
             <div className="flex justify-between text-sm">
-              <span className="text-muted-foreground">Сума кредиту:</span>
+              <span className="text-muted-foreground">{t('input.loanAmount')}:</span>
               <span className="font-semibold">{formatCurrency(Math.max(0, loanAmount))}</span>
             </div>
             <div className="flex justify-between text-sm mt-1">
-              <span className="text-muted-foreground">Внесок:</span>
+              <span className="text-muted-foreground">{t('input.contribution')}:</span>
               <span className="font-medium">{downPaymentPercent.toFixed(1)}%</span>
             </div>
           </div>
@@ -137,7 +140,7 @@ export function CalculatorInputs({ values, onChange }: CalculatorInputsProps) {
         <CardHeader className="pb-3">
           <CardTitle className="flex items-center gap-2 text-lg">
             <Calendar className="h-5 w-5 text-primary" />
-            Термін кредиту
+            {t('input.loanTerm')}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -150,7 +153,7 @@ export function CalculatorInputs({ values, onChange }: CalculatorInputsProps) {
               min={1}
               max={30}
             />
-            <span className="text-muted-foreground">років</span>
+            <span className="text-muted-foreground">{t('input.years')}</span>
           </div>
           <Slider
             value={[values.loanTermYears]}
@@ -161,8 +164,8 @@ export function CalculatorInputs({ values, onChange }: CalculatorInputsProps) {
             className="mt-2"
           />
           <div className="flex justify-between text-sm text-muted-foreground">
-            <span>1 рік</span>
-            <span>30 років</span>
+            <span>1 {t('input.year')}</span>
+            <span>30 {t('input.years')}</span>
           </div>
         </CardContent>
       </Card>
@@ -173,7 +176,7 @@ export function CalculatorInputs({ values, onChange }: CalculatorInputsProps) {
           <CardTitle className="flex items-center justify-between">
             <div className="flex items-center gap-2 text-lg">
               <Flag className="h-5 w-5 text-government" />
-              Програма "ЄОселя"
+              {t('input.yeoselia')}
             </div>
             <Switch
               checked={values.isGovernmentProgram}
@@ -190,7 +193,7 @@ export function CalculatorInputs({ values, onChange }: CalculatorInputsProps) {
           <CardContent className="space-y-4">
             <div className="p-3 bg-government/10 rounded-lg border border-government/20">
               <p className="text-sm text-foreground/80 mb-3">
-                Оберіть вашу категорію для визначення процентної ставки:
+                {t('input.selectCategory')}
               </p>
               <RadioGroup
                 value={String(values.governmentRate)}
@@ -201,11 +204,11 @@ export function CalculatorInputs({ values, onChange }: CalculatorInputsProps) {
                   <RadioGroupItem value="3" id="rate-3" className="mt-0.5" />
                   <div>
                     <Label htmlFor="rate-3" className="font-medium cursor-pointer flex items-center gap-2">
-                      3% річних
-                      <Badge variant="secondary" className="bg-success text-success-foreground">Пільгова</Badge>
+                      {t('input.rate3')}
+                      <Badge variant="secondary" className="bg-success text-success-foreground">{t('input.privileged')}</Badge>
                     </Label>
                     <p className="text-sm text-muted-foreground mt-1">
-                      Військовослужбовці, педагоги, медики, науковці
+                      {t('input.rate3desc')}
                     </p>
                   </div>
                 </div>
@@ -213,11 +216,11 @@ export function CalculatorInputs({ values, onChange }: CalculatorInputsProps) {
                   <RadioGroupItem value="7" id="rate-7" className="mt-0.5" />
                   <div>
                     <Label htmlFor="rate-7" className="font-medium cursor-pointer flex items-center gap-2">
-                      7% річних
-                      <Badge variant="outline">Стандартна</Badge>
+                      {t('input.rate7')}
+                      <Badge variant="outline">{t('input.standard')}</Badge>
                     </Label>
                     <p className="text-sm text-muted-foreground mt-1">
-                      Ветерани, ВПО, особи без власного житла (&gt;52,5 м²)
+                      {t('input.rate7desc')}
                     </p>
                   </div>
                 </div>
@@ -233,7 +236,7 @@ export function CalculatorInputs({ values, onChange }: CalculatorInputsProps) {
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-lg">
               <Percent className="h-5 w-5 text-primary" />
-              Річна процентна ставка
+              {t('input.annualRate')}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -256,7 +259,7 @@ export function CalculatorInputs({ values, onChange }: CalculatorInputsProps) {
       {/* Тип платежу */}
       <Card>
         <CardHeader className="pb-3">
-          <CardTitle className="text-lg">Тип платежу</CardTitle>
+          <CardTitle className="text-lg">{t('input.paymentType')}</CardTitle>
         </CardHeader>
         <CardContent>
           <RadioGroup
@@ -267,15 +270,15 @@ export function CalculatorInputs({ values, onChange }: CalculatorInputsProps) {
             <div className="flex items-center space-x-2 p-3 rounded-lg border hover:bg-accent/50 transition-colors cursor-pointer">
               <RadioGroupItem value="annuity" id="annuity" />
               <Label htmlFor="annuity" className="cursor-pointer">
-                <div className="font-medium">Ануїтетний</div>
-                <p className="text-xs text-muted-foreground">Рівні платежі</p>
+                <div className="font-medium">{t('input.annuity')}</div>
+                <p className="text-xs text-muted-foreground">{t('input.equalPayments')}</p>
               </Label>
             </div>
             <div className="flex items-center space-x-2 p-3 rounded-lg border hover:bg-accent/50 transition-colors cursor-pointer">
               <RadioGroupItem value="classic" id="classic" />
               <Label htmlFor="classic" className="cursor-pointer">
-                <div className="font-medium">Класичний</div>
-                <p className="text-xs text-muted-foreground">Спадні платежі</p>
+                <div className="font-medium">{t('input.classic')}</div>
+                <p className="text-xs text-muted-foreground">{t('input.decreasingPayments')}</p>
               </Label>
             </div>
           </RadioGroup>
@@ -287,12 +290,12 @@ export function CalculatorInputs({ values, onChange }: CalculatorInputsProps) {
         <CardHeader className="pb-3">
           <CardTitle className="flex items-center gap-2 text-lg">
             <Building2 className="h-5 w-5 text-primary" />
-            Комісії банку
+            {t('input.bankCommissions')}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
-            <Label className="text-sm text-muted-foreground">Одноразова комісія</Label>
+            <Label className="text-sm text-muted-foreground">{t('input.oneTimeCommission')}</Label>
             <div className="flex items-center gap-4 mt-2">
               <Input
                 type="number"
@@ -307,7 +310,7 @@ export function CalculatorInputs({ values, onChange }: CalculatorInputsProps) {
             </div>
           </div>
           <div>
-            <Label className="text-sm text-muted-foreground">Щомісячна комісія</Label>
+            <Label className="text-sm text-muted-foreground">{t('input.monthlyCommission')}</Label>
             <div className="flex items-center gap-4 mt-2">
               <Input
                 type="number"

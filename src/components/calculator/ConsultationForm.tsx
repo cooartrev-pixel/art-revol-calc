@@ -11,6 +11,7 @@ import { banks } from "@/lib/banks-data";
 import { formatCurrency } from "@/lib/mortgage-calculations";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useLanguage } from "@/lib/i18n";
 import { z } from "zod";
 
 interface ConsultationFormProps {
@@ -21,13 +22,6 @@ interface ConsultationFormProps {
   isGovernmentProgram: boolean;
 }
 
-const consultationSchema = z.object({
-  name: z.string().trim().min(2, "Ім'я повинно містити мінімум 2 символи").max(100, "Ім'я занадто довге"),
-  phone: z.string().trim().min(10, "Введіть коректний номер телефону").max(20, "Номер телефону занадто довгий"),
-  email: z.string().trim().email("Некоректна email адреса").max(255, "Email занадто довгий").optional().or(z.literal("")),
-  message: z.string().trim().max(1000, "Повідомлення занадто довге").optional(),
-});
-
 export function ConsultationForm({
   propertyValue,
   loanAmount,
@@ -35,6 +29,7 @@ export function ConsultationForm({
   interestRate,
   isGovernmentProgram,
 }: ConsultationFormProps) {
+  const { t } = useLanguage();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -47,6 +42,13 @@ export function ConsultationForm({
     message: "",
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const consultationSchema = z.object({
+    name: z.string().trim().min(2, t('validation.nameMin')).max(100, t('validation.nameMax')),
+    phone: z.string().trim().min(10, t('validation.phoneInvalid')).max(20, t('validation.phoneMax')),
+    email: z.string().trim().email(t('validation.emailInvalid')).max(255, t('validation.emailMax')).optional().or(z.literal("")),
+    message: z.string().trim().max(1000, t('validation.messageMax')).optional(),
+  });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -109,14 +111,14 @@ export function ConsultationForm({
 
       setIsSubmitted(true);
       toast({
-        title: "Заявку надіслано!",
-        description: "Наш агент зв'яжеться з вами найближчим часом.",
+        title: t('form.success'),
+        description: t('form.successDesc'),
       });
     } catch (error) {
       console.error("Error submitting consultation request");
       toast({
-        title: "Помилка",
-        description: "Не вдалося надіслати заявку. Спробуйте ще раз.",
+        title: t('form.error'),
+        description: t('form.errorDesc'),
         variant: "destructive",
       });
     } finally {
@@ -132,9 +134,9 @@ export function ConsultationForm({
             <div className="w-16 h-16 bg-success/20 rounded-full flex items-center justify-center mb-4">
               <CheckCircle className="h-8 w-8 text-success" />
             </div>
-            <h3 className="text-xl font-semibold mb-2">Дякуємо за заявку!</h3>
+            <h3 className="text-xl font-semibold mb-2">{t('form.thankYou')}</h3>
             <p className="text-muted-foreground mb-4">
-              Наш агент зв'яжеться з вами найближчим часом для консультації.
+              {t('form.thankYouDesc')}
             </p>
             <Button
               variant="outline"
@@ -150,7 +152,7 @@ export function ConsultationForm({
                 });
               }}
             >
-              Надіслати ще одну заявку
+              {t('form.submitAnother')}
             </Button>
           </div>
         </CardContent>
@@ -163,10 +165,10 @@ export function ConsultationForm({
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <MessageSquare className="h-5 w-5 text-primary" />
-          Заявка на консультацію
+          {t('form.title')}
         </CardTitle>
         <p className="text-sm text-muted-foreground">
-          Залиште заявку і наш агент зв'яжеться з вами для детальної консультації
+          {t('form.subtitle')}
         </p>
       </CardHeader>
       <CardContent>
@@ -175,11 +177,11 @@ export function ConsultationForm({
             <div className="space-y-2">
               <Label htmlFor="name" className="flex items-center gap-2">
                 <User className="h-4 w-4" />
-                Ім'я *
+                {t('form.name')} {t('form.required')}
               </Label>
               <Input
                 id="name"
-                placeholder="Ваше ім'я"
+                placeholder={t('form.namePlaceholder')}
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 required
@@ -192,12 +194,12 @@ export function ConsultationForm({
             <div className="space-y-2">
               <Label htmlFor="phone" className="flex items-center gap-2">
                 <Phone className="h-4 w-4" />
-                Телефон *
+                {t('form.phone')} {t('form.required')}
               </Label>
               <Input
                 id="phone"
                 type="tel"
-                placeholder="+380 XX XXX XX XX"
+                placeholder={t('form.phonePlaceholder')}
                 value={formData.phone}
                 onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                 required
@@ -211,12 +213,12 @@ export function ConsultationForm({
           <div className="space-y-2">
             <Label htmlFor="email" className="flex items-center gap-2">
               <Mail className="h-4 w-4" />
-              Email (необов'язково)
+              {t('form.emailOptional')}
             </Label>
             <Input
               id="email"
               type="email"
-              placeholder="your@email.com"
+              placeholder={t('form.emailPlaceholder')}
               value={formData.email}
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
               maxLength={255}
@@ -226,16 +228,16 @@ export function ConsultationForm({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="bank">Обраний банк (необов'язково)</Label>
+            <Label htmlFor="bank">{t('form.bank')}</Label>
             <Select
               value={formData.selectedBank}
               onValueChange={(value) => setFormData({ ...formData, selectedBank: value })}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Виберіть банк" />
+                <SelectValue placeholder={t('form.bankPlaceholder')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="none">Не визначився</SelectItem>
+                <SelectItem value="none">{t('form.bankNotDecided')}</SelectItem>
                 {banks.map((bank) => (
                   <SelectItem key={bank.id} value={bank.name}>
                     {bank.name}
@@ -248,12 +250,12 @@ export function ConsultationForm({
           <div className="flex items-center justify-between p-4 bg-muted/50 rounded-lg">
             <div>
               <Label htmlFor="includeCalculation" className="font-medium">
-                Додати дані розрахунку
+                {t('form.includeCalculation')}
               </Label>
               <p className="text-sm text-muted-foreground">
                 {formData.includeCalculation
-                  ? `${formatCurrency(loanAmount)} на ${loanTerm} років під ${interestRate}%`
-                  : "Дані розрахунку не будуть додані"}
+                  ? t('form.calculationIncluded', { amount: formatCurrency(loanAmount), years: loanTerm, rate: interestRate })
+                  : t('form.calculationNotIncluded')}
               </p>
             </div>
             <Switch
@@ -266,10 +268,10 @@ export function ConsultationForm({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="message">Додаткове повідомлення</Label>
+            <Label htmlFor="message">{t('form.message')}</Label>
             <Textarea
               id="message"
-              placeholder="Опишіть ваші побажання або питання..."
+              placeholder={t('form.messagePlaceholder')}
               value={formData.message}
               onChange={(e) => setFormData({ ...formData, message: e.target.value })}
               rows={3}
@@ -281,12 +283,12 @@ export function ConsultationForm({
             {isSubmitting ? (
               <>
                 <span className="animate-spin mr-2">⏳</span>
-                Надсилання...
+                {t('form.submitting')}
               </>
             ) : (
               <>
                 <Send className="h-4 w-4 mr-2" />
-                Надіслати заявку
+                {t('form.submit')}
               </>
             )}
           </Button>

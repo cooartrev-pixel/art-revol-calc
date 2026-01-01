@@ -4,36 +4,48 @@ import { cn } from "@/lib/utils";
 
 const AnimatedTabs = TabsPrimitive.Root;
 
-interface AnimatedTabsListProps extends React.ComponentPropsWithoutRef<typeof TabsPrimitive.List> {
-  activeIndex?: number;
-  tabCount?: number;
-}
-
 const AnimatedTabsList = React.forwardRef<
   React.ElementRef<typeof TabsPrimitive.List>,
-  AnimatedTabsListProps
+  React.ComponentPropsWithoutRef<typeof TabsPrimitive.List>
 >(({ className, children, ...props }, ref) => {
-  const [activeIndex, setActiveIndex] = React.useState(0);
-  const [tabWidths, setTabWidths] = React.useState<number[]>([]);
+  const [indicatorStyle, setIndicatorStyle] = React.useState({ left: 0, width: 0 });
   const tabsRef = React.useRef<HTMLDivElement>(null);
 
-  React.useEffect(() => {
+  const updateIndicator = React.useCallback(() => {
     if (tabsRef.current) {
-      const tabs = tabsRef.current.querySelectorAll('[role="tab"]');
-      const widths = Array.from(tabs).map((tab) => (tab as HTMLElement).offsetWidth);
-      setTabWidths(widths);
+      const activeTab = tabsRef.current.querySelector('[data-state="active"]') as HTMLElement;
+      if (activeTab) {
+        const tabsRect = tabsRef.current.getBoundingClientRect();
+        const activeRect = activeTab.getBoundingClientRect();
+        setIndicatorStyle({
+          left: activeRect.left - tabsRect.left,
+          width: activeRect.width,
+        });
+      }
     }
-  }, [children]);
-
-  const handleTabChange = React.useCallback((index: number) => {
-    setActiveIndex(index);
   }, []);
 
-  const indicatorLeft = React.useMemo(() => {
-    return tabWidths.slice(0, activeIndex).reduce((acc, width) => acc + width, 0);
-  }, [activeIndex, tabWidths]);
-
-  const indicatorWidth = tabWidths[activeIndex] || 0;
+  React.useEffect(() => {
+    updateIndicator();
+    
+    // Create observer to watch for data-state changes
+    const observer = new MutationObserver(updateIndicator);
+    if (tabsRef.current) {
+      observer.observe(tabsRef.current, { 
+        attributes: true, 
+        subtree: true, 
+        attributeFilter: ['data-state'] 
+      });
+    }
+    
+    // Update on resize
+    window.addEventListener('resize', updateIndicator);
+    
+    return () => {
+      observer.disconnect();
+      window.removeEventListener('resize', updateIndicator);
+    };
+  }, [updateIndicator, children]);
 
   return (
     <TabsPrimitive.List
@@ -45,45 +57,36 @@ const AnimatedTabsList = React.forwardRef<
       {...props}
     >
       <div ref={tabsRef} className="relative flex w-full">
-        {/* Animated indicator */}
+        {/* Animated underline indicator */}
         <div
           className="absolute bottom-0 h-0.5 bg-primary rounded-full transition-all duration-300 ease-out"
           style={{
-            left: `${indicatorLeft}px`,
-            width: `${indicatorWidth}px`,
+            left: `${indicatorStyle.left}px`,
+            width: `${indicatorStyle.width}px`,
           }}
         />
-        {React.Children.map(children, (child, index) => {
-          if (React.isValidElement(child)) {
-            return React.cloneElement(child as React.ReactElement<{ onSelect?: () => void }>, {
-              onSelect: () => handleTabChange(index),
-            });
-          }
-          return child;
-        })}
+        {/* Animated background indicator */}
+        <div
+          className="absolute top-0 bottom-0 bg-background rounded-md shadow-sm transition-all duration-300 ease-out -z-10"
+          style={{
+            left: `${indicatorStyle.left}px`,
+            width: `${indicatorStyle.width}px`,
+          }}
+        />
+        {children}
       </div>
     </TabsPrimitive.List>
   );
 });
 AnimatedTabsList.displayName = "AnimatedTabsList";
 
-interface AnimatedTabsTriggerProps extends React.ComponentPropsWithoutRef<typeof TabsPrimitive.Trigger> {
-  onSelect?: () => void;
-}
-
 const AnimatedTabsTrigger = React.forwardRef<
   React.ElementRef<typeof TabsPrimitive.Trigger>,
-  AnimatedTabsTriggerProps
->(({ className, onSelect, onClick, ...props }, ref) => {
-  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-    onSelect?.();
-    onClick?.(e);
-  };
-
+  React.ComponentPropsWithoutRef<typeof TabsPrimitive.Trigger>
+>(({ className, ...props }, ref) => {
   return (
     <TabsPrimitive.Trigger
       ref={ref}
-      onClick={handleClick}
       className={cn(
         "inline-flex flex-1 items-center justify-center whitespace-nowrap rounded-md px-2 md:px-4 py-2 md:py-2.5 text-xs md:text-sm font-medium ring-offset-background transition-all duration-200",
         "data-[state=active]:text-primary data-[state=active]:font-semibold",

@@ -1,5 +1,4 @@
 import { useState, useMemo } from "react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { BarChart3, Table, Bot, Building2, MessageSquare } from "lucide-react";
 import { Header } from "@/components/calculator/Header";
 import { CalculatorInputs } from "@/components/calculator/CalculatorInputs";
@@ -10,6 +9,12 @@ import { AIAssistant } from "@/components/calculator/AIAssistant";
 import { BankComparison } from "@/components/calculator/BankComparison";
 import { ConsultationForm } from "@/components/calculator/ConsultationForm";
 import { useLanguage } from "@/lib/i18n";
+import { 
+  AnimatedTabs, 
+  AnimatedTabsList, 
+  AnimatedTabsTrigger, 
+  AnimatedTabsContent 
+} from "@/components/ui/animated-tabs";
 import { 
   calculateMortgage, 
   generateAmortizationSchedule,
@@ -56,11 +61,10 @@ const Index = () => {
         {/* Hero Section */}
         <div className="text-center mb-8 animate-fade-in">
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-3">
-            Іпотечний Калькулятор
+            {t('header.title')}
           </h1>
           <p className="text-muted-foreground max-w-2xl mx-auto">
-            Розрахуйте вигідні умови кредитування, включаючи державну програму "ЄОселя" 
-            зі ставками від 3% річних
+            {t('header.subtitle')}
           </p>
         </div>
 
@@ -85,56 +89,56 @@ const Index = () => {
             </div>
 
             {/* Табы з деталями */}
-            <Tabs defaultValue="charts" className="w-full animate-fade-in [animation-delay:300ms]">
-              <TabsList className="grid w-full grid-cols-5 sticky top-2 z-10">
-                <TabsTrigger value="charts" className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2">
+            <AnimatedTabs defaultValue="charts" className="w-full animate-fade-in [animation-delay:300ms]">
+              <AnimatedTabsList className="grid w-full grid-cols-5 sticky top-2 z-10">
+                <AnimatedTabsTrigger value="charts" className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2">
                   <BarChart3 className="h-4 w-4 md:h-5 md:w-5" />
                   <span className="text-[10px] sm:text-xs md:text-sm">{t('tabs.charts')}</span>
-                </TabsTrigger>
-                <TabsTrigger value="banks" className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2">
+                </AnimatedTabsTrigger>
+                <AnimatedTabsTrigger value="banks" className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2">
                   <Building2 className="h-4 w-4 md:h-5 md:w-5" />
                   <span className="text-[10px] sm:text-xs md:text-sm">{t('tabs.banks')}</span>
-                </TabsTrigger>
-                <TabsTrigger value="table" className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2">
+                </AnimatedTabsTrigger>
+                <AnimatedTabsTrigger value="table" className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2">
                   <Table className="h-4 w-4 md:h-5 md:w-5" />
                   <span className="text-[10px] sm:text-xs md:text-sm">{t('tabs.table')}</span>
-                </TabsTrigger>
-                <TabsTrigger value="assistant" className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2">
+                </AnimatedTabsTrigger>
+                <AnimatedTabsTrigger value="assistant" className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2">
                   <Bot className="h-4 w-4 md:h-5 md:w-5" />
                   <span className="text-[10px] sm:text-xs md:text-sm">{t('tabs.assistant')}</span>
-                </TabsTrigger>
-                <TabsTrigger value="consultation" className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2">
+                </AnimatedTabsTrigger>
+                <AnimatedTabsTrigger value="consultation" className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2">
                   <MessageSquare className="h-4 w-4 md:h-5 md:w-5" />
                   <span className="text-[10px] sm:text-xs md:text-sm">{t('tabs.application')}</span>
-                </TabsTrigger>
-              </TabsList>
+                </AnimatedTabsTrigger>
+              </AnimatedTabsList>
 
-              <TabsContent value="charts" className="mt-6 animate-fade-in">
+              <AnimatedTabsContent value="charts" className="mt-6">
                 <PaymentChart 
                   result={result} 
                   schedule={schedule}
                   isGovernmentProgram={input.isGovernmentProgram}
                 />
-              </TabsContent>
+              </AnimatedTabsContent>
 
-              <TabsContent value="banks" className="mt-6 animate-fade-in">
+              <AnimatedTabsContent value="banks" className="mt-6">
                 <BankComparison 
                   loanAmount={loanAmount}
                   loanTermYears={input.loanTermYears}
                   isGovernmentProgram={input.isGovernmentProgram}
                   governmentRate={input.governmentRate}
                 />
-              </TabsContent>
+              </AnimatedTabsContent>
 
-              <TabsContent value="table" className="mt-6 animate-fade-in">
+              <AnimatedTabsContent value="table" className="mt-6">
                 <AmortizationTable schedule={schedule} />
-              </TabsContent>
+              </AnimatedTabsContent>
 
-              <TabsContent value="assistant" className="mt-6 animate-fade-in">
+              <AnimatedTabsContent value="assistant" className="mt-6">
                 <AIAssistant input={input} result={result} />
-              </TabsContent>
+              </AnimatedTabsContent>
 
-              <TabsContent value="consultation" className="mt-6 animate-fade-in">
+              <AnimatedTabsContent value="consultation" className="mt-6">
                 <ConsultationForm
                   propertyValue={input.propertyValue}
                   loanAmount={loanAmount}
@@ -142,16 +146,16 @@ const Index = () => {
                   interestRate={input.isGovernmentProgram ? input.governmentRate : input.interestRate}
                   isGovernmentProgram={input.isGovernmentProgram}
                 />
-              </TabsContent>
-            </Tabs>
+              </AnimatedTabsContent>
+            </AnimatedTabs>
           </div>
         </div>
 
         {/* Footer */}
         <footer className="mt-16 pt-8 border-t text-center text-sm text-muted-foreground animate-fade-in [animation-delay:400ms]">
-          <p>© 2024 Revolution - Агентство нерухомості. Всі права захищені.</p>
+          <p>{t('common.copyright')}</p>
           <p className="mt-2">
-            Калькулятор надає орієнтовні розрахунки. Точні умови кредитування уточнюйте у банку.
+            {t('common.disclaimer')}
           </p>
         </footer>
       </main>
