@@ -59,6 +59,48 @@ export type Database = {
         }
         Relationships: []
       }
+      legislative_updates: {
+        Row: {
+          category: string
+          content: string
+          created_at: string
+          id: string
+          is_auto_fetched: boolean
+          is_published: boolean
+          published_at: string
+          source_name: string
+          source_url: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          category?: string
+          content: string
+          created_at?: string
+          id?: string
+          is_auto_fetched?: boolean
+          is_published?: boolean
+          published_at?: string
+          source_name: string
+          source_url?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          content?: string
+          created_at?: string
+          id?: string
+          is_auto_fetched?: boolean
+          is_published?: boolean
+          published_at?: string
+          source_name?: string
+          source_url?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
