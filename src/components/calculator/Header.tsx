@@ -14,7 +14,7 @@ export function Header() {
     <header className="bg-card border-b">
       <div className="container mx-auto px-4 py-4">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-          <div className="flex items-center gap-3">
+          <Link to="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
             <div className="p-2 bg-primary rounded-lg">
               <Building className="h-6 w-6 text-primary-foreground" />
             </div>
@@ -22,7 +22,7 @@ export function Header() {
               <h1 className="text-xl font-bold tracking-tight">Revolution</h1>
               <p className="text-sm text-muted-foreground">{t('header.agency')}</p>
             </div>
-          </div>
+          </Link>
           <div className="flex flex-wrap items-center gap-4 text-sm">
             <a 
               href="tel:+380991234567" 
