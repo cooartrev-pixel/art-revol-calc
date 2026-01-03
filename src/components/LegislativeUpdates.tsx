@@ -8,6 +8,7 @@ import { ExternalLink, Newspaper, Building2, Landmark, RefreshCw, Calendar, Aler
 import { supabase } from '@/integrations/supabase/client';
 import { format } from 'date-fns';
 import { uk } from 'date-fns/locale';
+import { useAuth } from '@/hooks/useAuth';
 
 interface LegislativeUpdate {
   id: string;
@@ -44,6 +45,7 @@ const categoryConfig: Record<string, { label: string; icon: React.ReactNode; col
 };
 
 export function LegislativeUpdates() {
+  const { isAdmin, session } = useAuth();
   const [updates, setUpdates] = useState<LegislativeUpdate[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -76,9 +78,19 @@ export function LegislativeUpdates() {
   };
 
   const refreshFromSources = async () => {
+    if (!isAdmin || !session?.access_token) {
+      setError('Тільки адміністратори можуть оновлювати новини');
+      return;
+    }
+    
     setRefreshing(true);
     try {
-      const { error } = await supabase.functions.invoke('fetch-legislative-updates');
+      // Pass the user's session token for admin authentication
+      const { error } = await supabase.functions.invoke('fetch-legislative-updates', {
+        headers: {
+          Authorization: `Bearer ${session.access_token}`
+        }
+      });
       if (error) throw error;
       await fetchUpdates();
     } catch (err) {
@@ -121,15 +133,17 @@ export function LegislativeUpdates() {
             <Newspaper className="h-5 w-5 text-primary" />
             Зміни у законодавстві
           </CardTitle>
-          <Button 
-            variant="outline" 
-            size="sm" 
-            onClick={refreshFromSources}
-            disabled={refreshing}
-          >
-            <RefreshCw className={`h-4 w-4 mr-2 ${refreshing ? 'animate-spin' : ''}`} />
-            Оновити
-          </Button>
+          {isAdmin && (
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={refreshFromSources}
+              disabled={refreshing}
+            >
+              <RefreshCw className={`h-4 w-4 mr-2 ${refreshing ? 'animate-spin' : ''}`} />
+              Оновити
+            </Button>
+          )}
         </div>
         
         <div className="flex flex-wrap gap-2 mt-3">
