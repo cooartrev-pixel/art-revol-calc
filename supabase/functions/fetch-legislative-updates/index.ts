@@ -106,8 +106,63 @@ Deno.serve(async (req) => {
     console.log('Starting legislative updates fetch...')
     
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!
-    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
-    const supabase = createClient(supabaseUrl, supabaseKey)
+    const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')!
+    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+
+    // Security: Verify request comes from an authenticated admin user
+    const authHeader = req.headers.get('Authorization')
+    if (!authHeader) {
+      console.log('Unauthorized: No authorization header')
+      return new Response(
+        JSON.stringify({ success: false, error: 'Unauthorized' }),
+        { 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 401 
+        }
+      )
+    }
+
+    // Create a client with the user's JWT to verify their identity
+    const userClient = createClient(supabaseUrl, supabaseAnonKey, {
+      global: { headers: { Authorization: authHeader } }
+    })
+
+    // Verify the user is authenticated
+    const { data: { user }, error: userError } = await userClient.auth.getUser()
+    if (userError || !user) {
+      console.log('Unauthorized: Invalid or expired token')
+      return new Response(
+        JSON.stringify({ success: false, error: 'Unauthorized' }),
+        { 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 401 
+        }
+      )
+    }
+
+    // Check if the user has admin role
+    const { data: roleData, error: roleError } = await userClient
+      .from('user_roles')
+      .select('role')
+      .eq('user_id', user.id)
+      .eq('role', 'admin')
+      .maybeSingle()
+
+    if (roleError || !roleData) {
+      console.log('Forbidden: User is not an admin')
+      return new Response(
+        JSON.stringify({ success: false, error: 'Forbidden: Admin access required' }),
+        { 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 403 
+        }
+      )
+    }
+
+    console.log(`Admin user ${user.id} authorized, proceeding with RSS fetch...`)
+
+    // Use service role key for database operations
+    const supabase = createClient(supabaseUrl, supabaseServiceKey)
 
     const allItems: Array<{
       title: string

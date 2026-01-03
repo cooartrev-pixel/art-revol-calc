@@ -23,6 +23,26 @@ interface ConsultationRequest {
   message?: string;
 }
 
+// HTML escape function to prevent XSS in email content
+const escapeHtml = (text: string | undefined | null): string => {
+  if (!text) return "";
+  const map: Record<string, string> = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#039;'
+  };
+  return String(text).replace(/[&<>"']/g, (m) => map[m]);
+};
+
+// Escape for Telegram Markdown (escape special characters)
+const escapeTelegramMarkdown = (text: string | undefined | null): string => {
+  if (!text) return "";
+  // Escape Markdown special characters: _ * [ ] ( ) ~ ` > # + - = | { } . !
+  return String(text).replace(/[_*[\]()~`>#+=|{}.!-]/g, '\\$&');
+};
+
 const formatCurrency = (value: number | undefined) => {
   if (!value) return "Не вказано";
   return new Intl.NumberFormat("uk-UA", { style: "currency", currency: "UAH", maximumFractionDigits: 0 }).format(value);
@@ -57,23 +77,30 @@ const handler = async (req: Request): Promise<Response> => {
     // Send Email via Resend API
     if (RESEND_API_KEY) {
       try {
+        // Sanitize all user inputs before including in HTML email
+        const safeName = escapeHtml(data.name);
+        const safePhone = escapeHtml(data.phone);
+        const safeEmail = escapeHtml(data.email) || "Не вказано";
+        const safeBank = escapeHtml(data.selectedBank) || "Не вибрано";
+        const safeMessage = escapeHtml(data.message);
+
         const emailHtml = `
           <h2>🏠 Нова заявка на консультацію</h2>
           <p><strong>Дата:</strong> ${timestamp}</p>
           <hr />
           <h3>Контактна інформація:</h3>
-          <p><strong>Ім'я:</strong> ${data.name}</p>
-          <p><strong>Телефон:</strong> ${data.phone}</p>
-          <p><strong>Email:</strong> ${data.email || "Не вказано"}</p>
+          <p><strong>Ім'я:</strong> ${safeName}</p>
+          <p><strong>Телефон:</strong> ${safePhone}</p>
+          <p><strong>Email:</strong> ${safeEmail}</p>
           <hr />
           <h3>Параметри кредиту:</h3>
           <p><strong>Програма:</strong> ${programType}</p>
-          <p><strong>Банк:</strong> ${data.selectedBank || "Не вибрано"}</p>
+          <p><strong>Банк:</strong> ${safeBank}</p>
           <p><strong>Вартість нерухомості:</strong> ${formatCurrency(data.propertyValue)}</p>
           <p><strong>Сума кредиту:</strong> ${formatCurrency(data.loanAmount)}</p>
           <p><strong>Термін:</strong> ${data.loanTerm ? `${data.loanTerm} років` : "Не вказано"}</p>
           <p><strong>Ставка:</strong> ${data.interestRate ? `${data.interestRate}%` : "Не вказано"}</p>
-          ${data.message ? `<hr /><h3>Повідомлення:</h3><p>${data.message}</p>` : ""}
+          ${safeMessage ? `<hr /><h3>Повідомлення:</h3><p>${safeMessage}</p>` : ""}
         `;
 
         const emailResponse = await fetch("https://api.resend.com/emails", {
@@ -103,23 +130,30 @@ const handler = async (req: Request): Promise<Response> => {
     // Send Telegram notification
     if (telegramBotToken && telegramChatId) {
       try {
+        // Sanitize all user inputs before including in Telegram message
+        const safeTgName = escapeTelegramMarkdown(data.name);
+        const safeTgPhone = escapeTelegramMarkdown(data.phone);
+        const safeTgEmail = escapeTelegramMarkdown(data.email) || "Не вказано";
+        const safeTgBank = escapeTelegramMarkdown(data.selectedBank) || "Не вибрано";
+        const safeTgMessage = escapeTelegramMarkdown(data.message);
+
         const telegramMessage = `
 🏠 *Нова заявка на консультацію*
 📅 ${timestamp}
 
 *Контакти:*
-👤 ${data.name}
-📞 ${data.phone}
-📧 ${data.email || "Не вказано"}
+👤 ${safeTgName}
+📞 ${safeTgPhone}
+📧 ${safeTgEmail}
 
 *Параметри кредиту:*
 📋 Програма: ${programType}
-🏦 Банк: ${data.selectedBank || "Не вибрано"}
+🏦 Банк: ${safeTgBank}
 💰 Вартість: ${formatCurrency(data.propertyValue)}
 💳 Сума кредиту: ${formatCurrency(data.loanAmount)}
 📆 Термін: ${data.loanTerm ? `${data.loanTerm} років` : "Не вказано"}
 📊 Ставка: ${data.interestRate ? `${data.interestRate}%` : "Не вказано"}
-${data.message ? `\n💬 Повідомлення: ${data.message}` : ""}
+${safeTgMessage ? `\n💬 Повідомлення: ${safeTgMessage}` : ""}
         `.trim();
 
         const telegramResponse = await fetch(
