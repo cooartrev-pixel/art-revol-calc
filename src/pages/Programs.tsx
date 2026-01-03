@@ -7,6 +7,8 @@ import { Header } from "@/components/calculator/Header";
 import { TelegramWidget } from "@/components/widgets/TelegramWidget";
 import { CallbackWidget } from "@/components/widgets/CallbackWidget";
 import { LegislativeUpdates } from "@/components/LegislativeUpdates";
+import { InstructionGuide } from "@/components/InstructionGuide";
+import { Glossary } from "@/components/Glossary";
 import { programs } from "@/lib/programs-data";
 
 const Programs = () => {
@@ -95,6 +97,16 @@ const Programs = () => {
               <div className="absolute inset-0 bg-gradient-to-t from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
             </Card>
           ))}
+        </div>
+
+        {/* Instruction Guide Section */}
+        <div className="mb-12 animate-fade-in">
+          <InstructionGuide />
+        </div>
+
+        {/* Glossary Section */}
+        <div className="mb-12 animate-fade-in">
+          <Glossary />
         </div>
 
         {/* Legislative Updates Section */}
