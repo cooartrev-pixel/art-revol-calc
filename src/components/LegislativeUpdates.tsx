@@ -44,6 +44,13 @@ const categoryConfig: Record<string, { label: string; icon: React.ReactNode; col
   },
 };
 
+// Official source links
+const officialSources = [
+  { name: 'Верховна Рада України', url: 'https://www.rada.gov.ua/news' },
+  { name: 'НБУ', url: 'https://bank.gov.ua/ua/news' },
+  { name: 'Мінфін', url: 'https://mof.gov.ua/uk/news' },
+];
+
 export function LegislativeUpdates() {
   const { isAdmin, session } = useAuth();
   const [updates, setUpdates] = useState<LegislativeUpdate[]>([]);
@@ -51,6 +58,7 @@ export function LegislativeUpdates() {
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [lastUpdated, setLastUpdated] = useState<string | null>(null);
 
   const fetchUpdates = async () => {
     try {
@@ -69,6 +77,15 @@ export function LegislativeUpdates() {
 
       if (fetchError) throw fetchError;
       setUpdates(data || []);
+      
+      // Set last updated date from the most recent created_at
+      if (data && data.length > 0) {
+        const mostRecentCreated = data.reduce((latest, update) => {
+          const updateDate = new Date(update.created_at);
+          return updateDate > latest ? updateDate : latest;
+        }, new Date(data[0].created_at));
+        setLastUpdated(mostRecentCreated.toISOString());
+      }
     } catch (err) {
       console.error('Error fetching updates:', err);
       setError('Не вдалося завантажити новини');
@@ -144,6 +161,31 @@ export function LegislativeUpdates() {
               Оновити
             </Button>
           )}
+        </div>
+        
+        {/* Last updated date */}
+        {lastUpdated && (
+          <div className="flex items-center gap-1 text-xs text-muted-foreground mt-2">
+            <Calendar className="h-3 w-3" />
+            <span>Останнє оновлення: {format(new Date(lastUpdated), 'd MMMM yyyy, HH:mm', { locale: uk })}</span>
+          </div>
+        )}
+        
+        {/* Official source links */}
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs mt-2">
+          <span className="text-muted-foreground">Офіційні джерела:</span>
+          {officialSources.map((source, index) => (
+            <a
+              key={index}
+              href={source.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-primary hover:underline flex items-center gap-1"
+            >
+              {source.name}
+              <ExternalLink className="h-3 w-3" />
+            </a>
+          ))}
         </div>
         
         <div className="flex flex-wrap gap-2 mt-3">
