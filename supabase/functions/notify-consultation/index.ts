@@ -5,9 +5,6 @@ const telegramBotToken = Deno.env.get("TELEGRAM_BOT_TOKEN");
 const telegramChatId = Deno.env.get("TELEGRAM_CHAT_ID");
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
 
-// Internal trigger secret - only database trigger should know this
-const TRIGGER_SECRET = "db_trigger_internal";
-
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
@@ -24,7 +21,6 @@ interface ConsultationRequest {
   isYeoselya?: boolean;
   selectedBank?: string;
   message?: string;
-  trigger_secret?: string;
 }
 
 const formatCurrency = (value: number | undefined) => {
@@ -41,21 +37,17 @@ const handler = async (req: Request): Promise<Response> => {
     const data: ConsultationRequest = await req.json();
     console.log("Received consultation request notification");
 
-    // Security: Verify request comes from database trigger OR has service role key
+    // Security: Verify request comes from database trigger with service role key
     const authHeader = req.headers.get("Authorization");
-    const isServiceRole = authHeader && authHeader.includes(SUPABASE_SERVICE_ROLE_KEY || "");
-    const hasTriggerSecret = data.trigger_secret === TRIGGER_SECRET;
+    const isServiceRole = authHeader && SUPABASE_SERVICE_ROLE_KEY && authHeader.includes(SUPABASE_SERVICE_ROLE_KEY);
 
-    if (!isServiceRole && !hasTriggerSecret) {
-      console.log("Unauthorized: Missing service role or trigger secret");
+    if (!isServiceRole) {
+      console.log("Unauthorized: Missing service role key");
       return new Response(JSON.stringify({ error: "Unauthorized" }), {
         status: 401,
         headers: { "Content-Type": "application/json", ...corsHeaders },
       });
     }
-
-    // Remove trigger_secret from data before processing
-    delete data.trigger_secret;
 
     const programType = data.isYeoselya ? "єОселя" : "Комерційна іпотека";
     const timestamp = new Date().toLocaleString("uk-UA", { timeZone: "Europe/Kyiv" });
