@@ -1,10 +1,13 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 40">
   <defs>
-    <linearGradient id="radaGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#0033a0"/>
-      <stop offset="100%" style="stop-color:#0066cc"/>
+    <linearGradient id="radaGradNew" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#c41e3a"/>
+      <stop offset="100%" style="stop-color:#8b0000"/>
     </linearGradient>
   </defs>
-  <rect width="120" height="40" rx="6" fill="url(#radaGrad)"/>
-  <text x="60" y="26" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="white" text-anchor="middle">РАДАБАНК</text>
+  <rect width="120" height="40" rx="8" fill="url(#radaGradNew)"/>
+  <circle cx="22" cy="20" r="10" fill="none" stroke="white" stroke-width="2"/>
+  <path d="M17 16 L22 20 L17 24 M22 20 L27 20" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="75" y="18" font-family="Arial, sans-serif" font-size="7" font-weight="bold" fill="white" text-anchor="middle">РАДА</text>
+  <text x="75" y="28" font-family="Arial, sans-serif" font-size="7" font-weight="bold" fill="white" text-anchor="middle">БАНК</text>
 </svg>
