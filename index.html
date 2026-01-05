@@ -1,25 +1,66 @@
 <!doctype html>
-<html lang="en">
+<html lang="uk">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, minimum-scale=1.0, viewport-fit=cover" />
+    
+    <!-- Preconnect for performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    
+    <!-- Title and Description -->
     <title>Іпотечний Калькулятор | Revolution - Агентство нерухомості</title>
     <meta name="description" content="Розрахуйте іпотеку онлайн з урахуванням програми ЄОселя. Калькулятор від Revolution допоможе визначити щомісячний платіж, переплату та економію." />
     <meta name="author" content="Revolution - Агентство нерухомості" />
     <meta name="keywords" content="іпотека, калькулятор, ЄОселя, кредит на житло, нерухомість, Україна" />
-
+    
+    <!-- Theme Color for Mobile Browsers -->
+    <meta name="theme-color" content="#1a4731" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0a1628" media="(prefers-color-scheme: dark)" />
+    
+    <!-- iOS Safari Compatibility -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Revolution" />
+    <meta name="format-detection" content="telephone=no" />
+    
+    <!-- Android Chrome Compatibility -->
+    <meta name="mobile-web-app-capable" content="yes" />
+    
+    <!-- Microsoft IE/Edge Compatibility -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="msapplication-TileColor" content="#1a4731" />
+    <meta name="msapplication-tap-highlight" content="no" />
+    
+    <!-- Open Graph -->
     <meta property="og:title" content="Іпотечний Калькулятор | Revolution" />
     <meta property="og:description" content="Розрахуйте іпотеку онлайн з урахуванням державної програми ЄОселя зі ставками від 3% річних." />
     <meta property="og:type" content="website" />
     <meta property="og:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
     <meta property="og:locale" content="uk_UA" />
-
+    <meta property="og:site_name" content="Revolution - Агентство нерухомості" />
+    
+    <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Іпотечний Калькулятор | Revolution" />
     <meta name="twitter:description" content="Розрахуйте іпотеку онлайн з урахуванням програми ЄОселя" />
+    
+    <!-- Favicon -->
+    <link rel="icon" href="/favicon.ico" />
+    
+    <!-- DNS Prefetch for performance -->
+    <link rel="dns-prefetch" href="//fonts.googleapis.com" />
   </head>
 
   <body>
+    <!-- Noscript fallback -->
+    <noscript>
+      <div style="padding: 20px; text-align: center; font-family: Arial, sans-serif;">
+        <h1>Увімкніть JavaScript</h1>
+        <p>Для роботи іпотечного калькулятора необхідно увімкнути JavaScript у вашому браузері.</p>
+      </div>
+    </noscript>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

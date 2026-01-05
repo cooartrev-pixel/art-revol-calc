@@ -1,10 +1,14 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 40">
   <defs>
-    <linearGradient id="bisGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+    <linearGradient id="bisGradNew" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" style="stop-color:#f7941d"/>
-      <stop offset="100%" style="stop-color:#e88a1a"/>
+      <stop offset="100%" style="stop-color:#fdb913"/>
     </linearGradient>
   </defs>
-  <rect width="120" height="40" rx="6" fill="url(#bisGrad)"/>
-  <text x="60" y="26" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="white" text-anchor="middle">BISBANK</text>
+  <rect width="120" height="40" rx="8" fill="url(#bisGradNew)"/>
+  <rect x="12" y="12" width="16" height="16" rx="3" fill="none" stroke="white" stroke-width="2"/>
+  <line x1="16" y1="17" x2="24" y2="17" stroke="white" stroke-width="2" stroke-linecap="round"/>
+  <line x1="16" y1="20" x2="24" y2="20" stroke="white" stroke-width="2" stroke-linecap="round"/>
+  <line x1="16" y1="23" x2="20" y2="23" stroke="white" stroke-width="2" stroke-linecap="round"/>
+  <text x="75" y="24" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="white" text-anchor="middle">BIS</text>
 </svg>

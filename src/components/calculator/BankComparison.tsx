@@ -219,7 +219,7 @@ export function BankComparison({
                           <TableRow key={bank.id} className={!isEligible ? 'opacity-60' : ''}>
                             <TableCell>
                               <div className="flex items-center gap-3">
-                                <BankLogo bankId={bank.id} className="w-10 h-10" />
+                                <BankLogo bankId={bank.id} className="w-10 h-10" clickable />
                                 <div>
                                   <p className="font-medium">{bank.name}</p>
                                   {!isEligible && (
@@ -293,7 +293,7 @@ export function BankComparison({
                       <CardContent className="pt-4">
                         <div className="flex items-center justify-between mb-3">
                           <div className="flex items-center gap-3">
-                            <BankLogo bankId={bank.id} className="w-10 h-10" />
+                            <BankLogo bankId={bank.id} className="w-10 h-10" clickable />
                             <span className="font-semibold">{bank.name}</span>
                           </div>
                           <Badge variant={rate === 3 ? "default" : "secondary"} 

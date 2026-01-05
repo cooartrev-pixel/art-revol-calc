@@ -1,10 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 40">
-  <defs>
-    <linearGradient id="privatGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#1a4731"/>
-      <stop offset="100%" style="stop-color:#44b78b"/>
-    </linearGradient>
-  </defs>
-  <rect width="120" height="40" rx="6" fill="url(#privatGrad)"/>
-  <text x="60" y="26" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="white" text-anchor="middle">ПРИВАТБАНК</text>
+  <rect width="120" height="40" rx="8" fill="#1a4731"/>
+  <rect x="8" y="10" width="20" height="20" rx="3" fill="#44b78b"/>
+  <path d="M13 20 L18 25 L28 15" stroke="white" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="72" y="18" font-family="Arial, sans-serif" font-size="7" font-weight="bold" fill="white" text-anchor="middle">ПРИВАТ</text>
+  <text x="72" y="28" font-family="Arial, sans-serif" font-size="7" font-weight="bold" fill="white" text-anchor="middle">БАНК</text>
 </svg>

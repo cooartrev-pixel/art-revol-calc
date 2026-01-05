@@ -1,10 +1,13 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 40">
   <defs>
-    <linearGradient id="senseGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#ff6600"/>
-      <stop offset="100%" style="stop-color:#e55a00"/>
+    <linearGradient id="senseGradNew" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ff6b35"/>
+      <stop offset="100%" style="stop-color:#f7931e"/>
     </linearGradient>
   </defs>
-  <rect width="120" height="40" rx="6" fill="url(#senseGrad)"/>
-  <text x="60" y="26" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="white" text-anchor="middle">SENSE BANK</text>
+  <rect width="120" height="40" rx="8" fill="url(#senseGradNew)"/>
+  <circle cx="22" cy="20" r="10" fill="none" stroke="white" stroke-width="2"/>
+  <circle cx="22" cy="20" r="4" fill="white"/>
+  <path d="M22 10 L22 8 M22 30 L22 32 M12 20 L10 20 M32 20 L34 20" stroke="white" stroke-width="2" stroke-linecap="round"/>
+  <text x="75" y="24" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="white" text-anchor="middle">SENSE</text>
 </svg>
