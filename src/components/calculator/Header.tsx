@@ -1,10 +1,11 @@
-import { Building, Phone, Mail, Shield } from "lucide-react";
+import { Building, Phone, Mail, Shield, Download } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { LanguageToggle } from "@/components/LanguageToggle";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useLanguage } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
+import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/components/ui/tooltip";
 
 export function Header() {
   const { user, isAdmin } = useAuth();
@@ -51,6 +52,20 @@ export function Header() {
                 <Link to="/auth">{t('header.login')}</Link>
               </Button>
             )}
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button variant="outline" size="icon" asChild className="h-9 w-9">
+                    <Link to="/install">
+                      <Download className="h-4 w-4" />
+                    </Link>
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>{t('header.installApp')}</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
             <LanguageToggle />
             <ThemeToggle />
           </div>

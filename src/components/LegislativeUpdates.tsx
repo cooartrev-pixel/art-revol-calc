@@ -95,24 +95,22 @@ export function LegislativeUpdates() {
   };
 
   const refreshFromSources = async () => {
-    if (!isAdmin || !session?.access_token) {
-      setError('Тільки адміністратори можуть оновлювати новини');
-      return;
-    }
-    
     setRefreshing(true);
     try {
-      // Pass the user's session token for admin authentication
-      const { error } = await supabase.functions.invoke('fetch-legislative-updates', {
-        headers: {
-          Authorization: `Bearer ${session.access_token}`
-        }
-      });
-      if (error) throw error;
+      // Admin users can trigger a full refresh from RSS sources
+      if (isAdmin && session?.access_token) {
+        const { error } = await supabase.functions.invoke('fetch-legislative-updates', {
+          headers: {
+            Authorization: `Bearer ${session.access_token}`
+          }
+        });
+        if (error) throw error;
+      }
+      // All users can refresh the display from database
       await fetchUpdates();
     } catch (err) {
       console.error('Error refreshing updates:', err);
-      setError('Не вдалося оновити новини з джерел');
+      setError('Не вдалося оновити новини');
     } finally {
       setRefreshing(false);
     }
@@ -150,17 +148,15 @@ export function LegislativeUpdates() {
             <Newspaper className="h-5 w-5 text-primary" />
             Зміни у законодавстві
           </CardTitle>
-          {isAdmin && (
-            <Button 
-              variant="outline" 
-              size="sm" 
-              onClick={refreshFromSources}
-              disabled={refreshing}
-            >
-              <RefreshCw className={`h-4 w-4 mr-2 ${refreshing ? 'animate-spin' : ''}`} />
-              Оновити
-            </Button>
-          )}
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={refreshFromSources}
+            disabled={refreshing}
+          >
+            <RefreshCw className={`h-4 w-4 mr-2 ${refreshing ? 'animate-spin' : ''}`} />
+            Оновити
+          </Button>
         </div>
         
         {/* Last updated date */}
