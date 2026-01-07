@@ -14,6 +14,7 @@ import Admin from "./pages/Admin";
 import InstallPWA from "./pages/InstallPWA";
 import NotFound from "./pages/NotFound";
 
+// App configuration
 const queryClient = new QueryClient();
 
 const App = () => (
