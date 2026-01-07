@@ -14,6 +14,7 @@ const translations = {
     'header.agency': 'Агентство нерухомості',
     'header.admin': 'Адмін',
     'header.login': 'Вхід',
+    'header.installApp': 'Встановити додаток',
     'header.title': 'Іпотечний Калькулятор',
     'header.subtitle': 'Розрахуйте вигідні умови кредитування, включаючи державну програму "ЄОселя" зі ставками від 3% річних',
     
@@ -236,6 +237,7 @@ const translations = {
     'header.agency': 'Real Estate Agency',
     'header.admin': 'Admin',
     'header.login': 'Login',
+    'header.installApp': 'Install App',
     'header.title': 'Mortgage Calculator',
     'header.subtitle': 'Calculate favorable loan terms, including the "YeOselya" government program with rates from 3% per annum',
     
