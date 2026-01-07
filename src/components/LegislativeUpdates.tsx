@@ -120,6 +120,15 @@ export function LegislativeUpdates() {
     fetchUpdates();
   }, [selectedCategory]);
 
+  // Auto-refresh every 30 minutes
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      fetchUpdates();
+    }, 30 * 60 * 1000); // 30 minutes
+
+    return () => clearInterval(intervalId);
+  }, [selectedCategory]);
+
   const categories = Object.entries(categoryConfig);
 
   if (loading) {
