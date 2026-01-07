@@ -10,6 +10,7 @@ import ProgramCalculatorPage from "./pages/ProgramCalculatorPage";
 import ComparePrograms from "./pages/ComparePrograms";
 import Auth from "./pages/Auth";
 import Admin from "./pages/Admin";
+import InstallPWA from "./pages/InstallPWA";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -28,6 +29,7 @@ const App = () => (
               <Route path="/compare" element={<ComparePrograms />} />
               <Route path="/auth" element={<Auth />} />
               <Route path="/admin" element={<Admin />} />
+              <Route path="/install" element={<InstallPWA />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
