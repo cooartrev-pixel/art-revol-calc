@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -9,6 +9,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { format } from 'date-fns';
 import { uk } from 'date-fns/locale';
 import { useAuth } from '@/hooks/useAuth';
+import { toast } from '@/hooks/use-toast';
 
 interface LegislativeUpdate {
   id: string;
@@ -59,6 +60,8 @@ export function LegislativeUpdates() {
   const [error, setError] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [lastUpdated, setLastUpdated] = useState<string | null>(null);
+  const previousUpdatesCount = useRef<number>(0);
+  const isInitialLoad = useRef<boolean>(true);
 
   const fetchUpdates = async () => {
     try {
@@ -76,14 +79,28 @@ export function LegislativeUpdates() {
       const { data, error: fetchError } = await query;
 
       if (fetchError) throw fetchError;
-      setUpdates(data || []);
+      
+      const newData = data || [];
+      
+      // Show toast if new updates appeared (not on initial load)
+      if (!isInitialLoad.current && newData.length > previousUpdatesCount.current) {
+        const newCount = newData.length - previousUpdatesCount.current;
+        toast({
+          title: "Нові законодавчі зміни",
+          description: `Додано ${newCount} ${newCount === 1 ? 'нову новину' : newCount < 5 ? 'нові новини' : 'нових новин'}`,
+        });
+      }
+      
+      previousUpdatesCount.current = newData.length;
+      isInitialLoad.current = false;
+      setUpdates(newData);
       
       // Set last updated date from the most recent created_at
-      if (data && data.length > 0) {
-        const mostRecentCreated = data.reduce((latest, update) => {
+      if (newData.length > 0) {
+        const mostRecentCreated = newData.reduce((latest, update) => {
           const updateDate = new Date(update.created_at);
           return updateDate > latest ? updateDate : latest;
-        }, new Date(data[0].created_at));
+        }, new Date(newData[0].created_at));
         setLastUpdated(mostRecentCreated.toISOString());
       }
     } catch (err) {
