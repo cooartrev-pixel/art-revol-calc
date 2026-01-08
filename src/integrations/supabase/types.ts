@@ -107,6 +107,9 @@ export type Database = {
           email: string | null
           full_name: string | null
           id: string
+          notification_sound_enabled: boolean
+          notification_sound_type: string
+          notification_sound_volume: number
           updated_at: string
           user_id: string
         }
@@ -115,6 +118,9 @@ export type Database = {
           email?: string | null
           full_name?: string | null
           id?: string
+          notification_sound_enabled?: boolean
+          notification_sound_type?: string
+          notification_sound_volume?: number
           updated_at?: string
           user_id: string
         }
@@ -123,6 +129,9 @@ export type Database = {
           email?: string | null
           full_name?: string | null
           id?: string
+          notification_sound_enabled?: boolean
+          notification_sound_type?: string
+          notification_sound_volume?: number
           updated_at?: string
           user_id?: string
         }
