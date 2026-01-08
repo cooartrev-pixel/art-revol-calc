@@ -52,6 +52,30 @@ const officialSources = [
   { name: 'Мінфін', url: 'https://mof.gov.ua/uk/news' },
 ];
 
+// Play notification sound using Web Audio API
+const playNotificationSound = () => {
+  try {
+    const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    
+    oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+    oscillator.frequency.setValueAtTime(1000, audioContext.currentTime + 0.1);
+    oscillator.frequency.setValueAtTime(800, audioContext.currentTime + 0.2);
+    
+    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+    
+    oscillator.start(audioContext.currentTime);
+    oscillator.stop(audioContext.currentTime + 0.3);
+  } catch (error) {
+    console.log('Audio notification not supported');
+  }
+};
+
 export function LegislativeUpdates() {
   const { isAdmin, session } = useAuth();
   const [updates, setUpdates] = useState<LegislativeUpdate[]>([]);
@@ -82,9 +106,10 @@ export function LegislativeUpdates() {
       
       const newData = data || [];
       
-      // Show toast if new updates appeared (not on initial load)
+      // Show toast and play sound if new updates appeared (not on initial load)
       if (!isInitialLoad.current && newData.length > previousUpdatesCount.current) {
         const newCount = newData.length - previousUpdatesCount.current;
+        playNotificationSound();
         toast({
           title: "Нові законодавчі зміни",
           description: `Додано ${newCount} ${newCount === 1 ? 'нову новину' : newCount < 5 ? 'нові новини' : 'нових новин'}`,
