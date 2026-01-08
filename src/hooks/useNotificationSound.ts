@@ -1,4 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
 
 export type SoundType = 'chime' | 'bell' | 'ding' | 'notification' | 'alert';
 
@@ -53,19 +55,91 @@ export const soundLabels: Record<SoundType, string> = {
   alert: 'Сигнал',
 };
 
-export function useNotificationSound() {
-  const [settings, setSettings] = useState<NotificationSoundSettings>(() => {
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      return stored ? { ...defaultSettings, ...JSON.parse(stored) } : defaultSettings;
-    } catch {
-      return defaultSettings;
-    }
-  });
+// Get initial settings from localStorage (fallback)
+const getLocalSettings = (): NotificationSoundSettings => {
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    return stored ? { ...defaultSettings, ...JSON.parse(stored) } : defaultSettings;
+  } catch {
+    return defaultSettings;
+  }
+};
 
+export function useNotificationSound() {
+  const { session } = useAuth();
+  const [settings, setSettings] = useState<NotificationSoundSettings>(getLocalSettings);
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Fetch settings from database when user is authenticated
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
-  }, [settings]);
+    const fetchSettings = async () => {
+      if (!session?.user?.id) return;
+
+      setIsLoading(true);
+      try {
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('notification_sound_enabled, notification_sound_volume, notification_sound_type')
+          .eq('user_id', session.user.id)
+          .maybeSingle();
+
+        if (error) throw error;
+
+        if (data) {
+          const dbSettings: NotificationSoundSettings = {
+            enabled: data.notification_sound_enabled,
+            volume: Number(data.notification_sound_volume),
+            soundType: data.notification_sound_type as SoundType,
+          };
+          setSettings(dbSettings);
+          // Also update localStorage as cache
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(dbSettings));
+        }
+      } catch (error) {
+        console.error('Error fetching notification settings:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchSettings();
+  }, [session?.user?.id]);
+
+  // Save settings to localStorage (for non-authenticated users)
+  useEffect(() => {
+    if (!session?.user?.id) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
+    }
+  }, [settings, session?.user?.id]);
+
+  const updateSettings = useCallback(async (updates: Partial<NotificationSoundSettings>) => {
+    const newSettings = { ...settings, ...updates };
+    setSettings(newSettings);
+
+    // Save to database if authenticated
+    if (session?.user?.id) {
+      try {
+        const { error } = await supabase
+          .from('profiles')
+          .update({
+            notification_sound_enabled: newSettings.enabled,
+            notification_sound_volume: newSettings.volume,
+            notification_sound_type: newSettings.soundType,
+          })
+          .eq('user_id', session.user.id);
+
+        if (error) throw error;
+        
+        // Update localStorage cache
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(newSettings));
+      } catch (error) {
+        console.error('Error saving notification settings:', error);
+      }
+    } else {
+      // Save to localStorage for non-authenticated users
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(newSettings));
+    }
+  }, [settings, session?.user?.id]);
 
   const playSound = useCallback((soundType?: SoundType) => {
     if (!settings.enabled) return;
@@ -100,13 +174,10 @@ export function useNotificationSound() {
     }
   }, [settings]);
 
-  const updateSettings = useCallback((updates: Partial<NotificationSoundSettings>) => {
-    setSettings(prev => ({ ...prev, ...updates }));
-  }, []);
-
   return {
     settings,
     updateSettings,
     playSound,
+    isLoading,
   };
 }
