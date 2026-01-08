@@ -10,6 +10,8 @@ import { format } from 'date-fns';
 import { uk } from 'date-fns/locale';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from '@/hooks/use-toast';
+import { useNotificationSound } from '@/hooks/useNotificationSound';
+import { NotificationSoundSettings } from '@/components/NotificationSoundSettings';
 
 interface LegislativeUpdate {
   id: string;
@@ -52,32 +54,9 @@ const officialSources = [
   { name: 'Мінфін', url: 'https://mof.gov.ua/uk/news' },
 ];
 
-// Play notification sound using Web Audio API
-const playNotificationSound = () => {
-  try {
-    const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-    const oscillator = audioContext.createOscillator();
-    const gainNode = audioContext.createGain();
-    
-    oscillator.connect(gainNode);
-    gainNode.connect(audioContext.destination);
-    
-    oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
-    oscillator.frequency.setValueAtTime(1000, audioContext.currentTime + 0.1);
-    oscillator.frequency.setValueAtTime(800, audioContext.currentTime + 0.2);
-    
-    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
-    
-    oscillator.start(audioContext.currentTime);
-    oscillator.stop(audioContext.currentTime + 0.3);
-  } catch (error) {
-    console.log('Audio notification not supported');
-  }
-};
-
 export function LegislativeUpdates() {
   const { isAdmin, session } = useAuth();
+  const { playSound } = useNotificationSound();
   const [updates, setUpdates] = useState<LegislativeUpdate[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -109,7 +88,7 @@ export function LegislativeUpdates() {
       // Show toast and play sound if new updates appeared (not on initial load)
       if (!isInitialLoad.current && newData.length > previousUpdatesCount.current) {
         const newCount = newData.length - previousUpdatesCount.current;
-        playNotificationSound();
+        playSound();
         toast({
           title: "Нові законодавчі зміни",
           description: `Додано ${newCount} ${newCount === 1 ? 'нову новину' : newCount < 5 ? 'нові новини' : 'нових новин'}`,
@@ -199,15 +178,18 @@ export function LegislativeUpdates() {
             <Newspaper className="h-5 w-5 text-primary" />
             Зміни у законодавстві
           </CardTitle>
-          <Button 
-            variant="outline" 
-            size="sm" 
-            onClick={refreshFromSources}
-            disabled={refreshing}
-          >
-            <RefreshCw className={`h-4 w-4 mr-2 ${refreshing ? 'animate-spin' : ''}`} />
-            Оновити
-          </Button>
+          <div className="flex items-center gap-1">
+            <NotificationSoundSettings />
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={refreshFromSources}
+              disabled={refreshing}
+            >
+              <RefreshCw className={`h-4 w-4 mr-2 ${refreshing ? 'animate-spin' : ''}`} />
+              Оновити
+            </Button>
+          </div>
         </div>
         
         {/* Last updated date */}
