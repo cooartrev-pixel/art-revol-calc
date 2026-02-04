@@ -9,6 +9,8 @@ import { ExternalLink, Building2, Clock, Percent, ArrowUpDown, Check, Info } fro
 import { banks, formatMoney, OFFICIAL_YEOSELYA_URL, type BankInfo } from "@/lib/banks-data";
 import { formatCurrency } from "@/lib/mortgage-calculations";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
+import { HelpCircle } from "lucide-react";
 import { BankLogo } from "./BankLogo";
 
 interface BankComparisonProps {
@@ -193,16 +195,112 @@ export function BankComparison({
                           <SortButton label="Банк" sortKeyValue="name" />
                         </TableHead>
                         <TableHead className="text-center">
-                          <SortButton label="Ставка" sortKeyValue="rate" />
+                          <div className="flex items-center justify-center gap-1">
+                            <SortButton label="Ставка" sortKeyValue="rate" />
+                            <HoverCard openDelay={100} closeDelay={100}>
+                              <HoverCardTrigger asChild>
+                                <HelpCircle className="h-3.5 w-3.5 text-muted-foreground cursor-help transition-colors hover:text-primary" />
+                              </HoverCardTrigger>
+                              <HoverCardContent className="w-80 animate-in fade-in-0 zoom-in-95 duration-200" side="bottom">
+                                <div className="space-y-2">
+                                  <h4 className="font-semibold text-sm">Відсоткова ставка</h4>
+                                  <p className="text-sm text-muted-foreground">
+                                    Річна відсоткова ставка за кредитом. За програмою ЄОселя: 3% для пріоритетних категорій (ветерани, ВПО, медики) або 7% для інших. Після 10 років ставка збільшується на 3%.
+                                  </p>
+                                </div>
+                              </HoverCardContent>
+                            </HoverCard>
+                          </div>
                         </TableHead>
-                        <TableHead className="text-right">Щомісячний платіж*</TableHead>
                         <TableHead className="text-right">
-                          <SortButton label="Макс. сума" sortKeyValue="maxLoanAmount" />
+                          <div className="flex items-center justify-end gap-1">
+                            <span>Щомісячний платіж*</span>
+                            <HoverCard openDelay={100} closeDelay={100}>
+                              <HoverCardTrigger asChild>
+                                <HelpCircle className="h-3.5 w-3.5 text-muted-foreground cursor-help transition-colors hover:text-primary" />
+                              </HoverCardTrigger>
+                              <HoverCardContent className="w-80 animate-in fade-in-0 zoom-in-95 duration-200" side="bottom">
+                                <div className="space-y-2">
+                                  <h4 className="font-semibold text-sm">Щомісячний платіж</h4>
+                                  <p className="text-sm text-muted-foreground">
+                                    Сума, яку ви будете сплачувати щомісяця. Включає частину основного боргу та відсотки. Розрахований для ануїтетного типу погашення.
+                                  </p>
+                                </div>
+                              </HoverCardContent>
+                            </HoverCard>
+                          </div>
                         </TableHead>
-                        <TableHead className="text-center">Внесок</TableHead>
-                        <TableHead className="text-center">Термін</TableHead>
+                        <TableHead className="text-right">
+                          <div className="flex items-center justify-end gap-1">
+                            <SortButton label="Макс. сума" sortKeyValue="maxLoanAmount" />
+                            <HoverCard openDelay={100} closeDelay={100}>
+                              <HoverCardTrigger asChild>
+                                <HelpCircle className="h-3.5 w-3.5 text-muted-foreground cursor-help transition-colors hover:text-primary" />
+                              </HoverCardTrigger>
+                              <HoverCardContent className="w-80 animate-in fade-in-0 zoom-in-95 duration-200" side="bottom">
+                                <div className="space-y-2">
+                                  <h4 className="font-semibold text-sm">Максимальна сума кредиту</h4>
+                                  <p className="text-sm text-muted-foreground">
+                                    Найбільша сума, яку банк готовий надати в кредит за програмою ЄОселя. Ліміти можуть відрізнятися залежно від типу житла та регіону.
+                                  </p>
+                                </div>
+                              </HoverCardContent>
+                            </HoverCard>
+                          </div>
+                        </TableHead>
                         <TableHead className="text-center">
-                          <SortButton label="Розгляд" sortKeyValue="processingTime" />
+                          <div className="flex items-center justify-center gap-1">
+                            <span>Внесок</span>
+                            <HoverCard openDelay={100} closeDelay={100}>
+                              <HoverCardTrigger asChild>
+                                <HelpCircle className="h-3.5 w-3.5 text-muted-foreground cursor-help transition-colors hover:text-primary" />
+                              </HoverCardTrigger>
+                              <HoverCardContent className="w-80 animate-in fade-in-0 zoom-in-95 duration-200" side="bottom">
+                                <div className="space-y-2">
+                                  <h4 className="font-semibold text-sm">Перший внесок</h4>
+                                  <p className="text-sm text-muted-foreground">
+                                    Частка вартості житла, яку ви сплачуєте одразу з власних коштів. За програмою ЄОселя мінімум 20%, для молоді до 25 років — від 10%.
+                                  </p>
+                                </div>
+                              </HoverCardContent>
+                            </HoverCard>
+                          </div>
+                        </TableHead>
+                        <TableHead className="text-center">
+                          <div className="flex items-center justify-center gap-1">
+                            <span>Термін</span>
+                            <HoverCard openDelay={100} closeDelay={100}>
+                              <HoverCardTrigger asChild>
+                                <HelpCircle className="h-3.5 w-3.5 text-muted-foreground cursor-help transition-colors hover:text-primary" />
+                              </HoverCardTrigger>
+                              <HoverCardContent className="w-80 animate-in fade-in-0 zoom-in-95 duration-200" side="bottom">
+                                <div className="space-y-2">
+                                  <h4 className="font-semibold text-sm">Термін кредитування</h4>
+                                  <p className="text-sm text-muted-foreground">
+                                    Період, протягом якого ви повертаєте кредит. За програмою ЄОселя доступний термін до 20 років. Чим довший термін — менший щомісячний платіж, але більша загальна переплата.
+                                  </p>
+                                </div>
+                              </HoverCardContent>
+                            </HoverCard>
+                          </div>
+                        </TableHead>
+                        <TableHead className="text-center">
+                          <div className="flex items-center justify-center gap-1">
+                            <SortButton label="Розгляд" sortKeyValue="processingTime" />
+                            <HoverCard openDelay={100} closeDelay={100}>
+                              <HoverCardTrigger asChild>
+                                <HelpCircle className="h-3.5 w-3.5 text-muted-foreground cursor-help transition-colors hover:text-primary" />
+                              </HoverCardTrigger>
+                              <HoverCardContent className="w-80 animate-in fade-in-0 zoom-in-95 duration-200" side="bottom">
+                                <div className="space-y-2">
+                                  <h4 className="font-semibold text-sm">Час розгляду заявки</h4>
+                                  <p className="text-sm text-muted-foreground">
+                                    Орієнтовний час, який банк витрачає на розгляд вашої заявки. Фактичний термін може відрізнятися залежно від повноти документів.
+                                  </p>
+                                </div>
+                              </HoverCardContent>
+                            </HoverCard>
+                          </div>
                         </TableHead>
                         <TableHead className="text-center">Сайт</TableHead>
                       </TableRow>
@@ -318,20 +416,68 @@ export function BankComparison({
                         )}
 
                         <div className="space-y-2 text-sm">
-                          <div className="flex justify-between">
-                            <span className="text-muted-foreground">Макс. сума:</span>
+                          <div className="flex justify-between items-center">
+                            <div className="flex items-center gap-1">
+                              <span className="text-muted-foreground">Макс. сума:</span>
+                              <HoverCard openDelay={100} closeDelay={100}>
+                                <HoverCardTrigger asChild>
+                                  <HelpCircle className="h-3 w-3 text-muted-foreground cursor-help transition-colors hover:text-primary" />
+                                </HoverCardTrigger>
+                                <HoverCardContent className="w-72 animate-in fade-in-0 zoom-in-95 duration-200" side="top">
+                                  <p className="text-sm text-muted-foreground">
+                                    Максимальний розмір кредиту, який банк надає за програмою ЄОселя
+                                  </p>
+                                </HoverCardContent>
+                              </HoverCard>
+                            </div>
                             <span>{formatMoney(bank.maxLoanAmount)}</span>
                           </div>
-                          <div className="flex justify-between">
-                            <span className="text-muted-foreground">Внесок:</span>
+                          <div className="flex justify-between items-center">
+                            <div className="flex items-center gap-1">
+                              <span className="text-muted-foreground">Внесок:</span>
+                              <HoverCard openDelay={100} closeDelay={100}>
+                                <HoverCardTrigger asChild>
+                                  <HelpCircle className="h-3 w-3 text-muted-foreground cursor-help transition-colors hover:text-primary" />
+                                </HoverCardTrigger>
+                                <HoverCardContent className="w-72 animate-in fade-in-0 zoom-in-95 duration-200" side="top">
+                                  <p className="text-sm text-muted-foreground">
+                                    Діапазон можливого першого внеску від вартості житла
+                                  </p>
+                                </HoverCardContent>
+                              </HoverCard>
+                            </div>
                             <span>{bank.minDownPayment}% - {bank.maxDownPayment}%</span>
                           </div>
-                          <div className="flex justify-between">
-                            <span className="text-muted-foreground">Термін:</span>
+                          <div className="flex justify-between items-center">
+                            <div className="flex items-center gap-1">
+                              <span className="text-muted-foreground">Термін:</span>
+                              <HoverCard openDelay={100} closeDelay={100}>
+                                <HoverCardTrigger asChild>
+                                  <HelpCircle className="h-3 w-3 text-muted-foreground cursor-help transition-colors hover:text-primary" />
+                                </HoverCardTrigger>
+                                <HoverCardContent className="w-72 animate-in fade-in-0 zoom-in-95 duration-200" side="top">
+                                  <p className="text-sm text-muted-foreground">
+                                    Максимальний термін кредитування в цьому банку
+                                  </p>
+                                </HoverCardContent>
+                              </HoverCard>
+                            </div>
                             <span>до {bank.maxTerm} років</span>
                           </div>
-                          <div className="flex justify-between">
-                            <span className="text-muted-foreground">Розгляд:</span>
+                          <div className="flex justify-between items-center">
+                            <div className="flex items-center gap-1">
+                              <span className="text-muted-foreground">Розгляд:</span>
+                              <HoverCard openDelay={100} closeDelay={100}>
+                                <HoverCardTrigger asChild>
+                                  <HelpCircle className="h-3 w-3 text-muted-foreground cursor-help transition-colors hover:text-primary" />
+                                </HoverCardTrigger>
+                                <HoverCardContent className="w-72 animate-in fade-in-0 zoom-in-95 duration-200" side="top">
+                                  <p className="text-sm text-muted-foreground">
+                                    Орієнтовний час розгляду вашої заявки банком
+                                  </p>
+                                </HoverCardContent>
+                              </HoverCard>
+                            </div>
                             <span>{bank.processingTime}</span>
                           </div>
                         </div>
