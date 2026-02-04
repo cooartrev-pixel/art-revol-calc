@@ -5,10 +5,15 @@ import { Slider } from "@/components/ui/slider";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { Home, Percent, Calendar, Building2 } from "lucide-react";
+import { Home, Percent, Calendar, Building2, HelpCircle } from "lucide-react";
 import type { MortgageInput } from "@/lib/mortgage-calculations";
 import { calculateDownPaymentAmount, formatCurrency } from "@/lib/mortgage-calculations";
 import type { GovernmentProgram } from "@/lib/programs-data";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card";
 
 interface ProgramInputsProps {
   values: MortgageInput;
@@ -38,6 +43,52 @@ export function ProgramInputs({ values, onChange, program }: ProgramInputsProps)
   const maxPropertyValue = program.requirements.maxPropertyValue || 10000000;
   const maxLoanAmount = program.requirements.maxLoanAmount || 5000000;
 
+  // Tooltips content
+  const tooltips = {
+    propertyValue: {
+      title: 'Вартість нерухомості',
+      description: `Повна ринкова вартість квартири, будинку або іншої нерухомості, яку ви плануєте придбати. Для програми "${program.name}" існують обмеження: максимальна вартість — ${formatCurrency(maxPropertyValue)}, максимальна сума кредиту — ${formatCurrency(maxLoanAmount)}. Вартість визначається на основі оцінки незалежного експерта.`
+    },
+    downPayment: {
+      title: 'Перший внесок',
+      description: `Сума власних коштів, яку ви сплачуєте одразу при оформленні кредиту. Для програми "${program.name}" мінімальний внесок — ${program.requirements.minDownPayment}%, максимальний — ${program.requirements.maxDownPayment}%. Чим більший перший внесок — тим менша сума кредиту та щомісячний платіж.`
+    },
+    loanTerm: {
+      title: 'Термін кредитування',
+      description: `Період часу, протягом якого ви будете погашати кредит. Для програми "${program.name}" термін від ${program.requirements.minTerm} до ${program.requirements.maxTerm} років. Довший термін = менший щомісячний платіж, але більша загальна переплата.`
+    },
+    rateCategory: {
+      title: 'Категорія ставки',
+      description: hasPrivilegedRate 
+        ? `Програма "${program.name}" пропонує пільгову ставку ${program.rates.privileged}% для пріоритетних категорій (військовослужбовці, педагоги, медики, науковці) та стандартну ставку ${program.rates.standard}% для інших категорій.`
+        : `Програма "${program.name}" пропонує єдину ставку ${program.rates.standard}% річних.`
+    },
+    paymentType: {
+      title: 'Тип платежу',
+      description: 'Ануїтетний платіж — однакова сума щомісяця весь термін. Зручний для планування бюджету, але загальна переплата більша. Класичний (диференційований) — спочатку платіж більший, потім зменшується. Переплата менша, але перші роки навантаження на бюджет вище.'
+    },
+    commissions: {
+      title: 'Банківські комісії',
+      description: 'Додаткові платежі банку за обслуговування кредиту. Одноразова комісія (1-2%) — сплачується при видачі кредиту. Щомісячна комісія (0.01-0.1%) — стягується з залишку боргу кожного місяця. Комісії суттєво впливають на ефективну ставку!'
+    }
+  };
+
+  const InfoIcon = ({ tooltipKey }: { tooltipKey: keyof typeof tooltips }) => (
+    <HoverCard openDelay={100} closeDelay={100}>
+      <HoverCardTrigger asChild>
+        <button type="button" className="ml-1.5 inline-flex items-center text-muted-foreground hover:text-primary transition-colors">
+          <HelpCircle className="h-4 w-4" />
+        </button>
+      </HoverCardTrigger>
+      <HoverCardContent className="w-80 text-sm" side="right" align="start">
+        <div className="space-y-2">
+          <h4 className="font-semibold text-foreground">{tooltips[tooltipKey].title}</h4>
+          <p className="text-muted-foreground leading-relaxed">{tooltips[tooltipKey].description}</p>
+        </div>
+      </HoverCardContent>
+    </HoverCard>
+  );
+
   return (
     <div className="space-y-6">
       {/* Property Value */}
@@ -46,6 +97,7 @@ export function ProgramInputs({ values, onChange, program }: ProgramInputsProps)
           <CardTitle className="flex items-center gap-2 text-lg">
             <Home className="h-5 w-5 text-primary" />
             Вартість об'єкта
+            <InfoIcon tooltipKey="propertyValue" />
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -87,6 +139,7 @@ export function ProgramInputs({ values, onChange, program }: ProgramInputsProps)
             <CardTitle className="flex items-center gap-2 text-lg">
               <Percent className="h-5 w-5 text-primary" />
               Перший внесок
+              <InfoIcon tooltipKey="downPayment" />
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -155,6 +208,7 @@ export function ProgramInputs({ values, onChange, program }: ProgramInputsProps)
             <CardTitle className="flex items-center gap-2 text-lg">
               <Calendar className="h-5 w-5 text-primary" />
               Термін кредиту
+              <InfoIcon tooltipKey="loanTerm" />
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -192,6 +246,7 @@ export function ProgramInputs({ values, onChange, program }: ProgramInputsProps)
             <CardTitle className="flex items-center gap-2 text-lg">
               <Percent className="h-5 w-5 text-primary" />
               Категорія ставки
+              <InfoIcon tooltipKey="rateCategory" />
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -235,7 +290,10 @@ export function ProgramInputs({ values, onChange, program }: ProgramInputsProps)
       {!isSubsidyProgram && (
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-lg">Тип платежу</CardTitle>
+            <CardTitle className="flex items-center gap-2 text-lg">
+              Тип платежу
+              <InfoIcon tooltipKey="paymentType" />
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <RadioGroup
@@ -269,6 +327,7 @@ export function ProgramInputs({ values, onChange, program }: ProgramInputsProps)
             <CardTitle className="flex items-center gap-2 text-lg">
               <Building2 className="h-5 w-5 text-primary" />
               Комісії банку
+              <InfoIcon tooltipKey="commissions" />
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
