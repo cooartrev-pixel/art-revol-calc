@@ -2,6 +2,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip, BarChart, Bar, XAxis, YAxis, CartesianGrid } from "recharts";
 import type { MortgageResult, AmortizationRow } from "@/lib/mortgage-calculations";
 import { formatCurrency } from "@/lib/mortgage-calculations";
+import { HelpCircle } from "lucide-react";
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 
 interface PaymentChartProps {
   result: MortgageResult;
@@ -60,7 +62,22 @@ export function PaymentChart({ result, schedule, isGovernmentProgram }: PaymentC
       {/* Кругова діаграма */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg">Структура виплат</CardTitle>
+          <CardTitle className="text-lg flex items-center gap-2">
+            Структура виплат
+            <HoverCard openDelay={100} closeDelay={100}>
+              <HoverCardTrigger asChild>
+                <HelpCircle className="h-4 w-4 text-muted-foreground cursor-help transition-colors hover:text-primary" />
+              </HoverCardTrigger>
+              <HoverCardContent className="w-80 animate-in fade-in-0 zoom-in-95 duration-200" side="right">
+                <div className="space-y-2">
+                  <h4 className="font-semibold text-sm">Кругова діаграма виплат</h4>
+                  <p className="text-sm text-muted-foreground">
+                    Показує, з чого складається загальна сума виплат за кредитом: тіло кредиту (основний борг), відсотки (переплата банку) та комісії. Чим більша частка відсотків — тим дорожче обходиться кредит.
+                  </p>
+                </div>
+              </HoverCardContent>
+            </HoverCard>
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="h-[300px]">
@@ -93,7 +110,22 @@ export function PaymentChart({ result, schedule, isGovernmentProgram }: PaymentC
       {yearlyData.length > 1 && (
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg">Розподіл платежів по роках</CardTitle>
+            <CardTitle className="text-lg flex items-center gap-2">
+              Розподіл платежів по роках
+              <HoverCard openDelay={100} closeDelay={100}>
+                <HoverCardTrigger asChild>
+                  <HelpCircle className="h-4 w-4 text-muted-foreground cursor-help transition-colors hover:text-primary" />
+                </HoverCardTrigger>
+                <HoverCardContent className="w-80 animate-in fade-in-0 zoom-in-95 duration-200" side="right">
+                  <div className="space-y-2">
+                    <h4 className="font-semibold text-sm">Річний розподіл платежів</h4>
+                    <p className="text-sm text-muted-foreground">
+                      Стовпчикова діаграма показує, як змінюється структура платежу з роками. На початку більша частина йде на відсотки, а з часом зростає частка погашення основного боргу. Це типово для ануїтетного платежу.
+                    </p>
+                  </div>
+                </HoverCardContent>
+              </HoverCard>
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="h-[300px]">
@@ -142,8 +174,21 @@ export function PaymentChart({ result, schedule, isGovernmentProgram }: PaymentC
       {isGovernmentProgram && result.savingsVsCommercial > 0 && (
         <Card className="border-government">
           <CardHeader>
-            <CardTitle className="text-lg text-government">
+            <CardTitle className="text-lg text-government flex items-center gap-2">
               Економія за програмою "ЄОселя"
+              <HoverCard openDelay={100} closeDelay={100}>
+                <HoverCardTrigger asChild>
+                  <HelpCircle className="h-4 w-4 text-muted-foreground cursor-help transition-colors hover:text-primary" />
+                </HoverCardTrigger>
+                <HoverCardContent className="w-80 animate-in fade-in-0 zoom-in-95 duration-200" side="right">
+                  <div className="space-y-2">
+                    <h4 className="font-semibold text-sm">Порівняння з комерційним кредитом</h4>
+                    <p className="text-sm text-muted-foreground">
+                      Порівнює загальну вартість кредиту за програмою ЄОселя (3% або 7%) з комерційним кредитом (18%). Різниця — це ваша реальна економія завдяки державній підтримці.
+                    </p>
+                  </div>
+                </HoverCardContent>
+              </HoverCard>
             </CardTitle>
           </CardHeader>
           <CardContent>
