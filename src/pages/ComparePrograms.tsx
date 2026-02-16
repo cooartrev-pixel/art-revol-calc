@@ -14,8 +14,10 @@ import {
   Percent,
   Calendar,
   Banknote,
-  Users
+  Users,
+  HelpCircle
 } from "lucide-react";
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import { Header } from "@/components/calculator/Header";
 import { TelegramWidget } from "@/components/widgets/TelegramWidget";
 import { CallbackWidget } from "@/components/widgets/CallbackWidget";
@@ -39,11 +41,16 @@ const ComparePrograms = () => {
   const comparisonRows: {
     label: string;
     icon: React.ReactNode;
+    tooltip: { title: string; description: string };
     getValue: (p: GovernmentProgram) => React.ReactNode;
   }[] = [
     {
       label: 'Ставка',
       icon: <Percent className="h-4 w-4" />,
+      tooltip: {
+        title: 'Відсоткова ставка',
+        description: 'Річний відсоток, який нараховується на залишок кредиту. Пільгова ставка доступна для ветеранів, ВПО, медиків та інших пріоритетних категорій. Стандартна — для всіх інших учасників програми.'
+      },
       getValue: (p) => (
         <div>
           {p.rates.standard === 0 ? (
@@ -66,6 +73,10 @@ const ComparePrograms = () => {
     {
       label: 'Перший внесок',
       icon: <Banknote className="h-4 w-4" />,
+      tooltip: {
+        title: 'Перший внесок (аванс)',
+        description: 'Сума, яку ви сплачуєте одразу з власних коштів при купівлі житла. Решту покриває кредит. Чим більший внесок — тим менша сума кредиту та менші щомісячні платежі.'
+      },
       getValue: (p) => (
         p.requirements.minDownPayment === 0 
           ? <span className="text-success font-medium">Не потрібен</span>
@@ -75,6 +86,10 @@ const ComparePrograms = () => {
     {
       label: 'Термін',
       icon: <Calendar className="h-4 w-4" />,
+      tooltip: {
+        title: 'Термін кредитування',
+        description: 'Період, протягом якого ви повертаєте кредит. Довший термін означає менший щомісячний платіж, але більшу загальну переплату за весь період кредиту.'
+      },
       getValue: (p) => (
         <span>{p.requirements.minTerm} — {p.requirements.maxTerm} років</span>
       ),
@@ -82,6 +97,10 @@ const ComparePrograms = () => {
     {
       label: 'Макс. вартість',
       icon: <Banknote className="h-4 w-4" />,
+      tooltip: {
+        title: 'Максимальна вартість житла',
+        description: 'Верхня межа вартості нерухомості, яку можна придбати за цією програмою. Якщо житло дорожче — програма не застосовується.'
+      },
       getValue: (p) => (
         p.requirements.maxPropertyValue 
           ? formatCurrency(p.requirements.maxPropertyValue)
@@ -91,6 +110,10 @@ const ComparePrograms = () => {
     {
       label: 'Макс. кредит',
       icon: <Banknote className="h-4 w-4" />,
+      tooltip: {
+        title: 'Максимальна сума кредиту',
+        description: 'Найбільша сума, яку можна отримати в кредит за цією програмою. Фактична сума залежить від вартості житла та розміру першого внеску.'
+      },
       getValue: (p) => (
         p.requirements.maxLoanAmount 
           ? formatCurrency(p.requirements.maxLoanAmount)
@@ -194,6 +217,17 @@ const ComparePrograms = () => {
                       <div className="p-4 bg-muted/30 flex items-center gap-2">
                         {row.icon}
                         <span className="font-medium text-sm">{row.label}</span>
+                        <HoverCard openDelay={100} closeDelay={100}>
+                          <HoverCardTrigger asChild>
+                            <HelpCircle className="h-3.5 w-3.5 text-muted-foreground cursor-help transition-colors hover:text-primary shrink-0" />
+                          </HoverCardTrigger>
+                          <HoverCardContent className="w-80 animate-in fade-in-0 zoom-in-95 duration-200" side="right">
+                            <div className="space-y-2">
+                              <h4 className="font-semibold text-sm">{row.tooltip.title}</h4>
+                              <p className="text-sm text-muted-foreground">{row.tooltip.description}</p>
+                            </div>
+                          </HoverCardContent>
+                        </HoverCard>
                       </div>
                       {selectedProgramsData.map((program) => (
                         <div key={program.id} className="p-4 text-center border-l flex items-center justify-center">
