@@ -514,19 +514,79 @@ export function BankComparison({
         <CardContent className="space-y-3 text-sm text-muted-foreground">
           <div className="flex items-start gap-2">
             <Check className="h-4 w-4 text-success mt-0.5 shrink-0" />
-            <p>Ви можете подати заявку одночасно до 5 банків через додаток "Дія"</p>
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <p>Ви можете подати заявку одночасно до 5 банків через додаток "Дія"</p>
+              <HoverCard openDelay={100} closeDelay={100}>
+                <HoverCardTrigger asChild>
+                  <HelpCircle className="h-3.5 w-3.5 text-muted-foreground cursor-help transition-colors hover:text-primary shrink-0" />
+                </HoverCardTrigger>
+                <HoverCardContent className="w-80 animate-in fade-in-0 zoom-in-95 duration-200" side="top">
+                  <div className="space-y-2">
+                    <h4 className="font-semibold text-sm">Подача через Дію</h4>
+                    <p className="text-sm text-muted-foreground">
+                      Завантажте додаток "Дія", авторизуйтесь за допомогою BankID та оберіть до 5 банків-учасників. Кожен банк розглядатиме вашу заявку незалежно, і ви зможете обрати найвигіднішу пропозицію.
+                    </p>
+                  </div>
+                </HoverCardContent>
+              </HoverCard>
+            </div>
           </div>
           <div className="flex items-start gap-2">
             <Check className="h-4 w-4 text-success mt-0.5 shrink-0" />
-            <p>Після 10 років ставка змінюється: з 3% до 6% або з 7% до 10%</p>
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <p>Після 10 років ставка змінюється: з 3% до 6% або з 7% до 10%</p>
+              <HoverCard openDelay={100} closeDelay={100}>
+                <HoverCardTrigger asChild>
+                  <HelpCircle className="h-3.5 w-3.5 text-muted-foreground cursor-help transition-colors hover:text-primary shrink-0" />
+                </HoverCardTrigger>
+                <HoverCardContent className="w-80 animate-in fade-in-0 zoom-in-95 duration-200" side="top">
+                  <div className="space-y-2">
+                    <h4 className="font-semibold text-sm">Зміна ставки після 10 років</h4>
+                    <p className="text-sm text-muted-foreground">
+                      Пільгова ставка діє перші 10 років кредиту. Після цього ставка підвищується на 3 відсоткових пункти: 3% → 6% для пріоритетних категорій, 7% → 10% для стандартних. Це важливо враховувати при плануванні бюджету.
+                    </p>
+                  </div>
+                </HoverCardContent>
+              </HoverCard>
+            </div>
           </div>
           <div className="flex items-start gap-2">
             <Check className="h-4 w-4 text-success mt-0.5 shrink-0" />
-            <p>Для молоді до 25 років мінімальний внесок знижено до 10%</p>
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <p>Для молоді до 25 років мінімальний внесок знижено до 10%</p>
+              <HoverCard openDelay={100} closeDelay={100}>
+                <HoverCardTrigger asChild>
+                  <HelpCircle className="h-3.5 w-3.5 text-muted-foreground cursor-help transition-colors hover:text-primary shrink-0" />
+                </HoverCardTrigger>
+                <HoverCardContent className="w-80 animate-in fade-in-0 zoom-in-95 duration-200" side="top">
+                  <div className="space-y-2">
+                    <h4 className="font-semibold text-sm">Пільги для молоді</h4>
+                    <p className="text-sm text-muted-foreground">
+                      Якщо вам менше 25 років, ви можете скористатися зниженим першим внеском — від 10% замість стандартних 20%. Це дозволяє придбати житло з меншими початковими накопиченнями.
+                    </p>
+                  </div>
+                </HoverCardContent>
+              </HoverCard>
+            </div>
           </div>
           <div className="flex items-start gap-2">
             <Check className="h-4 w-4 text-success mt-0.5 shrink-0" />
-            <p>Для першого внеску можна використати сертифікат "єВідновлення"</p>
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <p>Для першого внеску можна використати сертифікат "єВідновлення"</p>
+              <HoverCard openDelay={100} closeDelay={100}>
+                <HoverCardTrigger asChild>
+                  <HelpCircle className="h-3.5 w-3.5 text-muted-foreground cursor-help transition-colors hover:text-primary shrink-0" />
+                </HoverCardTrigger>
+                <HoverCardContent className="w-80 animate-in fade-in-0 zoom-in-95 duration-200" side="top">
+                  <div className="space-y-2">
+                    <h4 className="font-semibold text-sm">Сертифікат єВідновлення</h4>
+                    <p className="text-sm text-muted-foreground">
+                      Якщо ваше житло було пошкоджене або зруйноване внаслідок бойових дій, ви можете отримати сертифікат "єВідновлення" та використати його як частину або повну суму першого внеску за програмою ЄОселя.
+                    </p>
+                  </div>
+                </HoverCardContent>
+              </HoverCard>
+            </div>
           </div>
         </CardContent>
       </Card>
