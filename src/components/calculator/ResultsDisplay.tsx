@@ -140,6 +140,13 @@ export function ResultsDisplay({ result, isGovernmentProgram, input, schedule }:
                       {t('results.savingsYeoselya')}: {formatCurrency(result.savingsVsCommercial)}
                     </Badge>
                   )}
+                  {isGovernmentProgram && input.loanTermYears > 10 && (
+                    <div className="mt-2 text-xs text-primary-foreground/70">
+                      {input.governmentRate === 3
+                        ? language === 'uk' ? '3% → 6% після 10 року' : '3% → 6% after year 10'
+                        : language === 'uk' ? '7% → 10% після 10 року' : '7% → 10% after year 10'}
+                    </div>
+                  )}
                 </div>
                 <div className="mt-4 flex justify-center">
                   <Button 

@@ -35,6 +35,10 @@ const defaultInput: MortgageInput = {
   governmentRate: 7,
   oneTimeCommission: 1,
   monthlyCommission: 0,
+  familySize: 1,
+  propertyType: 'apartment',
+  propertyAge: 'secondary',
+  isYouth: false,
 };
 
 const Index = () => {
