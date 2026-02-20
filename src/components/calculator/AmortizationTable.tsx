@@ -8,15 +8,22 @@ import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/h
 import type { AmortizationRow } from "@/lib/mortgage-calculations";
 import { formatCurrency } from "@/lib/mortgage-calculations";
 import { useLanguage } from "@/lib/i18n";
+import { Badge } from "@/components/ui/badge";
 
 interface AmortizationTableProps {
   schedule: AmortizationRow[];
+  isGovernmentProgram?: boolean;
+  loanTermYears?: number;
+  governmentRate?: number;
 }
 
-export function AmortizationTable({ schedule }: AmortizationTableProps) {
+export function AmortizationTable({ schedule, isGovernmentProgram, loanTermYears, governmentRate }: AmortizationTableProps) {
   const { t } = useLanguage();
   const [isExpanded, setIsExpanded] = useState(false);
   const displayedRows = isExpanded ? schedule : schedule.slice(0, 12);
+
+  const phaseChangeMonth = isGovernmentProgram && (loanTermYears ?? 0) > 10 ? 120 : null;
+  const rate2 = governmentRate === 3 ? 6 : 10;
 
   const exportToCSV = () => {
     const headers = [
@@ -147,26 +154,51 @@ export function AmortizationTable({ schedule }: AmortizationTableProps) {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {displayedRows.map((row) => (
-                <TableRow key={row.month}>
-                  <TableCell className="font-medium">{row.month}</TableCell>
-                  <TableCell className="text-right text-sm">
-                    {formatCurrency(row.openingBalance)}
-                  </TableCell>
-                  <TableCell className="text-right text-sm text-primary">
-                    {formatCurrency(row.principalPayment)}
-                  </TableCell>
-                  <TableCell className="text-right text-sm text-destructive">
-                    {formatCurrency(row.interestPayment)}
-                  </TableCell>
-                  <TableCell className="text-right text-sm font-medium">
-                    {formatCurrency(row.totalPayment)}
-                  </TableCell>
-                  <TableCell className="text-right text-sm">
-                    {formatCurrency(row.closingBalance)}
-                  </TableCell>
-                </TableRow>
-              ))}
+              {displayedRows.map((row) => {
+                const isPhaseTransition = phaseChangeMonth && row.month === phaseChangeMonth + 1;
+                const isPhase2 = phaseChangeMonth && row.month > phaseChangeMonth;
+                return (
+                  <>
+                    {isPhaseTransition && (
+                      <TableRow key={`phase-${row.month}`} className="border-0">
+                        <TableCell colSpan={6} className="py-1.5 px-0">
+                          <div className="flex items-center gap-2 px-3 py-1.5 bg-destructive/10 border border-destructive/20 rounded-md">
+                            <div className="w-1 h-4 bg-destructive rounded-full" />
+                            <span className="text-xs font-semibold text-destructive">
+                              Зміна ставки: {governmentRate}% → {rate2}% (з {phaseChangeMonth + 1}-го місяця)
+                            </span>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    )}
+                    <TableRow key={row.month} className={isPhase2 ? "bg-destructive/[0.03]" : ""}>
+                      <TableCell className="font-medium">
+                        {row.month}
+                        {isPhaseTransition && (
+                          <Badge variant="destructive" className="ml-1.5 text-[10px] px-1 py-0">
+                            Фаза 2
+                          </Badge>
+                        )}
+                      </TableCell>
+                      <TableCell className="text-right text-sm">
+                        {formatCurrency(row.openingBalance)}
+                      </TableCell>
+                      <TableCell className="text-right text-sm text-primary">
+                        {formatCurrency(row.principalPayment)}
+                      </TableCell>
+                      <TableCell className="text-right text-sm text-destructive">
+                        {formatCurrency(row.interestPayment)}
+                      </TableCell>
+                      <TableCell className="text-right text-sm font-medium">
+                        {formatCurrency(row.totalPayment)}
+                      </TableCell>
+                      <TableCell className="text-right text-sm">
+                        {formatCurrency(row.closingBalance)}
+                      </TableCell>
+                    </TableRow>
+                  </>
+                );
+              })}
             </TableBody>
           </Table>
         </ScrollArea>

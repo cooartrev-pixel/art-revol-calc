@@ -124,6 +124,8 @@ const Index = () => {
                   result={result} 
                   schedule={schedule}
                   isGovernmentProgram={input.isGovernmentProgram}
+                  loanTermYears={input.loanTermYears}
+                  governmentRate={input.governmentRate}
                 />
               </AnimatedTabsContent>
 
@@ -137,7 +139,12 @@ const Index = () => {
               </AnimatedTabsContent>
 
               <AnimatedTabsContent value="table" className="mt-6">
-                <AmortizationTable schedule={schedule} />
+                <AmortizationTable 
+                  schedule={schedule}
+                  isGovernmentProgram={input.isGovernmentProgram}
+                  loanTermYears={input.loanTermYears}
+                  governmentRate={input.governmentRate}
+                />
               </AnimatedTabsContent>
 
               <AnimatedTabsContent value="assistant" className="mt-6">
