@@ -2,6 +2,7 @@ import { useState, useMemo } from "react";
 import { BarChart3, Table, Bot, Building2, MessageSquare } from "lucide-react";
 import { Header } from "@/components/calculator/Header";
 import { CalculatorInputs } from "@/components/calculator/CalculatorInputs";
+import { AreaLimitCalculator } from "@/components/calculator/AreaLimitCalculator";
 import { ResultsDisplay } from "@/components/calculator/ResultsDisplay";
 import { PaymentChart } from "@/components/calculator/PaymentChart";
 import { AmortizationTable } from "@/components/calculator/AmortizationTable";
@@ -75,8 +76,9 @@ const Index = () => {
         <div className="grid lg:grid-cols-12 gap-8">
           {/* Ліва колонка - Введення */}
           <div className="lg:col-span-5 xl:col-span-4 animate-fade-in [animation-delay:100ms]">
-            <div className="lg:sticky lg:top-8">
+            <div className="lg:sticky lg:top-8 space-y-6">
               <CalculatorInputs values={input} onChange={setInput} />
+              {input.isGovernmentProgram && <AreaLimitCalculator />}
             </div>
           </div>
 
