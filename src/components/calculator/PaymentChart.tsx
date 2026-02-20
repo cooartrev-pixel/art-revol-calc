@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip, BarChart, Bar, XAxis, YAxis, CartesianGrid } from "recharts";
+import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip, BarChart, Bar, XAxis, YAxis, CartesianGrid, ReferenceLine } from "recharts";
 import type { MortgageResult, AmortizationRow } from "@/lib/mortgage-calculations";
 import { formatCurrency } from "@/lib/mortgage-calculations";
 import { HelpCircle } from "lucide-react";
@@ -9,6 +9,8 @@ interface PaymentChartProps {
   result: MortgageResult;
   schedule: AmortizationRow[];
   isGovernmentProgram: boolean;
+  loanTermYears?: number;
+  governmentRate?: number;
 }
 
 const COLORS = {
@@ -19,7 +21,7 @@ const COLORS = {
   commercial: 'hsl(var(--secondary))',
 };
 
-export function PaymentChart({ result, schedule, isGovernmentProgram }: PaymentChartProps) {
+export function PaymentChart({ result, schedule, isGovernmentProgram, loanTermYears, governmentRate }: PaymentChartProps) {
   // Дані для кругової діаграми
   const pieData = [
     { name: 'Тіло кредиту', value: result.loanAmount, fill: COLORS.principal },
@@ -35,13 +37,20 @@ export function PaymentChart({ result, schedule, isGovernmentProgram }: PaymentC
   }
 
   // Дані для графіка порівняння (кожен 12-й місяць для річного огляду)
+  const totalYears = Math.ceil(schedule.length / 12);
+  const phaseChangeYear = isGovernmentProgram && (loanTermYears ?? 0) > 10 ? 10 : null;
+  const rate2 = governmentRate === 3 ? 6 : 10;
+
   const yearlyData = schedule.filter((_, idx) => idx % 12 === 11 || idx === schedule.length - 1)
     .map((row, idx) => ({
       year: `${idx + 1} рік`,
+      yearNum: idx + 1,
       principal: row.principalPayment * 12,
       interest: row.interestPayment * 12,
     }))
-    .slice(0, Math.min(10, Math.ceil(schedule.length / 12)));
+    .slice(0, Math.min(totalYears, 20));
+
+  const phaseChangeLabel = phaseChangeYear ? `${phaseChangeYear} рік` : null;
 
   const CustomTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {
@@ -163,6 +172,21 @@ export function PaymentChart({ result, schedule, isGovernmentProgram }: PaymentC
                     fill={COLORS.interest}
                     radius={[4, 4, 0, 0]}
                   />
+                  {phaseChangeLabel && (
+                    <ReferenceLine
+                      x={phaseChangeLabel}
+                      stroke="hsl(var(--destructive))"
+                      strokeWidth={2}
+                      strokeDasharray="6 3"
+                      label={{
+                        value: `Ставка → ${rate2}%`,
+                        position: 'top',
+                        fill: 'hsl(var(--destructive))',
+                        fontSize: 11,
+                        fontWeight: 600,
+                      }}
+                    />
+                  )}
                 </BarChart>
               </ResponsiveContainer>
             </div>
