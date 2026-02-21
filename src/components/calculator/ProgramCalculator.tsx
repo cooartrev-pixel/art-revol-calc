@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { BarChart3, Table, Bot, Building2, MessageSquare, ArrowLeft, ExternalLink, Info, CheckCircle2 } from "lucide-react";
 import { Header } from "@/components/calculator/Header";
 import { ProgramInputs } from "@/components/calculator/ProgramInputs";
+import { AreaLimitCalculator } from "@/components/calculator/AreaLimitCalculator";
 import { ResultsDisplay } from "@/components/calculator/ResultsDisplay";
 import { PaymentChart } from "@/components/calculator/PaymentChart";
 import { AmortizationTable } from "@/components/calculator/AmortizationTable";
@@ -141,6 +142,7 @@ const ProgramCalculatorContent = ({ program }: ProgramCalculatorProps) => {
                 onChange={setInput} 
                 program={program}
               />
+              {program.id === 'yeoselya' && <AreaLimitCalculator />}
               
               {/* Eligibility Card */}
               <Card>
