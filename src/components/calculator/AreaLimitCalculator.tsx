@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -6,6 +6,8 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Separator } from "@/components/ui/separator";
+import { Progress } from "@/components/ui/progress";
+import { Button } from "@/components/ui/button";
 import {
   HoverCard,
   HoverCardContent,
@@ -21,7 +23,10 @@ import {
   XCircle,
   Info,
   Sparkles,
+  Copy,
+  Check,
 } from "lucide-react";
+import { toast } from "sonner";
 import { getYeoselyaAreaLimits, formatCurrency } from "@/lib/mortgage-calculations";
 
 interface AreaResult {
@@ -98,6 +103,7 @@ export function AreaLimitCalculator() {
   const [propertyType, setPropertyType] = useState<"apartment" | "house">("apartment");
   const [propertyAge, setPropertyAge] = useState<"new" | "secondary">("secondary");
   const [userArea, setUserArea] = useState<number | "">("");
+  const [copied, setCopied] = useState(false);
 
   const result = useMemo(() => {
     const limits = getYeoselyaAreaLimits(familySize, propertyType, propertyAge);
@@ -118,29 +124,85 @@ export function AreaLimitCalculator() {
     return { fits, fitsBase, area: userArea };
   }, [userArea, result]);
 
+  const areaPercent = useMemo(() => {
+    if (userArea === "" || userArea <= 0) return 0;
+    return Math.min(100, (userArea / result.maxArea) * 100);
+  }, [userArea, result.maxArea]);
+
+  const getProgressColor = (percent: number) => {
+    if (percent <= 70) return "bg-chart-2"; // green zone
+    if (percent <= 90) return "bg-chart-4"; // yellow zone
+    if (percent <= 100) return "bg-primary"; // orange zone
+    return "bg-destructive"; // over limit
+  };
+
+  const copyResults = useCallback(() => {
+    const propTypeLabel = propertyType === "apartment" ? "Квартира" : "Будинок";
+    const propAgeLabel = propertyAge === "new" ? "Новобудова (до 3 р.)" : "Вторинне житло";
+    
+    let text = `🏠 Калькулятор площі ЄОселя\n`;
+    text += `━━━━━━━━━━━━━━━━━━━━━\n`;
+    text += `👥 Склад сім'ї: ${familySize} ${familySize === 1 ? "особа" : familySize < 5 ? "особи" : "осіб"}\n`;
+    text += `🏢 Тип: ${propTypeLabel}\n`;
+    text += `📅 Вік: ${propAgeLabel}\n`;
+    text += `━━━━━━━━━━━━━━━━━━━━━\n`;
+    text += `📐 Базовий ліміт: ${result.baseMaxArea.toFixed(1)} м²\n`;
+    if (result.allowedOverpercent > 0) {
+      text += `➕ Допуск +${result.allowedOverpercent}%\n`;
+    }
+    text += `✅ Максимальна площа: ${result.maxArea.toFixed(1)} м²\n`;
+    
+    if (userArea && userArea > 0) {
+      const fits = userArea <= result.maxArea;
+      text += `━━━━━━━━━━━━━━━━━━━━━\n`;
+      text += `🔍 Перевірка: ${userArea} м² — ${fits ? "✅ Підходить" : `❌ Перевищує на ${(userArea - result.maxArea).toFixed(1)} м²`}\n`;
+    }
+    
+    text += `━━━━━━━━━━━━━━━━━━━━━\n`;
+    text += `💡 Рекомендації:\n`;
+    recommendations.forEach(r => { text += `  • ${r}\n`; });
+    
+    navigator.clipboard.writeText(text).then(() => {
+      setCopied(true);
+      toast.success("Скопійовано в буфер обміну!");
+      setTimeout(() => setCopied(false), 2000);
+    });
+  }, [familySize, propertyType, propertyAge, result, userArea, recommendations]);
+
   return (
     <Card className="border-primary/20">
       <CardHeader className="pb-4">
         <CardTitle className="flex items-center gap-2 text-lg">
           <Ruler className="h-5 w-5 text-primary" />
           Калькулятор максимальної площі ЄОселя
-          <HoverCard openDelay={100} closeDelay={100}>
-            <HoverCardTrigger asChild>
-              <button type="button" className="ml-1 text-muted-foreground hover:text-primary transition-colors">
-                <HelpCircle className="h-4 w-4" />
-              </button>
-            </HoverCardTrigger>
-            <HoverCardContent className="w-80 text-sm animate-in fade-in-0 zoom-in-95 duration-200" side="bottom">
-              <div className="space-y-2">
-                <h4 className="font-semibold text-foreground">Як розраховується ліміт площі?</h4>
-                <p className="text-muted-foreground leading-relaxed">
-                  За програмою ЄОселя ліміт площі залежить від кількості членів сім'ї, типу нерухомості
-                  та її віку. Квартира: 52,5 м² (1-2 особи) + 21 м² за кожного наступного, макс. 115,5 м².
-                  Будинок: 62,5 м² + 21 м², макс. 125,5 м². Для новобудов (до 3 років) допускається +10%.
-                </p>
-              </div>
-            </HoverCardContent>
-          </HoverCard>
+          <div className="ml-auto flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={copyResults}
+              className="gap-1.5 text-xs"
+            >
+              {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
+              {copied ? "Скопійовано" : "Копіювати"}
+            </Button>
+            <HoverCard openDelay={100} closeDelay={100}>
+              <HoverCardTrigger asChild>
+                <button type="button" className="text-muted-foreground hover:text-primary transition-colors">
+                  <HelpCircle className="h-4 w-4" />
+                </button>
+              </HoverCardTrigger>
+              <HoverCardContent className="w-80 text-sm animate-in fade-in-0 zoom-in-95 duration-200" side="bottom">
+                <div className="space-y-2">
+                  <h4 className="font-semibold text-foreground">Як розраховується ліміт площі?</h4>
+                  <p className="text-muted-foreground leading-relaxed">
+                    За програмою ЄОселя ліміт площі залежить від кількості членів сім'ї, типу нерухомості
+                    та її віку. Квартира: 52,5 м² (1-2 особи) + 21 м² за кожного наступного, макс. 115,5 м².
+                    Будинок: 62,5 м² + 21 м², макс. 125,5 м². Для новобудов (до 3 років) допускається +10%.
+                  </p>
+                </div>
+              </HoverCardContent>
+            </HoverCard>
+          </div>
         </CardTitle>
       </CardHeader>
 
@@ -284,6 +346,39 @@ export function AreaLimitCalculator() {
               )
             )}
           </div>
+
+          {/* Progress bar */}
+          {userArea !== "" && userArea > 0 && (
+            <div className="space-y-1.5 pt-1">
+              <div className="flex items-center justify-between text-xs text-muted-foreground">
+                <span>0 м²</span>
+                <span className="font-medium text-foreground">
+                  {areaPercent.toFixed(0)}% від ліміту
+                </span>
+                <span>{result.maxArea.toFixed(1)} м²</span>
+              </div>
+              <div className="relative h-4 w-full overflow-hidden rounded-full bg-secondary">
+                <div
+                  className={`h-full rounded-full transition-all duration-500 ease-out ${getProgressColor(areaPercent)}`}
+                  style={{ width: `${Math.min(areaPercent, 100)}%` }}
+                />
+                {/* Over-limit indicator */}
+                {areaPercent > 100 && (
+                  <div
+                    className="absolute top-0 right-0 h-full bg-destructive/20 rounded-r-full animate-pulse"
+                    style={{ width: `${Math.min((areaPercent - 100) / areaPercent * 100, 30)}%` }}
+                  />
+                )}
+              </div>
+              <div className="flex items-center gap-3 text-[10px] text-muted-foreground">
+                <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-chart-2 inline-block" /> до 70%</span>
+                <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-chart-4 inline-block" /> 70-90%</span>
+                <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-primary inline-block" /> 90-100%</span>
+                <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-destructive inline-block" /> понад ліміт</span>
+              </div>
+            </div>
+          )}
+
           {areaCheck && !areaCheck.fits && (
             <Alert className="py-2 border-destructive/30 bg-destructive/5">
               <AlertDescription className="text-xs text-destructive/90">
