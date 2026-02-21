@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -129,11 +129,40 @@ export function AreaLimitCalculator() {
     return Math.min(100, (userArea / result.maxArea) * 100);
   }, [userArea, result.maxArea]);
 
+  // Animated progress value
+  const [animatedPercent, setAnimatedPercent] = useState(0);
+  const animationRef = useRef<number>(0);
+
+  useEffect(() => {
+    const target = areaPercent;
+    const start = animatedPercent;
+    const duration = 600;
+    let startTime: number | null = null;
+
+    cancelAnimationFrame(animationRef.current);
+
+    const animate = (timestamp: number) => {
+      if (!startTime) startTime = timestamp;
+      const elapsed = timestamp - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      // ease-out cubic
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setAnimatedPercent(start + (target - start) * eased);
+      if (progress < 1) {
+        animationRef.current = requestAnimationFrame(animate);
+      }
+    };
+
+    animationRef.current = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(animationRef.current);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [areaPercent]);
+
   const getProgressColor = (percent: number) => {
-    if (percent <= 70) return "bg-chart-2"; // green zone
-    if (percent <= 90) return "bg-chart-4"; // yellow zone
-    if (percent <= 100) return "bg-primary"; // orange zone
-    return "bg-destructive"; // over limit
+    if (percent <= 70) return "bg-chart-2";
+    if (percent <= 90) return "bg-chart-4";
+    if (percent <= 100) return "bg-primary";
+    return "bg-destructive";
   };
 
   const copyResults = useCallback(() => {
@@ -353,20 +382,19 @@ export function AreaLimitCalculator() {
               <div className="flex items-center justify-between text-xs text-muted-foreground">
                 <span>0 м²</span>
                 <span className="font-medium text-foreground">
-                  {areaPercent.toFixed(0)}% від ліміту
+                  {Math.round(animatedPercent)}% від ліміту
                 </span>
                 <span>{result.maxArea.toFixed(1)} м²</span>
               </div>
               <div className="relative h-4 w-full overflow-hidden rounded-full bg-secondary">
                 <div
-                  className={`h-full rounded-full transition-all duration-500 ease-out ${getProgressColor(areaPercent)}`}
-                  style={{ width: `${Math.min(areaPercent, 100)}%` }}
+                  className={`h-full rounded-full ${getProgressColor(animatedPercent)}`}
+                  style={{ width: `${Math.min(animatedPercent, 100)}%` }}
                 />
-                {/* Over-limit indicator */}
-                {areaPercent > 100 && (
+                {animatedPercent > 100 && (
                   <div
                     className="absolute top-0 right-0 h-full bg-destructive/20 rounded-r-full animate-pulse"
-                    style={{ width: `${Math.min((areaPercent - 100) / areaPercent * 100, 30)}%` }}
+                    style={{ width: `${Math.min((animatedPercent - 100) / animatedPercent * 100, 30)}%` }}
                   />
                 )}
               </div>
