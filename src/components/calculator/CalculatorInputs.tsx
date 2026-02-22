@@ -16,6 +16,7 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
+import { AdditionalCosts } from "./AdditionalCosts";
 
 interface CalculatorInputsProps {
   values: MortgageInput;
@@ -554,6 +555,9 @@ export function CalculatorInputs({ values, onChange }: CalculatorInputsProps) {
           </div>
         </CardContent>
       </Card>
+
+      {/* Додаткові витрати */}
+      <AdditionalCosts values={values} onChange={onChange} />
     </div>
   );
 }
