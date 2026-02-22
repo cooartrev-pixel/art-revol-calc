@@ -10,10 +10,19 @@ export interface MortgageInput {
   oneTimeCommission: number;
   monthlyCommission: number;
   // ЄОселя — нові поля
-  familySize?: number;         // Кількість членів сім'ї
-  propertyType?: 'apartment' | 'house'; // Тип нерухомості
-  propertyAge?: 'new' | 'secondary';   // new = до 3 років, secondary = старше 3 років
-  isYouth?: boolean;           // Молодь до 25 років — внесок від 10%
+  familySize?: number;
+  propertyType?: 'apartment' | 'house';
+  propertyAge?: 'new' | 'secondary';
+  isYouth?: boolean;
+  // Додаткові витрати
+  pensionFundPercent?: number;      // Пенсійний фонд (1%)
+  dutyPercent?: number;             // Мито (1%)
+  incomeTaxPercent?: number;        // Податок на доходи (5%)
+  militaryTaxPercent?: number;      // Військовий збір (5%)
+  notaryCost?: number;              // Нотаріус (фіксована сума грн)
+  appraisalCost?: number;           // Оцінка (фіксована сума грн)
+  insurancePercent?: number;        // Страховка (0.25% від вартості об'єкту, щорічно)
+  agencyCommissionPercent?: number; // Комісія агенції нерухомості (%)
 }
 
 // Обмеження площі ЄОселя (актуальні з 9 лютого 2025)
@@ -91,6 +100,19 @@ export function checkYeoselyaEligibility(input: MortgageInput): YeoselyaEligibil
   return { eligible: warnings.length === 0, warnings, maxAllowedArea: maxArea, maxAllowedLoan };
 }
 
+export interface AdditionalCosts {
+  pensionFund: number;
+  duty: number;
+  incomeTax: number;
+  militaryTax: number;
+  notary: number;
+  appraisal: number;
+  insuranceAnnual: number;
+  insuranceTotal: number;
+  agencyCommission: number;
+  totalAdditional: number;
+}
+
 export interface MortgageResult {
   loanAmount: number;
   monthlyPayment: number;
@@ -100,6 +122,8 @@ export interface MortgageResult {
   oneTimeCommissionAmount: number;
   totalMonthlyCommissions: number;
   savingsVsCommercial: number;
+  additionalCosts: AdditionalCosts;
+  grandTotal: number; // totalPayment + downPayment + all additional costs
 }
 
 export interface AmortizationRow {
@@ -213,6 +237,23 @@ export function calculateMortgage(input: MortgageInput): MortgageResult {
   const totalCost = totalPayment + oneTimeCommissionAmount + totalMonthlyCommissions;
   const effectiveRate = ((totalCost / loanAmount - 1) / input.loanTermYears) * 100;
   
+  // Додаткові витрати
+  const pensionFund = (input.propertyValue * (input.pensionFundPercent ?? 0)) / 100;
+  const duty = (input.propertyValue * (input.dutyPercent ?? 0)) / 100;
+  const incomeTax = (input.propertyValue * (input.incomeTaxPercent ?? 0)) / 100;
+  const militaryTax = (input.propertyValue * (input.militaryTaxPercent ?? 0)) / 100;
+  const notary = input.notaryCost ?? 0;
+  const appraisal = input.appraisalCost ?? 0;
+  const insuranceAnnual = (input.propertyValue * (input.insurancePercent ?? 0)) / 100;
+  const insuranceTotal = insuranceAnnual * input.loanTermYears;
+  const agencyCommission = (input.propertyValue * (input.agencyCommissionPercent ?? 0)) / 100;
+  const totalAdditional = pensionFund + duty + incomeTax + militaryTax + notary + appraisal + insuranceTotal + agencyCommission;
+
+  const additionalCosts: AdditionalCosts = {
+    pensionFund, duty, incomeTax, militaryTax, notary, appraisal,
+    insuranceAnnual, insuranceTotal, agencyCommission, totalAdditional,
+  };
+
   // Економія порівняно з комерційним кредитом
   let savingsVsCommercial = 0;
   if (input.isGovernmentProgram) {
@@ -223,6 +264,8 @@ export function calculateMortgage(input: MortgageInput): MortgageResult {
     const commercialTotal = commercialMonthlyPayment * totalMonths;
     savingsVsCommercial = commercialTotal - totalPayment;
   }
+
+  const grandTotal = totalPayment + downPaymentAmount + oneTimeCommissionAmount + totalMonthlyCommissions + totalAdditional;
   
   return {
     loanAmount,
@@ -233,6 +276,8 @@ export function calculateMortgage(input: MortgageInput): MortgageResult {
     oneTimeCommissionAmount,
     totalMonthlyCommissions,
     savingsVsCommercial,
+    additionalCosts,
+    grandTotal,
   };
 }
 

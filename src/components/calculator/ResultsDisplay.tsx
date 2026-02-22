@@ -1,7 +1,8 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { TrendingUp, TrendingDown, Wallet, PiggyBank, Calculator, Percent, FileDown, HelpCircle } from "lucide-react";
+import { TrendingUp, TrendingDown, Wallet, PiggyBank, Calculator, Percent, FileDown, HelpCircle, Receipt, ChevronDown, ChevronUp } from "lucide-react";
+import { useState } from "react";
 import type { MortgageResult, MortgageInput, AmortizationRow } from "@/lib/mortgage-calculations";
 import { formatCurrency, formatPercent, calculateDownPaymentAmount } from "@/lib/mortgage-calculations";
 import { exportToPDF } from "@/lib/pdf-export";
@@ -321,7 +322,67 @@ export function ResultsDisplay({ result, isGovernmentProgram, input, schedule }:
             </CardContent>
           </Card>
         )}
+
+        {/* Додаткові витрати */}
+        <AdditionalCostsBreakdown result={result} input={input} />
       </div>
     </TooltipProvider>
+  );
+}
+
+function AdditionalCostsBreakdown({ result, input }: { result: MortgageResult; input: MortgageInput }) {
+  const { t } = useLanguage();
+  const [expanded, setExpanded] = useState(false);
+  const costs = result.additionalCosts;
+  
+  if (costs.totalAdditional <= 0) return null;
+
+  const items = [
+    { label: t('costs.pensionFund'), value: costs.pensionFund, percent: input.pensionFundPercent },
+    { label: t('costs.duty'), value: costs.duty, percent: input.dutyPercent },
+    { label: t('costs.incomeTax'), value: costs.incomeTax, percent: input.incomeTaxPercent },
+    { label: t('costs.militaryTax'), value: costs.militaryTax, percent: input.militaryTaxPercent },
+    { label: t('costs.notary'), value: costs.notary },
+    { label: t('costs.appraisal'), value: costs.appraisal },
+    { label: t('costs.insuranceTotal'), value: costs.insuranceTotal, sub: costs.insuranceAnnual > 0 ? `${formatCurrency(costs.insuranceAnnual)}${t('costs.perYear')}` : undefined },
+    { label: t('costs.agencyCommission'), value: costs.agencyCommission, percent: input.agencyCommissionPercent },
+  ].filter(i => i.value > 0);
+
+  return (
+    <Card>
+      <CardHeader className="pb-2">
+        <CardTitle 
+          className="text-base flex items-center justify-between cursor-pointer"
+          onClick={() => setExpanded(!expanded)}
+        >
+          <div className="flex items-center gap-2">
+            <Receipt className="h-4 w-4" />
+            {t('costs.title')}
+            <Badge variant="secondary" className="text-xs">{formatCurrency(costs.totalAdditional)}</Badge>
+          </div>
+          {expanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+        </CardTitle>
+      </CardHeader>
+      {expanded && (
+        <CardContent className="space-y-2">
+          {items.map((item, i) => (
+            <div key={i} className="flex justify-between text-sm">
+              <span className="text-muted-foreground">
+                {item.label}
+                {item.percent ? ` (${item.percent}%)` : ''}
+              </span>
+              <div className="text-right">
+                <span className="font-medium">{formatCurrency(item.value)}</span>
+                {item.sub && <p className="text-xs text-muted-foreground">{item.sub}</p>}
+              </div>
+            </div>
+          ))}
+          <div className="pt-2 border-t flex justify-between text-sm font-semibold">
+            <span>{t('costs.grandTotal')}:</span>
+            <span>{formatCurrency(result.grandTotal)}</span>
+          </div>
+        </CardContent>
+      )}
+    </Card>
   );
 }

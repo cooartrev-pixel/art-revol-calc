@@ -40,6 +40,14 @@ const defaultInput: MortgageInput = {
   propertyType: 'apartment',
   propertyAge: 'secondary',
   isYouth: false,
+  pensionFundPercent: 0,
+  dutyPercent: 0,
+  incomeTaxPercent: 0,
+  militaryTaxPercent: 0,
+  notaryCost: 0,
+  appraisalCost: 0,
+  insurancePercent: 0,
+  agencyCommissionPercent: 0,
 };
 
 const Index = () => {
