@@ -40,14 +40,14 @@ const defaultInput: MortgageInput = {
   propertyType: 'apartment',
   propertyAge: 'secondary',
   isYouth: false,
-  pensionFundPercent: 0,
-  dutyPercent: 0,
-  incomeTaxPercent: 0,
-  militaryTaxPercent: 0,
-  notaryCost: 0,
-  appraisalCost: 0,
-  insurancePercent: 0,
-  agencyCommissionPercent: 0,
+  pensionFundPercent: 0, pensionFundEnabled: true,
+  dutyPercent: 0, dutyEnabled: true,
+  incomeTaxPercent: 0, incomeTaxEnabled: true,
+  militaryTaxPercent: 0, militaryTaxEnabled: true,
+  notaryCost: 0, notaryEnabled: true,
+  appraisalCost: 0, appraisalEnabled: true,
+  insurancePercent: 0, insuranceEnabled: true,
+  agencyCommissionPercent: 0, agencyCommissionEnabled: false,
 };
 
 const Index = () => {

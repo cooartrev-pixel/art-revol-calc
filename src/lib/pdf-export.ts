@@ -1,6 +1,6 @@
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
-import { MortgageResult, AmortizationRow, formatCurrency, formatPercent } from "./mortgage-calculations";
+import { MortgageResult, AmortizationRow, AdditionalCosts, formatCurrency, formatPercent } from "./mortgage-calculations";
 import { banks } from "./banks-data";
 import { getTranslations, Language } from "./i18n";
 
@@ -158,6 +158,52 @@ export function exportToPDF(data: PDFExportData): void {
   });
 
   yPosition = (doc as any).lastAutoTable.finalY + 15;
+
+  // Additional Costs Section
+  const costs = data.result.additionalCosts;
+  if (costs && costs.totalAdditional > 0) {
+    if (yPosition > 220) {
+      doc.addPage();
+      yPosition = 20;
+    }
+
+    doc.setFontSize(14);
+    doc.setFont("helvetica", "bold");
+    doc.text(t['pdf.additionalCosts'], 14, yPosition);
+    yPosition += 8;
+
+    const costItems: string[][] = [];
+    if (costs.pensionFund > 0) costItems.push([t['costs.pensionFund'], formatCurrency(costs.pensionFund)]);
+    if (costs.duty > 0) costItems.push([t['costs.duty'], formatCurrency(costs.duty)]);
+    if (costs.incomeTax > 0) costItems.push([t['costs.incomeTax'], formatCurrency(costs.incomeTax)]);
+    if (costs.militaryTax > 0) costItems.push([t['costs.militaryTax'], formatCurrency(costs.militaryTax)]);
+    if (costs.notary > 0) costItems.push([t['costs.notary'], formatCurrency(costs.notary)]);
+    if (costs.appraisal > 0) costItems.push([t['costs.appraisal'], formatCurrency(costs.appraisal)]);
+    if (costs.insuranceTotal > 0) costItems.push([t['costs.insuranceTotal'], formatCurrency(costs.insuranceTotal)]);
+    if (costs.agencyCommission > 0) costItems.push([t['costs.agencyCommission'], formatCurrency(costs.agencyCommission)]);
+    costItems.push([t['costs.totalAdditional'], formatCurrency(costs.totalAdditional)]);
+    costItems.push([t['pdf.grandTotal'], formatCurrency(data.result.grandTotal)]);
+
+    autoTable(doc, {
+      startY: yPosition,
+      head: [],
+      body: costItems,
+      theme: "striped",
+      styles: { fontSize: 10, cellPadding: 3 },
+      columnStyles: {
+        0: { fontStyle: "bold", cellWidth: 90 },
+        1: { cellWidth: 50 },
+      },
+      didParseCell: (hookData) => {
+        // Bold last two rows (total + grand total)
+        if (hookData.row.index >= costItems.length - 2) {
+          hookData.cell.styles.fontStyle = 'bold';
+        }
+      },
+    });
+
+    yPosition = (doc as any).lastAutoTable.finalY + 15;
+  }
 
   // Check if we need a new page for amortization
   if (yPosition > 220) {

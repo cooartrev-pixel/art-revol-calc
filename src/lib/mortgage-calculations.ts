@@ -15,14 +15,22 @@ export interface MortgageInput {
   propertyAge?: 'new' | 'secondary';
   isYouth?: boolean;
   // Додаткові витрати
-  pensionFundPercent?: number;      // Пенсійний фонд (1%)
-  dutyPercent?: number;             // Мито (1%)
-  incomeTaxPercent?: number;        // Податок на доходи (5%)
-  militaryTaxPercent?: number;      // Військовий збір (5%)
-  notaryCost?: number;              // Нотаріус (фіксована сума грн)
-  appraisalCost?: number;           // Оцінка (фіксована сума грн)
-  insurancePercent?: number;        // Страховка (0.25% від вартості об'єкту, щорічно)
-  agencyCommissionPercent?: number; // Комісія агенції нерухомості (%)
+  pensionFundPercent?: number;
+  pensionFundEnabled?: boolean;
+  dutyPercent?: number;
+  dutyEnabled?: boolean;
+  incomeTaxPercent?: number;
+  incomeTaxEnabled?: boolean;
+  militaryTaxPercent?: number;
+  militaryTaxEnabled?: boolean;
+  notaryCost?: number;
+  notaryEnabled?: boolean;
+  appraisalCost?: number;
+  appraisalEnabled?: boolean;
+  insurancePercent?: number;
+  insuranceEnabled?: boolean;
+  agencyCommissionPercent?: number;
+  agencyCommissionEnabled?: boolean;
 }
 
 // Обмеження площі ЄОселя (актуальні з 9 лютого 2025)
@@ -237,16 +245,16 @@ export function calculateMortgage(input: MortgageInput): MortgageResult {
   const totalCost = totalPayment + oneTimeCommissionAmount + totalMonthlyCommissions;
   const effectiveRate = ((totalCost / loanAmount - 1) / input.loanTermYears) * 100;
   
-  // Додаткові витрати
-  const pensionFund = (input.propertyValue * (input.pensionFundPercent ?? 0)) / 100;
-  const duty = (input.propertyValue * (input.dutyPercent ?? 0)) / 100;
-  const incomeTax = (input.propertyValue * (input.incomeTaxPercent ?? 0)) / 100;
-  const militaryTax = (input.propertyValue * (input.militaryTaxPercent ?? 0)) / 100;
-  const notary = input.notaryCost ?? 0;
-  const appraisal = input.appraisalCost ?? 0;
-  const insuranceAnnual = (input.propertyValue * (input.insurancePercent ?? 0)) / 100;
+  // Додаткові витрати (враховуються тільки якщо enabled)
+  const pensionFund = (input.pensionFundEnabled !== false) ? (input.propertyValue * (input.pensionFundPercent ?? 0)) / 100 : 0;
+  const duty = (input.dutyEnabled !== false) ? (input.propertyValue * (input.dutyPercent ?? 0)) / 100 : 0;
+  const incomeTax = (input.incomeTaxEnabled !== false) ? (input.propertyValue * (input.incomeTaxPercent ?? 0)) / 100 : 0;
+  const militaryTax = (input.militaryTaxEnabled !== false) ? (input.propertyValue * (input.militaryTaxPercent ?? 0)) / 100 : 0;
+  const notary = (input.notaryEnabled !== false) ? (input.notaryCost ?? 0) : 0;
+  const appraisal = (input.appraisalEnabled !== false) ? (input.appraisalCost ?? 0) : 0;
+  const insuranceAnnual = (input.insuranceEnabled !== false) ? (input.propertyValue * (input.insurancePercent ?? 0)) / 100 : 0;
   const insuranceTotal = insuranceAnnual * input.loanTermYears;
-  const agencyCommission = (input.propertyValue * (input.agencyCommissionPercent ?? 0)) / 100;
+  const agencyCommission = (input.agencyCommissionEnabled !== false) ? (input.propertyValue * (input.agencyCommissionPercent ?? 0)) / 100 : 0;
   const totalAdditional = pensionFund + duty + incomeTax + militaryTax + notary + appraisal + insuranceTotal + agencyCommission;
 
   const additionalCosts: AdditionalCosts = {
