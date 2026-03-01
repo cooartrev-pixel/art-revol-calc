@@ -52,7 +52,7 @@ export function AdditionalCosts({ values, onChange }: AdditionalCostsProps) {
       notaryCost: 33000, notaryEnabled: true,
       appraisalCost: 8200, appraisalEnabled: true,
       insurancePercent: 0.25, insuranceEnabled: true,
-      agencyCommissionPercent: 0, agencyCommissionEnabled: false,
+      agencyCommissionPercent: 5, agencyCommissionEnabled: true,
     });
   };
 
