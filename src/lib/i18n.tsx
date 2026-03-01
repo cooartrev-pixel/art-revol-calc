@@ -110,6 +110,7 @@ const translations = {
     'costs.grandTotal': 'Загальна вартість угоди',
     'costs.insuranceTotal': 'Страховка за весь термін',
     'costs.perYear': '/рік',
+    'costs.usdRate': 'Курс USD',
     
     // PDF additional costs
     'pdf.additionalCosts': 'Додаткові Витрати',
@@ -388,6 +389,7 @@ const translations = {
     'costs.grandTotal': 'Total deal cost',
     'costs.insuranceTotal': 'Insurance for full term',
     'costs.perYear': '/year',
+    'costs.usdRate': 'USD rate',
     
     // PDF additional costs
     'pdf.additionalCosts': 'Additional Costs',
