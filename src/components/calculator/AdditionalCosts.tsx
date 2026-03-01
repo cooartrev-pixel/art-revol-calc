@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -8,6 +8,8 @@ import { Receipt, Landmark, Briefcase, Shield, Building, RotateCcw, Sparkles, He
 import type { MortgageInput } from "@/lib/mortgage-calculations";
 import { formatCurrency } from "@/lib/mortgage-calculations";
 import { useLanguage } from "@/lib/i18n";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "@/hooks/use-toast";
 import {
   Tooltip,
   TooltipContent,
@@ -21,6 +23,32 @@ interface AdditionalCostsProps {
 }
 
 const DEFAULT_USD_RATE = 41.5;
+const SYNC_INTERVAL_MS = 4 * 60 * 60 * 1000; // 4 hours
+const CACHE_KEY = 'nbu_exchange_rates';
+
+interface CachedRates {
+  usd: number;
+  eur: number;
+  fetchedAt: string;
+  date: string;
+}
+
+function getCachedRates(): CachedRates | null {
+  try {
+    const cached = localStorage.getItem(CACHE_KEY);
+    if (!cached) return null;
+    const data = JSON.parse(cached) as CachedRates;
+    const age = Date.now() - new Date(data.fetchedAt).getTime();
+    if (age > SYNC_INTERVAL_MS) return null;
+    return data;
+  } catch {
+    return null;
+  }
+}
+
+function setCachedRates(rates: CachedRates) {
+  localStorage.setItem(CACHE_KEY, JSON.stringify(rates));
+}
 
 function CostTooltip({ tipKey }: { tipKey: string }) {
   const { t } = useLanguage();
@@ -74,6 +102,78 @@ export function AdditionalCosts({ values, onChange }: AdditionalCostsProps) {
     setAppraisalUsd(usd);
     onChange({ ...values, appraisalCost: Math.round(usd * usdRate) });
   }, [values, onChange, usdRate]);
+
+  const [syncing, setSyncing] = useState(false);
+  const [lastSyncDate, setLastSyncDate] = useState<string | null>(null);
+  const syncTimerRef = useRef<ReturnType<typeof setInterval>>();
+
+  const fetchNbuRates = useCallback(async (silent = false) => {
+    setSyncing(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('fetch-exchange-rates');
+      if (error) throw error;
+      if (data?.success && data.rates?.USD) {
+        const newUsdRate = data.rates.USD.rate;
+        const newEurRate = data.rates.EUR?.rate;
+        const rateDate = data.rates.USD.date;
+        setUsdRate(newUsdRate);
+        setLastSyncDate(rateDate);
+        
+        setCachedRates({
+          usd: newUsdRate,
+          eur: newEurRate || 0,
+          fetchedAt: new Date().toISOString(),
+          date: rateDate,
+        });
+
+        // Recalculate UAH values based on new rate
+        const updates: Partial<MortgageInput> = {};
+        if (notaryCurrency === 'USD') updates.notaryCost = Math.round(notaryUsd * newUsdRate);
+        if (appraisalCurrency === 'USD') updates.appraisalCost = Math.round(appraisalUsd * newUsdRate);
+        if (Object.keys(updates).length > 0) {
+          onChange({ ...values, ...updates });
+        }
+
+        if (!silent) {
+          toast({ title: t('costs.ratesSynced'), description: `1 USD = ${newUsdRate.toFixed(4)} ₴ (${rateDate})` });
+        }
+      }
+    } catch (err) {
+      console.error('Error fetching NBU rates:', err);
+      if (!silent) {
+        toast({ title: t('costs.ratesSyncError'), variant: 'destructive' });
+      }
+    } finally {
+      setSyncing(false);
+    }
+  }, [values, onChange, notaryCurrency, appraisalCurrency, notaryUsd, appraisalUsd, t]);
+
+  // Auto-sync on mount and every 4 hours
+  useEffect(() => {
+    const cached = getCachedRates();
+    if (cached) {
+      setUsdRate(cached.usd);
+      setLastSyncDate(cached.date);
+      // Recalculate with cached rate
+      const updates: Partial<MortgageInput> = {};
+      if (notaryCurrency === 'USD') updates.notaryCost = Math.round(notaryUsd * cached.usd);
+      if (appraisalCurrency === 'USD') updates.appraisalCost = Math.round(appraisalUsd * cached.usd);
+      if (Object.keys(updates).length > 0) {
+        onChange({ ...values, ...updates });
+      }
+    } else {
+      fetchNbuRates(true);
+    }
+
+    syncTimerRef.current = setInterval(() => {
+      fetchNbuRates(true);
+    }, SYNC_INTERVAL_MS);
+
+    return () => {
+      if (syncTimerRef.current) clearInterval(syncTimerRef.current);
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleRateChange = useCallback((rate: number) => {
     setUsdRate(rate);
@@ -269,19 +369,37 @@ export function AdditionalCosts({ values, onChange }: AdditionalCostsProps) {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-5">
-          {/* Курс долара */}
-          <div className="flex items-center gap-2 p-2 bg-muted/30 rounded-lg border">
-            <DollarSign className="h-4 w-4 text-primary shrink-0" />
-            <Label className="text-xs text-muted-foreground whitespace-nowrap">{t('costs.usdRate')}:</Label>
-            <Input
-              type="number"
-              value={usdRate}
-              onChange={(e) => handleRateChange(Number(e.target.value))}
-              step={0.1}
-              min={1}
-              className="h-7 w-24 text-sm"
-            />
-            <span className="text-xs text-muted-foreground">₴/$</span>
+          {/* Курс НБУ */}
+          <div className="p-2 bg-muted/30 rounded-lg border space-y-1.5">
+            <div className="flex items-center gap-2">
+              <DollarSign className="h-4 w-4 text-primary shrink-0" />
+              <Label className="text-xs text-muted-foreground whitespace-nowrap">{t('costs.nbuRate')}:</Label>
+              <Input
+                type="number"
+                value={usdRate}
+                onChange={(e) => handleRateChange(Number(e.target.value))}
+                step={0.01}
+                min={1}
+                className="h-7 w-28 text-sm"
+              />
+              <span className="text-xs text-muted-foreground">₴/$</span>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => fetchNbuRates(false)}
+                disabled={syncing}
+                className="h-7 px-2 text-xs gap-1 shrink-0 ml-auto"
+              >
+                <RefreshCw className={`h-3 w-3 ${syncing ? 'animate-spin' : ''}`} />
+                {t('costs.syncRates')}
+              </Button>
+            </div>
+            {lastSyncDate && (
+              <p className="text-[10px] text-muted-foreground flex items-center gap-1">
+                {t('costs.lastSync')}: {lastSyncDate} · {t('costs.autoSync')}
+              </p>
+            )}
           </div>
 
           {/* Державні збори */}

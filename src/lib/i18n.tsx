@@ -111,6 +111,13 @@ const translations = {
     'costs.insuranceTotal': 'Страховка за весь термін',
     'costs.perYear': '/рік',
     'costs.usdRate': 'Курс USD',
+    'costs.eurRate': 'Курс EUR',
+    'costs.nbuRate': 'Курс НБУ',
+    'costs.syncRates': 'Синхронізувати',
+    'costs.ratesSynced': 'Курси оновлено',
+    'costs.ratesSyncError': 'Не вдалося отримати курси НБУ',
+    'costs.lastSync': 'Оновлено',
+    'costs.autoSync': 'Авто-оновлення кожні 4 год',
     
     // PDF additional costs
     'pdf.additionalCosts': 'Додаткові Витрати',
@@ -390,6 +397,13 @@ const translations = {
     'costs.insuranceTotal': 'Insurance for full term',
     'costs.perYear': '/year',
     'costs.usdRate': 'USD rate',
+    'costs.eurRate': 'EUR rate',
+    'costs.nbuRate': 'NBU rate',
+    'costs.syncRates': 'Sync rates',
+    'costs.ratesSynced': 'Rates updated',
+    'costs.ratesSyncError': 'Failed to fetch NBU rates',
+    'costs.lastSync': 'Updated',
+    'costs.autoSync': 'Auto-update every 4 hours',
     
     // PDF additional costs
     'pdf.additionalCosts': 'Additional Costs',
