@@ -1,9 +1,10 @@
+import { useState, useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Receipt, Landmark, Briefcase, Shield, Building, RotateCcw, Sparkles, HelpCircle } from "lucide-react";
+import { Receipt, Landmark, Briefcase, Shield, Building, RotateCcw, Sparkles, HelpCircle, DollarSign, RefreshCw } from "lucide-react";
 import type { MortgageInput } from "@/lib/mortgage-calculations";
 import { formatCurrency } from "@/lib/mortgage-calculations";
 import { useLanguage } from "@/lib/i18n";
@@ -18,6 +19,8 @@ interface AdditionalCostsProps {
   values: MortgageInput;
   onChange: (values: MortgageInput) => void;
 }
+
+const DEFAULT_USD_RATE = 41.5;
 
 function CostTooltip({ tipKey }: { tipKey: string }) {
   const { t } = useLanguage();
@@ -35,28 +38,94 @@ function CostTooltip({ tipKey }: { tipKey: string }) {
   );
 }
 
+function CurrencyToggle({ currency, onToggle }: { currency: 'UAH' | 'USD'; onToggle: () => void }) {
+  return (
+    <Button
+      type="button"
+      variant="outline"
+      size="sm"
+      onClick={onToggle}
+      className="h-7 px-2 text-xs gap-1 shrink-0"
+    >
+      <DollarSign className="h-3 w-3" />
+      {currency}
+    </Button>
+  );
+}
+
 export function AdditionalCosts({ values, onChange }: AdditionalCostsProps) {
   const { t } = useLanguage();
+  const [usdRate, setUsdRate] = useState(DEFAULT_USD_RATE);
+  const [notaryCurrency, setNotaryCurrency] = useState<'UAH' | 'USD'>('USD');
+  const [appraisalCurrency, setAppraisalCurrency] = useState<'UAH' | 'USD'>('USD');
+  const [notaryUsd, setNotaryUsd] = useState(800);
+  const [appraisalUsd, setAppraisalUsd] = useState(200);
 
   const updateValue = <K extends keyof MortgageInput>(key: K, value: MortgageInput[K]) => {
     onChange({ ...values, [key]: value });
   };
 
+  const handleNotaryUsdChange = useCallback((usd: number) => {
+    setNotaryUsd(usd);
+    onChange({ ...values, notaryCost: Math.round(usd * usdRate) });
+  }, [values, onChange, usdRate]);
+
+  const handleAppraisalUsdChange = useCallback((usd: number) => {
+    setAppraisalUsd(usd);
+    onChange({ ...values, appraisalCost: Math.round(usd * usdRate) });
+  }, [values, onChange, usdRate]);
+
+  const handleRateChange = useCallback((rate: number) => {
+    setUsdRate(rate);
+    const updates: Partial<MortgageInput> = {};
+    if (notaryCurrency === 'USD') updates.notaryCost = Math.round(notaryUsd * rate);
+    if (appraisalCurrency === 'USD') updates.appraisalCost = Math.round(appraisalUsd * rate);
+    if (Object.keys(updates).length > 0) {
+      onChange({ ...values, ...updates });
+    }
+  }, [values, onChange, notaryCurrency, appraisalCurrency, notaryUsd, appraisalUsd]);
+
+  const toggleNotaryCurrency = () => {
+    if (notaryCurrency === 'UAH') {
+      setNotaryCurrency('USD');
+      const usd = Math.round((values.notaryCost ?? 0) / usdRate);
+      setNotaryUsd(usd);
+    } else {
+      setNotaryCurrency('UAH');
+    }
+  };
+
+  const toggleAppraisalCurrency = () => {
+    if (appraisalCurrency === 'UAH') {
+      setAppraisalCurrency('USD');
+      const usd = Math.round((values.appraisalCost ?? 0) / usdRate);
+      setAppraisalUsd(usd);
+    } else {
+      setAppraisalCurrency('UAH');
+    }
+  };
+
   const fillDefaults = () => {
+    setNotaryCurrency('USD');
+    setAppraisalCurrency('USD');
+    setNotaryUsd(800);
+    setAppraisalUsd(200);
     onChange({
       ...values,
       pensionFundPercent: 1, pensionFundEnabled: true,
       dutyPercent: 1, dutyEnabled: true,
       incomeTaxPercent: 5, incomeTaxEnabled: true,
       militaryTaxPercent: 5, militaryTaxEnabled: true,
-      notaryCost: 33000, notaryEnabled: true,
-      appraisalCost: 8200, appraisalEnabled: true,
+      notaryCost: Math.round(800 * usdRate), notaryEnabled: true,
+      appraisalCost: Math.round(200 * usdRate), appraisalEnabled: true,
       insurancePercent: 0.25, insuranceEnabled: true,
       agencyCommissionPercent: 5, agencyCommissionEnabled: true,
     });
   };
 
   const clearAll = () => {
+    setNotaryUsd(0);
+    setAppraisalUsd(0);
     onChange({
       ...values,
       pensionFundPercent: 0, pensionFundEnabled: false,
@@ -123,6 +192,61 @@ export function AdditionalCosts({ values, onChange }: AdditionalCostsProps) {
     );
   };
 
+  const currencyCostField = (
+    label: string,
+    tipKey: string,
+    enabledKey: keyof MortgageInput,
+    uahKey: keyof MortgageInput,
+    currency: 'UAH' | 'USD',
+    usdValue: number,
+    onUsdChange: (v: number) => void,
+    onToggle: () => void,
+    opts: { placeholderUsd: string; placeholderUah: string }
+  ) => {
+    const enabled = isEnabled(enabledKey);
+    const isUsd = currency === 'USD';
+    return (
+      <div className={!enabled ? 'opacity-50' : ''}>
+        <Label className="text-xs text-muted-foreground flex items-center gap-1">
+          <Checkbox
+            checked={enabled}
+            onCheckedChange={(checked) => updateValue(enabledKey, !!checked as any)}
+            className="h-3.5 w-3.5"
+          />
+          {label}
+          <CostTooltip tipKey={tipKey} />
+        </Label>
+        <div className="flex items-center gap-1.5 mt-1">
+          <Input
+            type="number"
+            value={isUsd ? (usdValue || '') : ((values[uahKey] as number) || '')}
+            onChange={(e) => {
+              const v = Number(e.target.value);
+              if (isUsd) {
+                onUsdChange(v);
+              } else {
+                updateValue(uahKey, v as any);
+              }
+            }}
+            step={isUsd ? 50 : 1000}
+            min={0}
+            placeholder={isUsd ? opts.placeholderUsd : opts.placeholderUah}
+            className="h-9"
+            disabled={!enabled}
+          />
+          <CurrencyToggle currency={currency} onToggle={onToggle} />
+        </div>
+        {enabled && (values[uahKey] as number) > 0 && (
+          <p className="text-xs text-muted-foreground mt-0.5">
+            {isUsd && <span>{formatCurrency(values[uahKey] as number)} · </span>}
+            {!isUsd && usdValue > 0 && <span>~${usdValue} · </span>}
+            {formatCurrency(values[uahKey] as number)}
+          </p>
+        )}
+      </div>
+    );
+  };
+
   return (
     <TooltipProvider delayDuration={200}>
       <Card>
@@ -145,6 +269,21 @@ export function AdditionalCosts({ values, onChange }: AdditionalCostsProps) {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-5">
+          {/* Курс долара */}
+          <div className="flex items-center gap-2 p-2 bg-muted/30 rounded-lg border">
+            <DollarSign className="h-4 w-4 text-primary shrink-0" />
+            <Label className="text-xs text-muted-foreground whitespace-nowrap">{t('costs.usdRate')}:</Label>
+            <Input
+              type="number"
+              value={usdRate}
+              onChange={(e) => handleRateChange(Number(e.target.value))}
+              step={0.1}
+              min={1}
+              className="h-7 w-24 text-sm"
+            />
+            <span className="text-xs text-muted-foreground">₴/$</span>
+          </div>
+
           {/* Державні збори */}
           <div className="space-y-3">
             <Label className="text-sm font-medium flex items-center gap-1.5 text-muted-foreground">
@@ -166,8 +305,16 @@ export function AdditionalCosts({ values, onChange }: AdditionalCostsProps) {
               {t('costs.services')}
             </Label>
             <div className="grid grid-cols-2 gap-3">
-              {costField(t('costs.notary'), 'costs.notaryTip', 'notaryEnabled', 'notaryCost', { step: 1000, min: 0, placeholder: '33000', suffix: 'грн' })}
-              {costField(t('costs.appraisal'), 'costs.appraisalTip', 'appraisalEnabled', 'appraisalCost', { step: 500, min: 0, placeholder: '8200', suffix: 'грн' })}
+              {currencyCostField(
+                t('costs.notary'), 'costs.notaryTip', 'notaryEnabled', 'notaryCost',
+                notaryCurrency, notaryUsd, handleNotaryUsdChange, toggleNotaryCurrency,
+                { placeholderUsd: '800', placeholderUah: '33000' }
+              )}
+              {currencyCostField(
+                t('costs.appraisal'), 'costs.appraisalTip', 'appraisalEnabled', 'appraisalCost',
+                appraisalCurrency, appraisalUsd, handleAppraisalUsdChange, toggleAppraisalCurrency,
+                { placeholderUsd: '200', placeholderUah: '8200' }
+              )}
             </div>
           </div>
 
