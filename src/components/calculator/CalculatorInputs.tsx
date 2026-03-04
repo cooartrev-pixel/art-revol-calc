@@ -182,7 +182,7 @@ export function CalculatorInputs({ values, onChange }: CalculatorInputsProps) {
                   onChange={(e) => updateValue('downPayment', Number(e.target.value))}
                   className="text-lg font-medium"
                   placeholder="0"
-                  min={values.isGovernmentProgram ? 20 : 6}
+                  min={values.isGovernmentProgram ? (values.isYouth ? 10 : (values.propertyAge === 'new' ? 30 : 20)) : 6}
                   max={90}
                 />
                 <span className="text-muted-foreground">%</span>
@@ -190,7 +190,7 @@ export function CalculatorInputs({ values, onChange }: CalculatorInputsProps) {
               <Slider
                 value={[values.downPayment]}
                 onValueChange={([value]) => updateValue('downPayment', value)}
-                min={values.isGovernmentProgram ? 20 : 6}
+                min={values.isGovernmentProgram ? (values.isYouth ? 10 : (values.propertyAge === 'new' ? 30 : 20)) : 6}
                 max={90}
                 step={1}
                 className="mt-4"
@@ -272,8 +272,12 @@ export function CalculatorInputs({ values, onChange }: CalculatorInputsProps) {
               checked={values.isGovernmentProgram}
               onCheckedChange={(checked) => {
                 updateValue('isGovernmentProgram', checked);
-                if (checked && values.downPaymentType === 'percent' && values.downPayment < 20) {
-                  updateValue('downPayment', 20);
+                if (checked) {
+                  const isNewBuild = values.propertyAge === 'new';
+                  const minDP = values.isYouth ? 10 : (isNewBuild ? 30 : 20);
+                  if (values.downPaymentType === 'percent' && values.downPayment < minDP) {
+                    updateValue('downPayment', minDP);
+                  }
                 }
               }}
             />
