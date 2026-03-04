@@ -67,19 +67,26 @@ export function BankComparison({
     return sortAsc ? comparison : -comparison;
   });
 
-  // Розрахунок щомісячного платежу для кожного банку
+  // Розрахунок щомісячного платежу для кожного банку (з прогресивною ставкою)
   const calculateMonthlyPayment = (bank: BankInfo): number => {
-    const rate = isGovernmentProgram 
+    const rate1 = isGovernmentProgram 
       ? (governmentRate === 3 ? bank.rates.privileged : bank.rates.standard)
       : bank.rates.standard;
-    const monthlyRate = rate / 100 / 12;
     const totalMonths = loanTermYears * 12;
+    const mr1 = rate1 / 100 / 12;
     
-    if (monthlyRate === 0) return loanAmount / totalMonths;
+    if (mr1 === 0) return loanAmount / totalMonths;
+    
+    // Для ЄОселя — прогресивна ставка після 10 років
+    if (isGovernmentProgram && loanTermYears > 10) {
+      const phase1Months = 10 * 12;
+      const mp1 = loanAmount * (mr1 * Math.pow(1 + mr1, totalMonths)) / (Math.pow(1 + mr1, totalMonths) - 1);
+      return mp1; // Показуємо платіж першої фази
+    }
     
     return loanAmount * 
-      (monthlyRate * Math.pow(1 + monthlyRate, totalMonths)) / 
-      (Math.pow(1 + monthlyRate, totalMonths) - 1);
+      (mr1 * Math.pow(1 + mr1, totalMonths)) / 
+      (Math.pow(1 + mr1, totalMonths) - 1);
   };
 
   const SortButton = ({ label, sortKeyValue }: { label: string; sortKeyValue: SortKey }) => (
@@ -125,7 +132,7 @@ export function BankComparison({
       </Card>
 
       {/* Інформація про програму */}
-      <div className="grid sm:grid-cols-3 gap-4">
+      <div className="grid sm:grid-cols-4 gap-4">
         <Card>
           <CardContent className="pt-4">
             <div className="flex items-center gap-3">
@@ -134,8 +141,8 @@ export function BankComparison({
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Пільгова ставка</p>
-                <p className="text-xl font-bold text-success">3%</p>
-                <p className="text-xs text-muted-foreground">для пріоритетних категорій</p>
+                <p className="text-xl font-bold text-success">3% → 6%</p>
+                <p className="text-xs text-muted-foreground">контрактники, мобілізовані, медики, педагоги</p>
               </div>
             </div>
           </CardContent>
@@ -148,8 +155,8 @@ export function BankComparison({
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Стандартна ставка</p>
-                <p className="text-xl font-bold text-government">7%</p>
-                <p className="text-xs text-muted-foreground">для інших категорій</p>
+                <p className="text-xl font-bold text-government">7% → 10%</p>
+                <p className="text-xs text-muted-foreground">ветерани, ВПО, інші</p>
               </div>
             </div>
           </CardContent>
@@ -163,7 +170,21 @@ export function BankComparison({
               <div>
                 <p className="text-sm text-muted-foreground">Банків-учасників</p>
                 <p className="text-xl font-bold">{banks.length}</p>
-                <p className="text-xs text-muted-foreground">станом на 2025 рік</p>
+                <p className="text-xs text-muted-foreground">станом на 2026 рік</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="pt-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-lg bg-warning/10">
+                <Info className="h-4 w-4 text-warning" />
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">Перший внесок</p>
+                <p className="text-xl font-bold">20-30%</p>
+                <p className="text-xs text-muted-foreground">20% вторинка / 30% новобудова</p>
               </div>
             </div>
           </CardContent>
@@ -329,10 +350,17 @@ export function BankComparison({
                               </div>
                             </TableCell>
                             <TableCell className="text-center">
-                              <Badge variant={rate === 3 ? "default" : "secondary"} 
-                                className={rate === 3 ? "bg-success text-success-foreground" : ""}>
-                                {rate}%
-                              </Badge>
+                              <div className="flex flex-col items-center gap-0.5">
+                                <Badge variant={rate === 3 ? "default" : "secondary"} 
+                                  className={rate === 3 ? "bg-success text-success-foreground" : ""}>
+                                  {rate}%
+                                </Badge>
+                                {bank.effectiveRates && (
+                                  <span className="text-[10px] text-muted-foreground">
+                                    ≈{(governmentRate === 3 ? bank.effectiveRates.privileged : bank.effectiveRates.standard).toFixed(1)}% реальна
+                                  </span>
+                                )}
+                              </div>
                             </TableCell>
                             <TableCell className="text-right font-medium">
                               {isEligible ? formatCurrency(monthlyPayment) : '—'}
@@ -341,7 +369,8 @@ export function BankComparison({
                               {formatMoney(bank.maxLoanAmount)}
                             </TableCell>
                             <TableCell className="text-center">
-                              {bank.minDownPayment}% - {bank.maxDownPayment}%
+                              <div className="text-sm">{bank.minDownPayment}%-{bank.maxDownPayment}%</div>
+                              <div className="text-[10px] text-muted-foreground">новобуд. від {bank.minDownPaymentNewBuild}%</div>
                             </TableCell>
                             <TableCell className="text-center">
                               {bank.minTerm} - {bank.maxTerm} років
@@ -446,7 +475,8 @@ export function BankComparison({
                                 </HoverCardContent>
                               </HoverCard>
                             </div>
-                            <span>{bank.minDownPayment}% - {bank.maxDownPayment}%</span>
+                            <span>{bank.minDownPayment}%-{bank.maxDownPayment}%</span>
+                            <span className="text-[10px] text-muted-foreground block">(новобуд. від {bank.minDownPaymentNewBuild}%)</span>
                           </div>
                           <div className="flex justify-between items-center">
                             <div className="flex items-center gap-1">
@@ -534,7 +564,7 @@ export function BankComparison({
           <div className="flex items-start gap-2">
             <Check className="h-4 w-4 text-success mt-0.5 shrink-0" />
             <div className="flex items-center gap-1.5 flex-wrap">
-              <p>Після 10 років ставка змінюється: з 3% до 6% або з 7% до 10%</p>
+              <p>Після 10 років ставка зростає: 3% → 6% або 7% → 10% (постанова №856)</p>
               <HoverCard openDelay={100} closeDelay={100}>
                 <HoverCardTrigger asChild>
                   <HelpCircle className="h-3.5 w-3.5 text-muted-foreground cursor-help transition-colors hover:text-primary shrink-0" />
@@ -553,20 +583,32 @@ export function BankComparison({
           <div className="flex items-start gap-2">
             <Check className="h-4 w-4 text-success mt-0.5 shrink-0" />
             <div className="flex items-center gap-1.5 flex-wrap">
-              <p>Для молоді до 25 років мінімальний внесок знижено до 10%</p>
+              <p>Перший внесок: від 20% для вторинки, від 30% для новобудов (10% для молоді до 25 років)</p>
               <HoverCard openDelay={100} closeDelay={100}>
                 <HoverCardTrigger asChild>
                   <HelpCircle className="h-3.5 w-3.5 text-muted-foreground cursor-help transition-colors hover:text-primary shrink-0" />
                 </HoverCardTrigger>
                 <HoverCardContent className="w-80 animate-in fade-in-0 zoom-in-95 duration-200" side="top">
                   <div className="space-y-2">
-                    <h4 className="font-semibold text-sm">Пільги для молоді</h4>
+                    <h4 className="font-semibold text-sm">Перший внесок</h4>
                     <p className="text-sm text-muted-foreground">
-                      Якщо вам менше 25 років, ви можете скористатися зниженим першим внеском — від 10% замість стандартних 20%. Це дозволяє придбати житло з меншими початковими накопиченнями.
+                      Вторинний ринок — від 20%, новобудови від забудовника — від 30%. Для молоді до 25 років — від 10%. Якщо вартість або площа перевищують норматив — різниця покривається збільшенням першого внеску.
                     </p>
                   </div>
                 </HoverCardContent>
               </HoverCard>
+            </div>
+          </div>
+          <div className="flex items-start gap-2">
+            <Check className="h-4 w-4 text-success mt-0.5 shrink-0" />
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <p>Мобілізовані тепер також мають право на ставку 3% (постанова №1637, грудень 2025)</p>
+            </div>
+          </div>
+          <div className="flex items-start gap-2">
+            <Check className="h-4 w-4 text-success mt-0.5 shrink-0" />
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <p>Для ВПО: держава компенсує 70% першого внеску та 70% платежів першого року (макс. 2 млн грн)</p>
             </div>
           </div>
           <div className="flex items-start gap-2">

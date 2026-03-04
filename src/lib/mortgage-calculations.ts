@@ -89,9 +89,10 @@ export function checkYeoselyaEligibility(input: MortgageInput): YeoselyaEligibil
     ? input.downPayment
     : (input.downPayment / input.propertyValue) * 100;
 
-  const minDownPayment = isYouth ? 10 : 20;
+  const isNewBuild = propertyAge === 'new';
+  const minDownPayment = isYouth ? 10 : (isNewBuild ? 30 : 20);
   if (downPaymentPercent < minDownPayment) {
-    warnings.push(`Мінімальний перший внесок за ЄОселя — ${minDownPayment}% (${isYouth ? 'для молоді' : 'стандарт'})`);
+    warnings.push(`Мінімальний перший внесок за ЄОселя — ${minDownPayment}% (${isYouth ? 'для молоді' : isNewBuild ? 'для новобудов' : 'вторинний ринок'})`);
   }
 
   // Перевірка терміну
