@@ -3,5 +3,8 @@ project_id = "bsnpgnnxvsarebbvpaua"
 [functions.notify-consultation]
 verify_jwt = false
 
+[functions.fetch-exchange-rates]
+verify_jwt = false
+
 [functions.fetch-legislative-updates]
 verify_jwt = false
