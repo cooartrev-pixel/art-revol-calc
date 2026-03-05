@@ -18,6 +18,8 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
+import { useCurrencyRates } from "@/hooks/useCurrencyRates";
+import { CurrencyAmount } from "./CurrencyAmount";
 
 interface ResultsDisplayProps {
   result: MortgageResult;
@@ -28,6 +30,7 @@ interface ResultsDisplayProps {
 
 export function ResultsDisplay({ result, isGovernmentProgram, input, schedule }: ResultsDisplayProps) {
   const { t, language } = useLanguage();
+  const { usd: usdRate, eur: eurRate } = useCurrencyRates();
   
   const handleExportPDF = () => {
     const downPaymentAmount = calculateDownPaymentAmount(
@@ -135,6 +138,9 @@ export function ResultsDisplay({ result, isGovernmentProgram, input, schedule }:
                   <p className="text-4xl md:text-5xl font-bold tracking-tight">
                     {formatCurrency(result.monthlyPayment)}
                   </p>
+                  <p className="text-primary-foreground/60 text-sm mt-1">
+                    ≈ ${Math.round(result.monthlyPayment / usdRate).toLocaleString('uk-UA')} · €{Math.round(result.monthlyPayment / eurRate).toLocaleString('uk-UA')}
+                  </p>
                   {isGovernmentProgram && result.savingsVsCommercial > 0 && (
                     <Badge className="mt-3 bg-success text-success-foreground">
                       <TrendingDown className="h-3 w-3 mr-1" />
@@ -190,12 +196,13 @@ export function ResultsDisplay({ result, isGovernmentProgram, input, schedule }:
                     <div className="p-2 rounded-lg bg-primary/10 transition-colors duration-300 group-hover:bg-primary/20">
                       <Calculator className="h-4 w-4 text-primary" />
                     </div>
-                    <div>
+                    <div className="min-w-0">
                       <p className="text-sm text-muted-foreground flex items-center gap-1">
                         {t('results.loanAmount')}
                         <HelpCircle className="h-3 w-3 opacity-50" />
                       </p>
                       <p className="text-lg font-semibold">{formatCurrency(result.loanAmount)}</p>
+                      <CurrencyAmount amount={result.loanAmount} usdRate={usdRate} eurRate={eurRate} showMain={false} />
                     </div>
                   </div>
                 </CardContent>
@@ -217,12 +224,13 @@ export function ResultsDisplay({ result, isGovernmentProgram, input, schedule }:
                     <div className="p-2 rounded-lg bg-destructive/10 transition-colors duration-300">
                       <TrendingUp className="h-4 w-4 text-destructive" />
                     </div>
-                    <div>
+                    <div className="min-w-0">
                       <p className="text-sm text-muted-foreground flex items-center gap-1">
                         {t('results.overpayment')}
                         <HelpCircle className="h-3 w-3 opacity-50" />
                       </p>
                       <p className="text-lg font-semibold">{formatCurrency(result.totalInterest)}</p>
+                      <CurrencyAmount amount={result.totalInterest} usdRate={usdRate} eurRate={eurRate} showMain={false} />
                     </div>
                   </div>
                 </CardContent>
@@ -244,12 +252,13 @@ export function ResultsDisplay({ result, isGovernmentProgram, input, schedule }:
                     <div className="p-2 rounded-lg bg-accent transition-colors duration-300">
                       <Wallet className="h-4 w-4 text-accent-foreground" />
                     </div>
-                    <div>
+                    <div className="min-w-0">
                       <p className="text-sm text-muted-foreground flex items-center gap-1">
                         {t('results.totalSum')}
                         <HelpCircle className="h-3 w-3 opacity-50" />
                       </p>
                       <p className="text-lg font-semibold">{formatCurrency(result.totalPayment)}</p>
+                      <CurrencyAmount amount={result.totalPayment} usdRate={usdRate} eurRate={eurRate} showMain={false} />
                     </div>
                   </div>
                 </CardContent>
@@ -307,7 +316,7 @@ export function ResultsDisplay({ result, isGovernmentProgram, input, schedule }:
                     {t('results.oneTimeCommission')}:
                     <InfoTooltip content={tooltips.oneTimeCommission} />
                   </span>
-                  <span className="font-medium">{formatCurrency(result.oneTimeCommissionAmount)}</span>
+                  <CurrencyAmount amount={result.oneTimeCommissionAmount} usdRate={usdRate} eurRate={eurRate} />
                 </div>
               )}
               {result.totalMonthlyCommissions > 0 && (
@@ -316,7 +325,7 @@ export function ResultsDisplay({ result, isGovernmentProgram, input, schedule }:
                     {t('results.monthlyCommissions')}:
                     <InfoTooltip content={tooltips.monthlyCommission} />
                   </span>
-                  <span className="font-medium">{formatCurrency(result.totalMonthlyCommissions)}</span>
+                  <CurrencyAmount amount={result.totalMonthlyCommissions} usdRate={usdRate} eurRate={eurRate} />
                 </div>
               )}
             </CardContent>
@@ -324,13 +333,13 @@ export function ResultsDisplay({ result, isGovernmentProgram, input, schedule }:
         )}
 
         {/* Додаткові витрати */}
-        <AdditionalCostsBreakdown result={result} input={input} />
+        <AdditionalCostsBreakdown result={result} input={input} usdRate={usdRate} eurRate={eurRate} />
       </div>
     </TooltipProvider>
   );
 }
 
-function AdditionalCostsBreakdown({ result, input }: { result: MortgageResult; input: MortgageInput }) {
+function AdditionalCostsBreakdown({ result, input, usdRate, eurRate }: { result: MortgageResult; input: MortgageInput; usdRate: number; eurRate: number }) {
   const { t } = useLanguage();
   const [expanded, setExpanded] = useState(false);
   const costs = result.additionalCosts;
@@ -372,14 +381,14 @@ function AdditionalCostsBreakdown({ result, input }: { result: MortgageResult; i
                 {item.percent ? ` (${item.percent}%)` : ''}
               </span>
               <div className="text-right">
-                <span className="font-medium">{formatCurrency(item.value)}</span>
+                <CurrencyAmount amount={item.value} usdRate={usdRate} eurRate={eurRate} />
                 {item.sub && <p className="text-xs text-muted-foreground">{item.sub}</p>}
               </div>
             </div>
           ))}
           <div className="pt-2 border-t flex justify-between text-sm font-semibold">
             <span>{t('costs.grandTotal')}:</span>
-            <span>{formatCurrency(result.grandTotal)}</span>
+            <CurrencyAmount amount={result.grandTotal} usdRate={usdRate} eurRate={eurRate} />
           </div>
         </CardContent>
       )}

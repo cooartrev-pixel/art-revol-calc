@@ -8,7 +8,8 @@ import { Receipt, Landmark, Briefcase, Shield, Building, RotateCcw, Sparkles, He
 import type { MortgageInput } from "@/lib/mortgage-calculations";
 import { formatCurrency } from "@/lib/mortgage-calculations";
 import { useLanguage } from "@/lib/i18n";
-import { supabase } from "@/integrations/supabase/client";
+import { useCurrencyRates } from "@/hooks/useCurrencyRates";
+import { CurrencyAmount } from "./CurrencyAmount";
 import { toast } from "@/hooks/use-toast";
 import {
   Tooltip,
@@ -23,32 +24,6 @@ interface AdditionalCostsProps {
 }
 
 const DEFAULT_USD_RATE = 41.5;
-const SYNC_INTERVAL_MS = 4 * 60 * 60 * 1000; // 4 hours
-const CACHE_KEY = 'nbu_exchange_rates';
-
-interface CachedRates {
-  usd: number;
-  eur: number;
-  fetchedAt: string;
-  date: string;
-}
-
-function getCachedRates(): CachedRates | null {
-  try {
-    const cached = localStorage.getItem(CACHE_KEY);
-    if (!cached) return null;
-    const data = JSON.parse(cached) as CachedRates;
-    const age = Date.now() - new Date(data.fetchedAt).getTime();
-    if (age > SYNC_INTERVAL_MS) return null;
-    return data;
-  } catch {
-    return null;
-  }
-}
-
-function setCachedRates(rates: CachedRates) {
-  localStorage.setItem(CACHE_KEY, JSON.stringify(rates));
-}
 
 function CostTooltip({ tipKey }: { tipKey: string }) {
   const { t } = useLanguage();
@@ -83,7 +58,8 @@ function CurrencyToggle({ currency, onToggle }: { currency: 'UAH' | 'USD'; onTog
 
 export function AdditionalCosts({ values, onChange }: AdditionalCostsProps) {
   const { t } = useLanguage();
-  const [usdRate, setUsdRate] = useState(DEFAULT_USD_RATE);
+  const { usd: sharedUsdRate, eur: eurRate, date: lastSyncDate, syncing, fetchRates } = useCurrencyRates();
+  const [usdRate, setUsdRate] = useState(sharedUsdRate);
   const [notaryCurrency, setNotaryCurrency] = useState<'UAH' | 'USD'>('USD');
   const [appraisalCurrency, setAppraisalCurrency] = useState<'UAH' | 'USD'>('USD');
   const [notaryUsd, setNotaryUsd] = useState(800);
@@ -92,6 +68,18 @@ export function AdditionalCosts({ values, onChange }: AdditionalCostsProps) {
   const updateValue = <K extends keyof MortgageInput>(key: K, value: MortgageInput[K]) => {
     onChange({ ...values, [key]: value });
   };
+
+  // Sync local rate when shared rate updates
+  useEffect(() => {
+    setUsdRate(sharedUsdRate);
+    const updates: Partial<MortgageInput> = {};
+    if (notaryCurrency === 'USD') updates.notaryCost = Math.round(notaryUsd * sharedUsdRate);
+    if (appraisalCurrency === 'USD') updates.appraisalCost = Math.round(appraisalUsd * sharedUsdRate);
+    if (Object.keys(updates).length > 0) {
+      onChange({ ...values, ...updates });
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sharedUsdRate]);
 
   const handleNotaryUsdChange = useCallback((usd: number) => {
     setNotaryUsd(usd);
@@ -102,78 +90,6 @@ export function AdditionalCosts({ values, onChange }: AdditionalCostsProps) {
     setAppraisalUsd(usd);
     onChange({ ...values, appraisalCost: Math.round(usd * usdRate) });
   }, [values, onChange, usdRate]);
-
-  const [syncing, setSyncing] = useState(false);
-  const [lastSyncDate, setLastSyncDate] = useState<string | null>(null);
-  const syncTimerRef = useRef<ReturnType<typeof setInterval>>();
-
-  const fetchNbuRates = useCallback(async (silent = false) => {
-    setSyncing(true);
-    try {
-      const { data, error } = await supabase.functions.invoke('fetch-exchange-rates');
-      if (error) throw error;
-      if (data?.success && data.rates?.USD) {
-        const newUsdRate = data.rates.USD.rate;
-        const newEurRate = data.rates.EUR?.rate;
-        const rateDate = data.rates.USD.date;
-        setUsdRate(newUsdRate);
-        setLastSyncDate(rateDate);
-        
-        setCachedRates({
-          usd: newUsdRate,
-          eur: newEurRate || 0,
-          fetchedAt: new Date().toISOString(),
-          date: rateDate,
-        });
-
-        // Recalculate UAH values based on new rate
-        const updates: Partial<MortgageInput> = {};
-        if (notaryCurrency === 'USD') updates.notaryCost = Math.round(notaryUsd * newUsdRate);
-        if (appraisalCurrency === 'USD') updates.appraisalCost = Math.round(appraisalUsd * newUsdRate);
-        if (Object.keys(updates).length > 0) {
-          onChange({ ...values, ...updates });
-        }
-
-        if (!silent) {
-          toast({ title: t('costs.ratesSynced'), description: `1 USD = ${newUsdRate.toFixed(4)} ₴ (${rateDate})` });
-        }
-      }
-    } catch (err) {
-      console.error('Error fetching NBU rates:', err);
-      if (!silent) {
-        toast({ title: t('costs.ratesSyncError'), variant: 'destructive' });
-      }
-    } finally {
-      setSyncing(false);
-    }
-  }, [values, onChange, notaryCurrency, appraisalCurrency, notaryUsd, appraisalUsd, t]);
-
-  // Auto-sync on mount and every 4 hours
-  useEffect(() => {
-    const cached = getCachedRates();
-    if (cached) {
-      setUsdRate(cached.usd);
-      setLastSyncDate(cached.date);
-      // Recalculate with cached rate
-      const updates: Partial<MortgageInput> = {};
-      if (notaryCurrency === 'USD') updates.notaryCost = Math.round(notaryUsd * cached.usd);
-      if (appraisalCurrency === 'USD') updates.appraisalCost = Math.round(appraisalUsd * cached.usd);
-      if (Object.keys(updates).length > 0) {
-        onChange({ ...values, ...updates });
-      }
-    } else {
-      fetchNbuRates(true);
-    }
-
-    syncTimerRef.current = setInterval(() => {
-      fetchNbuRates(true);
-    }, SYNC_INTERVAL_MS);
-
-    return () => {
-      if (syncTimerRef.current) clearInterval(syncTimerRef.current);
-    };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   const handleRateChange = useCallback((rate: number) => {
     setUsdRate(rate);
@@ -387,7 +303,7 @@ export function AdditionalCosts({ values, onChange }: AdditionalCostsProps) {
                 type="button"
                 variant="outline"
                 size="sm"
-                onClick={() => fetchNbuRates(false)}
+                onClick={() => fetchRates(false)}
                 disabled={syncing}
                 className="h-7 px-2 text-xs gap-1 shrink-0 ml-auto"
               >
@@ -508,9 +424,9 @@ export function AdditionalCosts({ values, onChange }: AdditionalCostsProps) {
           {/* Підсумок */}
           {total > 0 && (
             <div className="p-3 bg-muted/30 rounded-lg border space-y-2">
-              <div className="flex justify-between text-sm">
+              <div className="flex justify-between text-sm items-center">
                 <span className="text-muted-foreground">{t('costs.totalAdditional')}:</span>
-                <span className="font-semibold">{formatCurrency(total)}</span>
+                <CurrencyAmount amount={total} usdRate={usdRate} eurRate={eurRate} />
               </div>
             </div>
           )}

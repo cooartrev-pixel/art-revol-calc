@@ -175,16 +175,16 @@ export function AreaLimitCalculator() {
     text += `🏢 Тип: ${propTypeLabel}\n`;
     text += `📅 Вік: ${propAgeLabel}\n`;
     text += `━━━━━━━━━━━━━━━━━━━━━\n`;
-    text += `📐 Базовий ліміт: ${result.baseMaxArea.toFixed(1)} м²\n`;
+    text += `📐 Базовий ліміт: ${result.baseMaxArea.toFixed(2)} м²\n`;
     if (result.allowedOverpercent > 0) {
       text += `➕ Допуск +${result.allowedOverpercent}%\n`;
     }
-    text += `✅ Максимальна площа: ${result.maxArea.toFixed(1)} м²\n`;
+    text += `✅ Максимальна площа: ${result.maxArea.toFixed(2)} м²\n`;
     
     if (userArea && userArea > 0) {
       const fits = userArea <= result.maxArea;
       text += `━━━━━━━━━━━━━━━━━━━━━\n`;
-      text += `🔍 Перевірка: ${userArea} м² — ${fits ? "✅ Підходить" : `❌ Перевищує на ${(userArea - result.maxArea).toFixed(1)} м²`}\n`;
+      text += `🔍 Перевірка: ${userArea} м² — ${fits ? "✅ Підходить" : `❌ Перевищує на ${(userArea - result.maxArea).toFixed(2)} м²`}\n`;
     }
     
     text += `━━━━━━━━━━━━━━━━━━━━━\n`;
@@ -308,14 +308,14 @@ export function AreaLimitCalculator() {
         <div className="p-4 bg-primary/5 rounded-lg border border-primary/15 space-y-3">
           <div className="flex items-center justify-between">
             <span className="text-sm font-medium text-foreground">Максимально допустима площа:</span>
-            <span className="text-2xl font-bold text-primary">{result.maxArea.toFixed(1)} м²</span>
+            <span className="text-2xl font-bold text-primary">{result.maxArea.toFixed(2)} м²</span>
           </div>
 
           {result.allowedOverpercent > 0 && (
             <div className="flex items-center gap-2 text-xs text-muted-foreground">
               <Info className="h-3.5 w-3.5 text-primary" />
               <span>
-                Базовий ліміт {result.baseMaxArea.toFixed(1)} м² + {result.allowedOverpercent}% допуск для новобудов
+                Базовий ліміт {result.baseMaxArea.toFixed(2)} м² + {result.allowedOverpercent}% допуск для новобудов
               </span>
             </div>
           )}
@@ -337,12 +337,12 @@ export function AreaLimitCalculator() {
             <Separator className="my-1" />
             <div className="flex items-center justify-between text-sm font-semibold">
               <span>Базовий ліміт</span>
-              <span>{result.baseMaxArea.toFixed(1)} м²</span>
+              <span>{result.baseMaxArea.toFixed(2)} м²</span>
             </div>
             {result.allowedOverpercent > 0 && (
               <div className="flex items-center justify-between text-sm">
                 <span className="text-muted-foreground">Допуск +{result.allowedOverpercent}%</span>
-                <span className="font-medium text-primary">= {result.maxArea.toFixed(1)} м²</span>
+                <span className="font-medium text-primary">= {result.maxArea.toFixed(2)} м²</span>
               </div>
             )}
           </div>
@@ -384,7 +384,7 @@ export function AreaLimitCalculator() {
                 <span className="font-medium text-foreground">
                   {Math.round(animatedPercent)}% від ліміту
                 </span>
-                <span>{result.maxArea.toFixed(1)} м²</span>
+                <span>{result.maxArea.toFixed(2)} м²</span>
               </div>
               <div className="relative h-4 w-full overflow-hidden rounded-full bg-secondary">
                 <div
