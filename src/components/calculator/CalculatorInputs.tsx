@@ -210,12 +210,16 @@ export function CalculatorInputs({ values, onChange }: CalculatorInputsProps) {
             </TabsContent>
           </Tabs>
           
-          <div className="p-3 bg-muted/30 rounded-lg">
+          <div className="p-3 bg-muted/30 rounded-lg space-y-1">
+            <div className="flex justify-between text-sm">
+              <span className="text-muted-foreground">{language === 'uk' ? 'Перший внесок' : 'Down payment'}:</span>
+              <span className="font-semibold text-primary">{formatCurrency(calculateDownPaymentAmount(values.propertyValue, values.downPayment, values.downPaymentType))}</span>
+            </div>
             <div className="flex justify-between text-sm">
               <span className="text-muted-foreground">{t('input.loanAmount')}:</span>
               <span className="font-semibold">{formatCurrency(Math.max(0, loanAmount))}</span>
             </div>
-            <div className="flex justify-between text-sm mt-1">
+            <div className="flex justify-between text-sm">
               <span className="text-muted-foreground">{t('input.contribution')}:</span>
               <span className="font-medium">{downPaymentPercent.toFixed(1)}%</span>
             </div>
