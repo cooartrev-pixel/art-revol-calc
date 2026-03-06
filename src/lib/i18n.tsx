@@ -323,6 +323,7 @@ const translations = {
     'header.admin': 'Admin',
     'header.login': 'Login',
     'header.installApp': 'Install App',
+    'header.settings': 'Settings',
     'header.title': 'Mortgage Calculator',
     'header.subtitle': 'Calculate favorable loan terms, including the "YeOselya" government program with rates from 3% per annum',
     
