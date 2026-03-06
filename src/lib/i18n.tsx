@@ -427,6 +427,27 @@ const translations = {
     'costs.ratesSyncError': 'Failed to fetch NBU rates',
     'costs.lastSync': 'Updated',
     'costs.autoSync': 'Auto-update every 4 hours',
+
+    // Settings
+    'settings.title': 'Settings',
+    'settings.subtitle': 'Calculation parameters and currency rates',
+    'settings.rateSource': 'USD rate source',
+    'settings.rateSourceDesc': 'Choose which rate to use for dollar conversion',
+    'settings.nbu': 'NBU (National Bank)',
+    'settings.nbuDesc': 'Official NBU rate. Updated daily. Used for official calculations.',
+    'settings.universalbank': 'Universalbank (sell)',
+    'settings.universalbankDesc': 'Commercial USD sell rate from Universalbank. Closer to the actual market rate.',
+    'settings.official': 'Official',
+    'settings.commercial': 'Commercial',
+    'settings.noData': 'No data — click "Sync"',
+    'settings.lastUpdate': 'Last update',
+    'settings.syncNow': 'Sync rates',
+    'settings.activeRate': 'Active rate',
+    'settings.rateNote': 'The selected rate will be used in all calculations and conversions throughout the app.',
+
+    // Property USD input
+    'input.propertyValueUsd': 'or enter in $',
+    'input.propertyValueUsdHint': 'Auto-conversion at {source} rate: {rate} UAH/$',
     
     // PDF additional costs
     'pdf.additionalCosts': 'Additional Costs',
