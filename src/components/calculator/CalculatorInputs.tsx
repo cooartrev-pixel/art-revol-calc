@@ -147,15 +147,53 @@ export function CalculatorInputs({ values, onChange }: CalculatorInputsProps) {
             <Input
               type="number"
               value={values.propertyValue || ''}
-              onChange={(e) => updateValue('propertyValue', Number(e.target.value))}
+              onChange={(e) => {
+                const val = Number(e.target.value);
+                updateValue('propertyValue', val);
+                setPropertyUsd('');
+              }}
               className="text-lg font-medium"
               placeholder="0"
             />
             <span className="text-muted-foreground whitespace-nowrap">{t('input.currency')}</span>
           </div>
+          
+          {/* USD input */}
+          <div className="flex items-center gap-2">
+            <DollarSign className="h-4 w-4 text-muted-foreground shrink-0" />
+            <Input
+              type="number"
+              value={propertyUsd}
+              onChange={(e) => {
+                const usd = Number(e.target.value);
+                setPropertyUsd(usd || '');
+                if (usd > 0) {
+                  updateValue('propertyValue', Math.round(usd * usdRate));
+                }
+              }}
+              className="h-9"
+              placeholder={t('input.propertyValueUsd')}
+            />
+            <span className="text-muted-foreground text-sm whitespace-nowrap">$</span>
+          </div>
+          <p className="text-[10px] text-muted-foreground -mt-2">
+            {t('input.propertyValueUsdHint', { 
+              source: rateSource === 'nbu' ? 'НБУ' : 'Універсалбанк', 
+              rate: usdRate.toFixed(2) 
+            })}
+          </p>
+          {values.propertyValue > 0 && (
+            <div className="text-xs text-muted-foreground">
+              <CurrencyAmount amount={values.propertyValue} usdRate={usdRate} eurRate={eurRate} showMain={false} size="sm" />
+            </div>
+          )}
+          
           <Slider
             value={[values.propertyValue]}
-            onValueChange={([value]) => updateValue('propertyValue', value)}
+            onValueChange={([value]) => {
+              updateValue('propertyValue', value);
+              setPropertyUsd('');
+            }}
             min={100000}
             max={20000000}
             step={50000}
