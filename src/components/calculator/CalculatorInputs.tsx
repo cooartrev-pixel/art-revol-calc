@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -7,10 +8,12 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Home, Percent, Calendar, Building2, Flag, HelpCircle, Users, AlertTriangle, Info } from "lucide-react";
+import { Home, Percent, Calendar, Building2, Flag, HelpCircle, Users, AlertTriangle, Info, DollarSign } from "lucide-react";
 import type { MortgageInput } from "@/lib/mortgage-calculations";
 import { calculateDownPaymentAmount, formatCurrency, checkYeoselyaEligibility, getYeoselyaAreaLimits } from "@/lib/mortgage-calculations";
 import { useLanguage } from "@/lib/i18n";
+import { useCurrencyRates } from "@/hooks/useCurrencyRates";
+import { CurrencyAmount } from "./CurrencyAmount";
 import {
   HoverCard,
   HoverCardContent,
@@ -25,6 +28,8 @@ interface CalculatorInputsProps {
 
 export function CalculatorInputs({ values, onChange }: CalculatorInputsProps) {
   const { t, language } = useLanguage();
+  const { usd: usdRate, eur: eurRate, rateSource } = useCurrencyRates();
+  const [propertyUsd, setPropertyUsd] = useState<number | ''>('');
   
   const updateValue = <K extends keyof MortgageInput>(key: K, value: MortgageInput[K]) => {
     onChange({ ...values, [key]: value });
@@ -135,15 +140,53 @@ export function CalculatorInputs({ values, onChange }: CalculatorInputsProps) {
             <Input
               type="number"
               value={values.propertyValue || ''}
-              onChange={(e) => updateValue('propertyValue', Number(e.target.value))}
+              onChange={(e) => {
+                const val = Number(e.target.value);
+                updateValue('propertyValue', val);
+                setPropertyUsd('');
+              }}
               className="text-lg font-medium"
               placeholder="0"
             />
             <span className="text-muted-foreground whitespace-nowrap">{t('input.currency')}</span>
           </div>
+          
+          {/* USD input */}
+          <div className="flex items-center gap-2">
+            <DollarSign className="h-4 w-4 text-muted-foreground shrink-0" />
+            <Input
+              type="number"
+              value={propertyUsd}
+              onChange={(e) => {
+                const usd = Number(e.target.value);
+                setPropertyUsd(usd || '');
+                if (usd > 0) {
+                  updateValue('propertyValue', Math.round(usd * usdRate));
+                }
+              }}
+              className="h-9"
+              placeholder={t('input.propertyValueUsd')}
+            />
+            <span className="text-muted-foreground text-sm whitespace-nowrap">$</span>
+          </div>
+          <p className="text-[10px] text-muted-foreground -mt-2">
+            {t('input.propertyValueUsdHint', { 
+              source: rateSource === 'nbu' ? 'НБУ' : 'Універсалбанк', 
+              rate: usdRate.toFixed(2) 
+            })}
+          </p>
+          {values.propertyValue > 0 && (
+            <div className="text-xs text-muted-foreground">
+              <CurrencyAmount amount={values.propertyValue} usdRate={usdRate} eurRate={eurRate} showMain={false} size="sm" />
+            </div>
+          )}
+          
           <Slider
             value={[values.propertyValue]}
-            onValueChange={([value]) => updateValue('propertyValue', value)}
+            onValueChange={([value]) => {
+              updateValue('propertyValue', value);
+              setPropertyUsd('');
+            }}
             min={100000}
             max={20000000}
             step={50000}

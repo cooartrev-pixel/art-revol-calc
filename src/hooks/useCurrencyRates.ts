@@ -3,8 +3,11 @@ import { supabase } from "@/integrations/supabase/client";
 
 const SYNC_INTERVAL_MS = 4 * 60 * 60 * 1000;
 const CACHE_KEY = 'nbu_exchange_rates';
+const SETTINGS_KEY = 'currency_rate_source';
 const DEFAULT_USD_RATE = 41.5;
 const DEFAULT_EUR_RATE = 45.0;
+
+export type RateSource = 'nbu' | 'universalbank';
 
 export interface CurrencyRates {
   usd: number;
@@ -12,6 +15,10 @@ export interface CurrencyRates {
   date: string | null;
   syncing: boolean;
   fetchRates: (silent?: boolean) => Promise<void>;
+  rateSource: RateSource;
+  setRateSource: (source: RateSource) => void;
+  nbuUsd: number;
+  universalbankUsd: number | null;
 }
 
 interface CachedRates {
@@ -19,6 +26,8 @@ interface CachedRates {
   eur: number;
   fetchedAt: string;
   date: string;
+  nbuUsd: number;
+  universalbankUsd: number | null;
 }
 
 function getCachedRates(): CachedRates | null {
@@ -38,10 +47,27 @@ function setCachedRates(rates: CachedRates) {
   localStorage.setItem(CACHE_KEY, JSON.stringify(rates));
 }
 
-// Singleton state to share across components
-let globalRates = { usd: DEFAULT_USD_RATE, eur: DEFAULT_EUR_RATE, date: null as string | null };
+function getSavedSource(): RateSource {
+  return (localStorage.getItem(SETTINGS_KEY) as RateSource) || 'nbu';
+}
+
+// Singleton state
+let globalState = {
+  nbuUsd: DEFAULT_USD_RATE,
+  eur: DEFAULT_EUR_RATE,
+  universalbankUsd: null as number | null,
+  date: null as string | null,
+  rateSource: getSavedSource(),
+};
 let listeners: Set<() => void> = new Set();
 let initialized = false;
+
+function getActiveUsd(): number {
+  if (globalState.rateSource === 'universalbank' && globalState.universalbankUsd) {
+    return globalState.universalbankUsd;
+  }
+  return globalState.nbuUsd;
+}
 
 function notifyListeners() {
   listeners.forEach(fn => fn());
@@ -64,24 +90,32 @@ export function useCurrencyRates(): CurrencyRates {
       const { data, error } = await supabase.functions.invoke('fetch-exchange-rates');
       if (error) throw error;
       if (data?.success && data.rates?.USD) {
-        globalRates = {
-          usd: data.rates.USD.rate,
-          eur: data.rates.EUR?.rate || DEFAULT_EUR_RATE,
-          date: data.rates.USD.date,
-        };
+        globalState.nbuUsd = data.rates.USD.rate;
+        globalState.eur = data.rates.EUR?.rate || DEFAULT_EUR_RATE;
+        globalState.date = data.rates.USD.date;
+        globalState.universalbankUsd = data.universalbank?.USD?.sell || null;
+        
         setCachedRates({
-          usd: globalRates.usd,
-          eur: globalRates.eur,
+          usd: getActiveUsd(),
+          eur: globalState.eur,
+          nbuUsd: globalState.nbuUsd,
+          universalbankUsd: globalState.universalbankUsd,
           fetchedAt: new Date().toISOString(),
-          date: globalRates.date!,
+          date: globalState.date!,
         });
         notifyListeners();
       }
     } catch (err) {
-      console.error('Error fetching NBU rates:', err);
+      console.error('Error fetching rates:', err);
     } finally {
       setSyncing(false);
     }
+  }, []);
+
+  const setRateSource = useCallback((source: RateSource) => {
+    globalState.rateSource = source;
+    localStorage.setItem(SETTINGS_KEY, source);
+    notifyListeners();
   }, []);
 
   useEffect(() => {
@@ -89,7 +123,10 @@ export function useCurrencyRates(): CurrencyRates {
       initialized = true;
       const cached = getCachedRates();
       if (cached) {
-        globalRates = { usd: cached.usd, eur: cached.eur, date: cached.date };
+        globalState.nbuUsd = cached.nbuUsd || cached.usd;
+        globalState.eur = cached.eur;
+        globalState.date = cached.date;
+        globalState.universalbankUsd = cached.universalbankUsd || null;
         notifyListeners();
       } else {
         fetchRates(true);
@@ -106,11 +143,15 @@ export function useCurrencyRates(): CurrencyRates {
   }, [fetchRates]);
 
   return {
-    usd: globalRates.usd,
-    eur: globalRates.eur,
-    date: globalRates.date,
+    usd: getActiveUsd(),
+    eur: globalState.eur,
+    date: globalState.date,
     syncing,
     fetchRates,
+    rateSource: globalState.rateSource,
+    setRateSource,
+    nbuUsd: globalState.nbuUsd,
+    universalbankUsd: globalState.universalbankUsd,
   };
 }
 

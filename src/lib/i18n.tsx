@@ -15,6 +15,7 @@ const translations = {
     'header.admin': 'Адмін',
     'header.login': 'Вхід',
     'header.installApp': 'Встановити додаток',
+    'header.settings': 'Налаштування',
     'header.title': 'Іпотечний Калькулятор',
     'header.subtitle': 'Розрахуйте вигідні умови кредитування, включаючи державну програму "ЄОселя" зі ставками від 3% річних',
     
@@ -118,6 +119,27 @@ const translations = {
     'costs.ratesSyncError': 'Не вдалося отримати курси НБУ',
     'costs.lastSync': 'Оновлено',
     'costs.autoSync': 'Авто-оновлення кожні 4 год',
+
+    // Settings
+    'settings.title': 'Налаштування',
+    'settings.subtitle': 'Параметри розрахунків та курсів валют',
+    'settings.rateSource': 'Джерело курсу долара',
+    'settings.rateSourceDesc': 'Оберіть який курс використовувати для конвертації сум у долари',
+    'settings.nbu': 'НБУ (Національний банк)',
+    'settings.nbuDesc': 'Офіційний курс НБУ. Оновлюється щодня. Використовується для офіційних розрахунків.',
+    'settings.universalbank': 'Універсалбанк (продаж)',
+    'settings.universalbankDesc': 'Комерційний курс продажу долара від Універсалбанку. Ближчий до реального ринкового курсу.',
+    'settings.official': 'Офіційний',
+    'settings.commercial': 'Комерційний',
+    'settings.noData': 'Немає даних — натисніть "Оновити"',
+    'settings.lastUpdate': 'Останнє оновлення',
+    'settings.syncNow': 'Оновити курси',
+    'settings.activeRate': 'Активний курс',
+    'settings.rateNote': 'Обраний курс буде використовуватись у всіх розрахунках та конвертаціях додатку.',
+
+    // Property USD input
+    'input.propertyValueUsd': 'або введіть в $',
+    'input.propertyValueUsdHint': 'Автоконвертація за курсом {source}: {rate} ₴/$',
     
     // PDF additional costs
     'pdf.additionalCosts': 'Додаткові Витрати',
@@ -301,6 +323,7 @@ const translations = {
     'header.admin': 'Admin',
     'header.login': 'Login',
     'header.installApp': 'Install App',
+    'header.settings': 'Settings',
     'header.title': 'Mortgage Calculator',
     'header.subtitle': 'Calculate favorable loan terms, including the "YeOselya" government program with rates from 3% per annum',
     
@@ -404,6 +427,27 @@ const translations = {
     'costs.ratesSyncError': 'Failed to fetch NBU rates',
     'costs.lastSync': 'Updated',
     'costs.autoSync': 'Auto-update every 4 hours',
+
+    // Settings
+    'settings.title': 'Settings',
+    'settings.subtitle': 'Calculation parameters and currency rates',
+    'settings.rateSource': 'USD rate source',
+    'settings.rateSourceDesc': 'Choose which rate to use for dollar conversion',
+    'settings.nbu': 'NBU (National Bank)',
+    'settings.nbuDesc': 'Official NBU rate. Updated daily. Used for official calculations.',
+    'settings.universalbank': 'Universalbank (sell)',
+    'settings.universalbankDesc': 'Commercial USD sell rate from Universalbank. Closer to the actual market rate.',
+    'settings.official': 'Official',
+    'settings.commercial': 'Commercial',
+    'settings.noData': 'No data — click "Sync"',
+    'settings.lastUpdate': 'Last update',
+    'settings.syncNow': 'Sync rates',
+    'settings.activeRate': 'Active rate',
+    'settings.rateNote': 'The selected rate will be used in all calculations and conversions throughout the app.',
+
+    // Property USD input
+    'input.propertyValueUsd': 'or enter in $',
+    'input.propertyValueUsdHint': 'Auto-conversion at {source} rate: {rate} UAH/$',
     
     // PDF additional costs
     'pdf.additionalCosts': 'Additional Costs',

@@ -1,4 +1,4 @@
-import { Building, Phone, Mail, Shield, Download } from "lucide-react";
+import { Building, Phone, Mail, Shield, Download, Settings } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { LanguageToggle } from "@/components/LanguageToggle";
 import { Link } from "react-router-dom";
@@ -52,6 +52,20 @@ export function Header() {
                 <Link to="/auth">{t('header.login')}</Link>
               </Button>
             )}
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button variant="outline" size="icon" asChild className="h-9 w-9">
+                    <Link to="/settings">
+                      <Settings className="h-4 w-4" />
+                    </Link>
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>{t('header.settings')}</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
