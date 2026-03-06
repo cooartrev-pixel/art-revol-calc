@@ -12,6 +12,7 @@ import ComparePrograms from "./pages/ComparePrograms";
 import Auth from "./pages/Auth";
 import Admin from "./pages/Admin";
 import InstallPWA from "./pages/InstallPWA";
+import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 
 // App configuration
