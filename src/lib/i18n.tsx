@@ -119,6 +119,27 @@ const translations = {
     'costs.ratesSyncError': 'Не вдалося отримати курси НБУ',
     'costs.lastSync': 'Оновлено',
     'costs.autoSync': 'Авто-оновлення кожні 4 год',
+
+    // Settings
+    'settings.title': 'Налаштування',
+    'settings.subtitle': 'Параметри розрахунків та курсів валют',
+    'settings.rateSource': 'Джерело курсу долара',
+    'settings.rateSourceDesc': 'Оберіть який курс використовувати для конвертації сум у долари',
+    'settings.nbu': 'НБУ (Національний банк)',
+    'settings.nbuDesc': 'Офіційний курс НБУ. Оновлюється щодня. Використовується для офіційних розрахунків.',
+    'settings.universalbank': 'Універсалбанк (продаж)',
+    'settings.universalbankDesc': 'Комерційний курс продажу долара від Універсалбанку. Ближчий до реального ринкового курсу.',
+    'settings.official': 'Офіційний',
+    'settings.commercial': 'Комерційний',
+    'settings.noData': 'Немає даних — натисніть "Оновити"',
+    'settings.lastUpdate': 'Останнє оновлення',
+    'settings.syncNow': 'Оновити курси',
+    'settings.activeRate': 'Активний курс',
+    'settings.rateNote': 'Обраний курс буде використовуватись у всіх розрахунках та конвертаціях додатку.',
+
+    // Property USD input
+    'input.propertyValueUsd': 'або введіть в $',
+    'input.propertyValueUsdHint': 'Автоконвертація за курсом {source}: {rate} ₴/$',
     
     // PDF additional costs
     'pdf.additionalCosts': 'Додаткові Витрати',
