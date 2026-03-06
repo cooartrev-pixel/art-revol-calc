@@ -20,13 +20,6 @@ import {
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
 import { AdditionalCosts } from "./AdditionalCosts";
-import { useLanguage } from "@/lib/i18n";
-import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from "@/components/ui/hover-card";
-import { AdditionalCosts } from "./AdditionalCosts";
 
 interface CalculatorInputsProps {
   values: MortgageInput;
