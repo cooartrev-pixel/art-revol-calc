@@ -56,6 +56,20 @@ export function Header() {
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button variant="outline" size="icon" asChild className="h-9 w-9">
+                    <Link to="/settings">
+                      <Settings className="h-4 w-4" />
+                    </Link>
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>{t('header.settings')}</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button variant="outline" size="icon" asChild className="h-9 w-9">
                     <Link to="/install">
                       <Download className="h-4 w-4" />
                     </Link>
