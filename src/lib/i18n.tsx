@@ -15,6 +15,7 @@ const translations = {
     'header.admin': 'Адмін',
     'header.login': 'Вхід',
     'header.installApp': 'Встановити додаток',
+    'header.settings': 'Налаштування',
     'header.title': 'Іпотечний Калькулятор',
     'header.subtitle': 'Розрахуйте вигідні умови кредитування, включаючи державну програму "ЄОселя" зі ставками від 3% річних',
     
