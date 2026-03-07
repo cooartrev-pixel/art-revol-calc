@@ -30,6 +30,7 @@ export function CalculatorInputs({ values, onChange }: CalculatorInputsProps) {
   const { t, language } = useLanguage();
   const { usd: usdRate, eur: eurRate, rateSource } = useCurrencyRates();
   const [propertyUsd, setPropertyUsd] = useState<number | ''>('');
+  const [propertyEur, setPropertyEur] = useState<number | ''>('');
   
   const updateValue = <K extends keyof MortgageInput>(key: K, value: MortgageInput[K]) => {
     onChange({ ...values, [key]: value });
