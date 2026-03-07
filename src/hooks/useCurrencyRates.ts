@@ -58,8 +58,9 @@ function getSavedSource(): RateSource {
 // Singleton state
 let globalState = {
   nbuUsd: DEFAULT_USD_RATE,
-  eur: DEFAULT_EUR_RATE,
+  nbuEur: DEFAULT_EUR_RATE,
   universalbankUsd: null as number | null,
+  universalbankEur: null as number | null,
   date: null as string | null,
   rateSource: getSavedSource(),
 };
