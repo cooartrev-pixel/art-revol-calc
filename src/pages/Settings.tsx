@@ -11,7 +11,7 @@ import { useLanguage } from "@/lib/i18n";
 const Settings = () => {
   const { t } = useLanguage();
   const { 
-    usd, eur, nbuUsd, universalbankUsd, 
+    usd, eur, nbuUsd, nbuEur, universalbankUsd, universalbankEur,
     rateSource, setRateSource, 
     syncing, fetchRates, date 
   } = useCurrencyRates();
