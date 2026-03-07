@@ -137,9 +137,10 @@ const translations = {
     'settings.activeRate': 'Активний курс',
     'settings.rateNote': 'Обраний курс буде використовуватись у всіх розрахунках та конвертаціях додатку.',
 
-    // Property USD input
+    // Property currency inputs
     'input.propertyValueUsd': 'або введіть в $',
-    'input.propertyValueUsdHint': 'Автоконвертація за курсом {source}: {rate} ₴/$',
+    'input.propertyValueEur': 'або введіть в €',
+    'input.propertyValueCurrencyHint': 'Курс {source} (продаж): {usdRate} ₴/$ · {eurRate} ₴/€',
     
     // PDF additional costs
     'pdf.additionalCosts': 'Додаткові Витрати',
