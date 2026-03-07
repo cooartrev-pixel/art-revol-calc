@@ -211,6 +211,7 @@ export function CalculatorInputs({ values, onChange }: CalculatorInputsProps) {
             onValueChange={([value]) => {
               updateValue('propertyValue', value);
               setPropertyUsd('');
+              setPropertyEur('');
             }}
             min={100000}
             max={20000000}

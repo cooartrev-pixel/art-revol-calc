@@ -446,9 +446,10 @@ const translations = {
     'settings.activeRate': 'Active rate',
     'settings.rateNote': 'The selected rate will be used in all calculations and conversions throughout the app.',
 
-    // Property USD input
+    // Property currency inputs
     'input.propertyValueUsd': 'or enter in $',
-    'input.propertyValueUsdHint': 'Auto-conversion at {source} rate: {rate} UAH/$',
+    'input.propertyValueEur': 'or enter in €',
+    'input.propertyValueCurrencyHint': '{source} rate (sell): {usdRate} UAH/$ · {eurRate} UAH/€',
     
     // PDF additional costs
     'pdf.additionalCosts': 'Additional Costs',
