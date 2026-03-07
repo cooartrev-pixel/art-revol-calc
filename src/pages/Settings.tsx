@@ -105,7 +105,7 @@ const Settings = () => {
             <div className="p-3 bg-muted/30 rounded-lg">
               <p className="text-xs text-muted-foreground">
                 <strong>{t('settings.activeRate')}:</strong>{' '}
-                {rateSource === 'nbu' ? t('settings.nbu') : t('settings.universalbank')} — {fmtRate(usd)} ₴/$
+                {rateSource === 'nbu' ? t('settings.nbu') : t('settings.universalbank')} — {fmtRate(usd)} ₴/$ | {fmtRate(eur)} ₴/€
               </p>
               <p className="text-[10px] text-muted-foreground mt-1">{t('settings.rateNote')}</p>
             </div>

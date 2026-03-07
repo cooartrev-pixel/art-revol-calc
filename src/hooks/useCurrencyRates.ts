@@ -160,14 +160,16 @@ export function useCurrencyRates(): CurrencyRates {
 
   return {
     usd: getActiveUsd(),
-    eur: globalState.eur,
+    eur: getActiveEur(),
     date: globalState.date,
     syncing,
     fetchRates,
     rateSource: globalState.rateSource,
     setRateSource,
     nbuUsd: globalState.nbuUsd,
+    nbuEur: globalState.nbuEur,
     universalbankUsd: globalState.universalbankUsd,
+    universalbankEur: globalState.universalbankEur,
   };
 }
 

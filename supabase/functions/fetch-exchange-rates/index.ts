@@ -142,7 +142,7 @@ Deno.serve(async (req) => {
       JSON.stringify({
         success: true,
         rates,
-        universalbank: universalbankRates,
+        universalbank: Object.keys(universalbankRates).length > 0 ? universalbankRates : null,
         fetchedAt: new Date().toISOString(),
       }),
       {
