@@ -145,6 +145,7 @@ export function CalculatorInputs({ values, onChange }: CalculatorInputsProps) {
                 const val = Number(e.target.value);
                 updateValue('propertyValue', val);
                 setPropertyUsd('');
+                setPropertyEur('');
               }}
               className="text-lg font-medium"
               placeholder="0"
