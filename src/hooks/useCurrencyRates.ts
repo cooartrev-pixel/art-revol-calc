@@ -139,9 +139,10 @@ export function useCurrencyRates(): CurrencyRates {
       const cached = getCachedRates();
       if (cached) {
         globalState.nbuUsd = cached.nbuUsd || cached.usd;
-        globalState.eur = cached.eur;
+        globalState.nbuEur = cached.nbuEur || cached.eur;
         globalState.date = cached.date;
         globalState.universalbankUsd = cached.universalbankUsd || null;
+        globalState.universalbankEur = cached.universalbankEur || null;
         notifyListeners();
       } else {
         fetchRates(true);
