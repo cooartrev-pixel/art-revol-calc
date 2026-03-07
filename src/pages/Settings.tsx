@@ -11,7 +11,7 @@ import { useLanguage } from "@/lib/i18n";
 const Settings = () => {
   const { t } = useLanguage();
   const { 
-    usd, eur, nbuUsd, universalbankUsd, 
+    usd, eur, nbuUsd, nbuEur, universalbankUsd, universalbankEur,
     rateSource, setRateSource, 
     syncing, fetchRates, date 
   } = useCurrencyRates();
@@ -58,7 +58,7 @@ const Settings = () => {
                   <p className="text-sm text-muted-foreground mt-1">{t('settings.nbuDesc')}</p>
                   <div className="mt-2 flex items-center gap-3">
                     <span className="text-sm font-mono font-semibold">{fmtRate(nbuUsd)} ₴/$</span>
-                    <span className="text-sm font-mono text-muted-foreground">{fmtRate(eur)} ₴/€</span>
+                    <span className="text-sm font-mono text-muted-foreground">{fmtRate(nbuEur)} ₴/€</span>
                   </div>
                 </div>
               </div>
@@ -78,6 +78,9 @@ const Settings = () => {
                     ) : (
                       <span className="text-sm text-muted-foreground italic">{t('settings.noData')}</span>
                     )}
+                    {universalbankEur ? (
+                      <span className="text-sm font-mono text-muted-foreground">{fmtRate(universalbankEur)} ₴/€</span>
+                    ) : null}
                   </div>
                 </div>
               </div>
@@ -102,7 +105,7 @@ const Settings = () => {
             <div className="p-3 bg-muted/30 rounded-lg">
               <p className="text-xs text-muted-foreground">
                 <strong>{t('settings.activeRate')}:</strong>{' '}
-                {rateSource === 'nbu' ? t('settings.nbu') : t('settings.universalbank')} — {fmtRate(usd)} ₴/$
+                {rateSource === 'nbu' ? t('settings.nbu') : t('settings.universalbank')} — {fmtRate(usd)} ₴/$ | {fmtRate(eur)} ₴/€
               </p>
               <p className="text-[10px] text-muted-foreground mt-1">{t('settings.rateNote')}</p>
             </div>

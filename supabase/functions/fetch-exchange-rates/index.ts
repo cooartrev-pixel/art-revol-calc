@@ -33,7 +33,33 @@ async function fetchNbuRate(valcode: string): Promise<NbuRate | null> {
   }
 }
 
-async function fetchUniversalbankRate(): Promise<{ buy: number; sell: number } | null> {
+interface UniversalbankRates {
+  USD: { buy: number; sell: number } | null;
+  EUR: { buy: number; sell: number } | null;
+}
+
+function parseRateTableRow(html: string, currency: string): { buy: number; sell: number } | null {
+  // Match table rows: <td ...>USD</td> ... <td ...>43.50</td> ... <td ...>44.00</td>
+  // The Universalbank page has: currency | buy | sell | nbu in each row
+  // We need to match exactly "USD" or "EUR" (not "EUR/USD")
+  const rowPattern = new RegExp(
+    `<td[^>]*>\\s*${currency}\\s*</td>[\\s\\S]*?<td[^>]*>\\s*([\\d]+[.,][\\d]+)\\s*</td>[\\s\\S]*?<td[^>]*>\\s*([\\d]+[.,][\\d]+)\\s*</td>`,
+    'i'
+  )
+  const match = html.match(rowPattern)
+  if (match) {
+    const buy = parseFloat(match[1].replace(',', '.'))
+    const sell = parseFloat(match[2].replace(',', '.'))
+    if (buy > 0 && sell > 0) {
+      console.log(`Universalbank ${currency}: buy=${buy}, sell=${sell}`)
+      return { buy, sell }
+    }
+  }
+  console.error(`Could not parse Universalbank ${currency} rate`)
+  return null
+}
+
+async function fetchUniversalbankRates(): Promise<UniversalbankRates> {
   try {
     const response = await fetch('https://www.universalbank.com.ua/', {
       headers: {
@@ -44,64 +70,21 @@ async function fetchUniversalbankRate(): Promise<{ buy: number; sell: number } |
     })
     if (!response.ok) {
       console.error(`Universalbank fetch error: ${response.status}`)
-      return null
+      return { USD: null, EUR: null }
     }
     const html = await response.text()
-    
-    // Parse USD sell rate from the page
-    // The page typically has currency rates in a table/block
-    // Try multiple patterns to find USD rates
-    
-    // Pattern 1: Look for USD rate in structured data
-    const usdSellMatch = html.match(/USD[\s\S]*?(?:sell|продаж|Продаж)[^0-9]*?([\d]+[.,][\d]+)/i)
-      || html.match(/(?:sell|продаж|Продаж)[^0-9]*?([\d]+[.,][\d]+)[\s\S]*?USD/i)
-    
-    // Pattern 2: Look for currency table pattern - buy/sell pairs near USD
-    const usdBlockMatch = html.match(/USD[\s\S]{0,500}?([\d]{2}[.,][\d]{2,4})[\s\S]{0,100}?([\d]{2}[.,][\d]{2,4})/i)
-    
-    // Pattern 3: JSON data in script tags
-    const jsonMatch = html.match(/["']USD["'][\s\S]*?["']sell["']\s*:\s*["']?([\d]+[.,][\d]+)["']?/i)
-      || html.match(/["']sell["']\s*:\s*["']?([\d]+[.,][\d]+)["']?[\s\S]*?["']USD["']/i)
 
-    // Pattern 4: data attributes
-    const dataMatch = html.match(/data-currency=["']USD["'][\s\S]*?data-sell=["']([\d]+[.,][\d]+)["']/i)
-      || html.match(/data-sell=["']([\d]+[.,][\d]+)["'][\s\S]*?data-currency=["']USD["']/i)
+    // Extract just the first rate table (not conversion table)
+    const rateTableMatch = html.match(/<table[^>]*class="rate table[^"]*"[^>]*>[\s\S]*?<\/table>/)
+    const tableHtml = rateTableMatch ? rateTableMatch[0] : html
 
-    let buy: number | null = null
-    let sell: number | null = null
+    const usd = parseRateTableRow(tableHtml, 'USD')
+    const eur = parseRateTableRow(tableHtml, 'EUR')
 
-    if (jsonMatch) {
-      sell = parseFloat(jsonMatch[1].replace(',', '.'))
-    } else if (dataMatch) {
-      sell = parseFloat(dataMatch[1].replace(',', '.'))
-    } else if (usdSellMatch) {
-      sell = parseFloat(usdSellMatch[1].replace(',', '.'))
-    } else if (usdBlockMatch) {
-      buy = parseFloat(usdBlockMatch[1].replace(',', '.'))
-      sell = parseFloat(usdBlockMatch[2].replace(',', '.'))
-    }
-
-    // Fallback: try to find any two consecutive numbers near USD that look like exchange rates (38-50 range)
-    if (!sell) {
-      const allRates = [...html.matchAll(/USD[\s\S]{0,300}?(3\d[.,]\d{2,4}|4\d[.,]\d{2,4})/gi)]
-      if (allRates.length >= 2) {
-        buy = parseFloat(allRates[0][1].replace(',', '.'))
-        sell = parseFloat(allRates[1][1].replace(',', '.'))
-      } else if (allRates.length === 1) {
-        sell = parseFloat(allRates[0][1].replace(',', '.'))
-      }
-    }
-
-    if (sell && sell > 30 && sell < 60) {
-      console.log(`Universalbank USD sell rate: ${sell}`)
-      return { buy: buy || sell, sell }
-    }
-
-    console.error('Could not parse Universalbank USD rate from HTML')
-    return null
+    return { USD: usd, EUR: eur }
   } catch (error) {
-    console.error('Error fetching Universalbank rate:', error)
-    return null
+    console.error('Error fetching Universalbank rates:', error)
+    return { USD: null, EUR: null }
   }
 }
 
@@ -114,7 +97,7 @@ Deno.serve(async (req) => {
     const [usd, eur, universalbank] = await Promise.all([
       fetchNbuRate('USD'),
       fetchNbuRate('EUR'),
-      fetchUniversalbankRate(),
+      fetchUniversalbankRates(),
     ])
 
     const rates: Record<string, { rate: number; date: string; name: string }> = {}
@@ -126,15 +109,15 @@ Deno.serve(async (req) => {
       rates.EUR = { rate: eur.rate, date: eur.exchangedate, name: eur.txt }
     }
 
-    const universalbankRates: Record<string, { buy: number; sell: number }> | null = universalbank
-      ? { USD: universalbank }
-      : null
+    const universalbankRates: Record<string, { buy: number; sell: number }> = {}
+    if (universalbank.USD) universalbankRates.USD = universalbank.USD
+    if (universalbank.EUR) universalbankRates.EUR = universalbank.EUR
 
     return new Response(
       JSON.stringify({
         success: true,
         rates,
-        universalbank: universalbankRates,
+        universalbank: Object.keys(universalbankRates).length > 0 ? universalbankRates : null,
         fetchedAt: new Date().toISOString(),
       }),
       {

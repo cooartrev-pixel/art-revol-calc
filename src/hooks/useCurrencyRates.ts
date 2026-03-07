@@ -18,7 +18,9 @@ export interface CurrencyRates {
   rateSource: RateSource;
   setRateSource: (source: RateSource) => void;
   nbuUsd: number;
+  nbuEur: number;
   universalbankUsd: number | null;
+  universalbankEur: number | null;
 }
 
 interface CachedRates {
@@ -27,7 +29,9 @@ interface CachedRates {
   fetchedAt: string;
   date: string;
   nbuUsd: number;
+  nbuEur: number;
   universalbankUsd: number | null;
+  universalbankEur: number | null;
 }
 
 function getCachedRates(): CachedRates | null {
@@ -54,8 +58,9 @@ function getSavedSource(): RateSource {
 // Singleton state
 let globalState = {
   nbuUsd: DEFAULT_USD_RATE,
-  eur: DEFAULT_EUR_RATE,
+  nbuEur: DEFAULT_EUR_RATE,
   universalbankUsd: null as number | null,
+  universalbankEur: null as number | null,
   date: null as string | null,
   rateSource: getSavedSource(),
 };
@@ -67,6 +72,13 @@ function getActiveUsd(): number {
     return globalState.universalbankUsd;
   }
   return globalState.nbuUsd;
+}
+
+function getActiveEur(): number {
+  if (globalState.rateSource === 'universalbank' && globalState.universalbankEur) {
+    return globalState.universalbankEur;
+  }
+  return globalState.nbuEur;
 }
 
 function notifyListeners() {
@@ -91,15 +103,18 @@ export function useCurrencyRates(): CurrencyRates {
       if (error) throw error;
       if (data?.success && data.rates?.USD) {
         globalState.nbuUsd = data.rates.USD.rate;
-        globalState.eur = data.rates.EUR?.rate || DEFAULT_EUR_RATE;
+        globalState.nbuEur = data.rates.EUR?.rate || DEFAULT_EUR_RATE;
         globalState.date = data.rates.USD.date;
         globalState.universalbankUsd = data.universalbank?.USD?.sell || null;
+        globalState.universalbankEur = data.universalbank?.EUR?.sell || null;
         
         setCachedRates({
           usd: getActiveUsd(),
-          eur: globalState.eur,
+          eur: getActiveEur(),
           nbuUsd: globalState.nbuUsd,
+          nbuEur: globalState.nbuEur,
           universalbankUsd: globalState.universalbankUsd,
+          universalbankEur: globalState.universalbankEur,
           fetchedAt: new Date().toISOString(),
           date: globalState.date!,
         });
@@ -124,9 +139,10 @@ export function useCurrencyRates(): CurrencyRates {
       const cached = getCachedRates();
       if (cached) {
         globalState.nbuUsd = cached.nbuUsd || cached.usd;
-        globalState.eur = cached.eur;
+        globalState.nbuEur = cached.nbuEur || cached.eur;
         globalState.date = cached.date;
         globalState.universalbankUsd = cached.universalbankUsd || null;
+        globalState.universalbankEur = cached.universalbankEur || null;
         notifyListeners();
       } else {
         fetchRates(true);
@@ -144,14 +160,16 @@ export function useCurrencyRates(): CurrencyRates {
 
   return {
     usd: getActiveUsd(),
-    eur: globalState.eur,
+    eur: getActiveEur(),
     date: globalState.date,
     syncing,
     fetchRates,
     rateSource: globalState.rateSource,
     setRateSource,
     nbuUsd: globalState.nbuUsd,
+    nbuEur: globalState.nbuEur,
     universalbankUsd: globalState.universalbankUsd,
+    universalbankEur: globalState.universalbankEur,
   };
 }
 
