@@ -58,7 +58,7 @@ const Settings = () => {
                   <p className="text-sm text-muted-foreground mt-1">{t('settings.nbuDesc')}</p>
                   <div className="mt-2 flex items-center gap-3">
                     <span className="text-sm font-mono font-semibold">{fmtRate(nbuUsd)} ₴/$</span>
-                    <span className="text-sm font-mono text-muted-foreground">{fmtRate(eur)} ₴/€</span>
+                    <span className="text-sm font-mono text-muted-foreground">{fmtRate(nbuEur)} ₴/€</span>
                   </div>
                 </div>
               </div>
