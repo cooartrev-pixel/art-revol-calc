@@ -29,7 +29,9 @@ interface CachedRates {
   fetchedAt: string;
   date: string;
   nbuUsd: number;
+  nbuEur: number;
   universalbankUsd: number | null;
+  universalbankEur: number | null;
 }
 
 function getCachedRates(): CachedRates | null {
