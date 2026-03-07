@@ -18,7 +18,9 @@ export interface CurrencyRates {
   rateSource: RateSource;
   setRateSource: (source: RateSource) => void;
   nbuUsd: number;
+  nbuEur: number;
   universalbankUsd: number | null;
+  universalbankEur: number | null;
 }
 
 interface CachedRates {
