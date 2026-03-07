@@ -78,6 +78,9 @@ const Settings = () => {
                     ) : (
                       <span className="text-sm text-muted-foreground italic">{t('settings.noData')}</span>
                     )}
+                    {universalbankEur ? (
+                      <span className="text-sm font-mono text-muted-foreground">{fmtRate(universalbankEur)} ₴/€</span>
+                    ) : null}
                   </div>
                 </div>
               </div>
