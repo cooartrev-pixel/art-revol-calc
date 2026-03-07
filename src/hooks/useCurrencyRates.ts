@@ -103,15 +103,18 @@ export function useCurrencyRates(): CurrencyRates {
       if (error) throw error;
       if (data?.success && data.rates?.USD) {
         globalState.nbuUsd = data.rates.USD.rate;
-        globalState.eur = data.rates.EUR?.rate || DEFAULT_EUR_RATE;
+        globalState.nbuEur = data.rates.EUR?.rate || DEFAULT_EUR_RATE;
         globalState.date = data.rates.USD.date;
         globalState.universalbankUsd = data.universalbank?.USD?.sell || null;
+        globalState.universalbankEur = data.universalbank?.EUR?.sell || null;
         
         setCachedRates({
           usd: getActiveUsd(),
-          eur: globalState.eur,
+          eur: getActiveEur(),
           nbuUsd: globalState.nbuUsd,
+          nbuEur: globalState.nbuEur,
           universalbankUsd: globalState.universalbankUsd,
+          universalbankEur: globalState.universalbankEur,
           fetchedAt: new Date().toISOString(),
           date: globalState.date!,
         });
