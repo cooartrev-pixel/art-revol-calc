@@ -122,7 +122,7 @@ Deno.serve(async (req) => {
     const [usd, eur, universalbank] = await Promise.all([
       fetchNbuRate('USD'),
       fetchNbuRate('EUR'),
-      fetchUniversalbankRate(),
+      fetchUniversalbankRates(),
     ])
 
     const rates: Record<string, { rate: number; date: string; name: string }> = {}
@@ -134,9 +134,9 @@ Deno.serve(async (req) => {
       rates.EUR = { rate: eur.rate, date: eur.exchangedate, name: eur.txt }
     }
 
-    const universalbankRates: Record<string, { buy: number; sell: number }> | null = universalbank
-      ? { USD: universalbank }
-      : null
+    const universalbankRates: Record<string, { buy: number; sell: number }> = {}
+    if (universalbank.USD) universalbankRates.USD = universalbank.USD
+    if (universalbank.EUR) universalbankRates.EUR = universalbank.EUR
 
     return new Response(
       JSON.stringify({
