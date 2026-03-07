@@ -137,9 +137,10 @@ const translations = {
     'settings.activeRate': 'Активний курс',
     'settings.rateNote': 'Обраний курс буде використовуватись у всіх розрахунках та конвертаціях додатку.',
 
-    // Property USD input
+    // Property currency inputs
     'input.propertyValueUsd': 'або введіть в $',
-    'input.propertyValueUsdHint': 'Автоконвертація за курсом {source}: {rate} ₴/$',
+    'input.propertyValueEur': 'або введіть в €',
+    'input.propertyValueCurrencyHint': 'Курс {source} (продаж): {usdRate} ₴/$ · {eurRate} ₴/€',
     
     // PDF additional costs
     'pdf.additionalCosts': 'Додаткові Витрати',
@@ -445,9 +446,10 @@ const translations = {
     'settings.activeRate': 'Active rate',
     'settings.rateNote': 'The selected rate will be used in all calculations and conversions throughout the app.',
 
-    // Property USD input
+    // Property currency inputs
     'input.propertyValueUsd': 'or enter in $',
-    'input.propertyValueUsdHint': 'Auto-conversion at {source} rate: {rate} UAH/$',
+    'input.propertyValueEur': 'or enter in €',
+    'input.propertyValueCurrencyHint': '{source} rate (sell): {usdRate} UAH/$ · {eurRate} UAH/€',
     
     // PDF additional costs
     'pdf.additionalCosts': 'Additional Costs',
