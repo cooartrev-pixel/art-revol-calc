@@ -38,53 +38,24 @@ interface UniversalbankRates {
   EUR: { buy: number; sell: number } | null;
 }
 
-function parseCurrencyFromHtml(html: string, currency: string, minRate: number, maxRate: number): { buy: number; sell: number } | null {
-  // Pattern 1: JSON data in script tags
-  const jsonMatch = html.match(new RegExp(`["']${currency}["'][\\s\\S]*?["']sell["']\\s*:\\s*["']?([\\d]+[.,][\\d]+)["']?`, 'i'))
-    || html.match(new RegExp(`["']sell["']\\s*:\\s*["']?([\\d]+[.,][\\d]+)["']?[\\s\\S]*?["']${currency}["']`, 'i'))
-
-  // Pattern 2: data attributes
-  const dataMatch = html.match(new RegExp(`data-currency=["']${currency}["'][\\s\\S]*?data-sell=["']([\\d]+[.,][\\d]+)["']`, 'i'))
-    || html.match(new RegExp(`data-sell=["']([\\d]+[.,][\\d]+)["'][\\s\\S]*?data-currency=["']${currency}["']`, 'i'))
-
-  // Pattern 3: text patterns
-  const sellMatch = html.match(new RegExp(`${currency}[\\s\\S]*?(?:sell|продаж|Продаж)[^0-9]*?([\\d]+[.,][\\d]+)`, 'i'))
-    || html.match(new RegExp(`(?:sell|продаж|Продаж)[^0-9]*?([\\d]+[.,][\\d]+)[\\s\\S]*?${currency}`, 'i'))
-
-  // Pattern 4: block with two numbers (buy/sell)
-  const blockMatch = html.match(new RegExp(`${currency}[\\s\\S]{0,500}?([\\d]{2}[.,][\\d]{2,4})[\\s\\S]{0,100}?([\\d]{2}[.,][\\d]{2,4})`, 'i'))
-
-  let buy: number | null = null
-  let sell: number | null = null
-
-  if (jsonMatch) {
-    sell = parseFloat(jsonMatch[1].replace(',', '.'))
-  } else if (dataMatch) {
-    sell = parseFloat(dataMatch[1].replace(',', '.'))
-  } else if (sellMatch) {
-    sell = parseFloat(sellMatch[1].replace(',', '.'))
-  } else if (blockMatch) {
-    buy = parseFloat(blockMatch[1].replace(',', '.'))
-    sell = parseFloat(blockMatch[2].replace(',', '.'))
-  }
-
-  // Fallback: find consecutive numbers near currency code in expected range
-  if (!sell) {
-    const pattern = new RegExp(`${currency}[\\s\\S]{0,300}?(${Math.floor(minRate)}\\d[.,]\\d{2,4}|${Math.floor(minRate)+1}\\d[.,]\\d{2,4})`, 'gi')
-    const allRates = [...html.matchAll(pattern)]
-    if (allRates.length >= 2) {
-      buy = parseFloat(allRates[0][1].replace(',', '.'))
-      sell = parseFloat(allRates[1][1].replace(',', '.'))
-    } else if (allRates.length === 1) {
-      sell = parseFloat(allRates[0][1].replace(',', '.'))
+function parseRateTableRow(html: string, currency: string): { buy: number; sell: number } | null {
+  // Match table rows: <td ...>USD</td> ... <td ...>43.50</td> ... <td ...>44.00</td>
+  // The Universalbank page has: currency | buy | sell | nbu in each row
+  // We need to match exactly "USD" or "EUR" (not "EUR/USD")
+  const rowPattern = new RegExp(
+    `<td[^>]*>\\s*${currency}\\s*</td>[\\s\\S]*?<td[^>]*>\\s*([\\d]+[.,][\\d]+)\\s*</td>[\\s\\S]*?<td[^>]*>\\s*([\\d]+[.,][\\d]+)\\s*</td>`,
+    'i'
+  )
+  const match = html.match(rowPattern)
+  if (match) {
+    const buy = parseFloat(match[1].replace(',', '.'))
+    const sell = parseFloat(match[2].replace(',', '.'))
+    if (buy > 0 && sell > 0) {
+      console.log(`Universalbank ${currency}: buy=${buy}, sell=${sell}`)
+      return { buy, sell }
     }
   }
-
-  if (sell && sell > minRate && sell < maxRate) {
-    console.log(`Universalbank ${currency} sell rate: ${sell}`)
-    return { buy: buy || sell, sell }
-  }
-
+  console.error(`Could not parse Universalbank ${currency} rate`)
   return null
 }
 
@@ -103,8 +74,12 @@ async function fetchUniversalbankRates(): Promise<UniversalbankRates> {
     }
     const html = await response.text()
 
-    const usd = parseCurrencyFromHtml(html, 'USD', 30, 60)
-    const eur = parseCurrencyFromHtml(html, 'EUR', 35, 65)
+    // Extract just the first rate table (not conversion table)
+    const rateTableMatch = html.match(/<table[^>]*class="rate table[^"]*"[^>]*>[\s\S]*?<\/table>/)
+    const tableHtml = rateTableMatch ? rateTableMatch[0] : html
+
+    const usd = parseRateTableRow(tableHtml, 'USD')
+    const eur = parseRateTableRow(tableHtml, 'EUR')
 
     return { USD: usd, EUR: eur }
   } catch (error) {
