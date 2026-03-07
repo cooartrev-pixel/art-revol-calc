@@ -74,6 +74,13 @@ function getActiveUsd(): number {
   return globalState.nbuUsd;
 }
 
+function getActiveEur(): number {
+  if (globalState.rateSource === 'universalbank' && globalState.universalbankEur) {
+    return globalState.universalbankEur;
+  }
+  return globalState.nbuEur;
+}
+
 function notifyListeners() {
   listeners.forEach(fn => fn());
 }
