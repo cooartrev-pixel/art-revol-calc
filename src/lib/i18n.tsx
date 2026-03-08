@@ -448,6 +448,9 @@ const translations = {
     'settings.syncNow': 'Sync rates',
     'settings.activeRate': 'Active rate',
     'settings.rateNote': 'The selected rate will be used in all calculations and conversions throughout the app.',
+    'settings.installApp': 'Install App',
+    'settings.installAppDesc': 'Install the calculator on your device for quick access',
+    'settings.installAppBtn': 'Go to installation',
 
     // Property currency inputs
     'input.propertyValueUsd': 'or enter in $',
