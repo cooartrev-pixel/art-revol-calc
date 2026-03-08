@@ -9,11 +9,13 @@ import { CallbackWidget } from "@/components/widgets/CallbackWidget";
 import { LegislativeUpdates } from "@/components/LegislativeUpdates";
 import { InstructionGuide } from "@/components/InstructionGuide";
 import { Glossary } from "@/components/Glossary";
+import { PWAInstallBanner } from "@/components/PWAInstallBanner";
 import { programs } from "@/lib/programs-data";
 
 const Programs = () => {
   return (
     <div className="min-h-screen bg-background">
+      <PWAInstallBanner />
       <Header />
       
       <main className="container mx-auto px-4 py-8">
