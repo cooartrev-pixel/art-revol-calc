@@ -67,6 +67,7 @@ export function AmortizationTable({ schedule, isGovernmentProgram, loanTermYears
       </CardHeader>
       <CardContent>
         <ScrollArea className={isExpanded ? "h-[500px]" : ""}>
+          <div className="min-w-[640px]">
           <Table>
             <TableHeader>
               <TableRow>
