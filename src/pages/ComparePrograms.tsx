@@ -19,8 +19,6 @@ import {
 } from "lucide-react";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import { Header } from "@/components/calculator/Header";
-import { TelegramWidget } from "@/components/widgets/TelegramWidget";
-import { CallbackWidget } from "@/components/widgets/CallbackWidget";
 import { programs, type GovernmentProgram } from "@/lib/programs-data";
 import { formatCurrency } from "@/lib/mortgage-calculations";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
@@ -374,9 +372,6 @@ const ComparePrograms = () => {
         </footer>
       </main>
 
-      {/* Floating Widgets */}
-      <TelegramWidget botUsername="reviipotek_bot" />
-      <CallbackWidget />
     </div>
   );
 };

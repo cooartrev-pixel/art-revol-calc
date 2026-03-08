@@ -4,8 +4,6 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Calculator, ExternalLink, CheckCircle2, Scale } from "lucide-react";
 import { Header } from "@/components/calculator/Header";
-import { TelegramWidget } from "@/components/widgets/TelegramWidget";
-import { CallbackWidget } from "@/components/widgets/CallbackWidget";
 import { LegislativeUpdates } from "@/components/LegislativeUpdates";
 import { InstructionGuide } from "@/components/InstructionGuide";
 import { Glossary } from "@/components/Glossary";
@@ -172,9 +170,6 @@ const Programs = () => {
         </footer>
       </main>
 
-      {/* Floating Widgets */}
-      <TelegramWidget botUsername="reviipotek_bot" />
-      <CallbackWidget />
     </div>
   );
 };
