@@ -434,7 +434,7 @@ export async function exportToPDF(data: PDFExportData): Promise<void> {
       bank.rates.privileged === 3 ? t['banks.yes'] : t['banks.no'],
       bank.rates.standard === 7 ? t['banks.yes'] : t['banks.no'],
       `${bank.minDownPayment}%`,
-      formatCurrency(mp),
+      fmtAmount(mp),
     ];
   });
 
