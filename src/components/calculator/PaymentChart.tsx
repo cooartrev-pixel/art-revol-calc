@@ -89,18 +89,18 @@ export function PaymentChart({ result, schedule, isGovernmentProgram, loanTermYe
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="h-[300px]">
+          <div className="h-[260px] sm:h-[300px]">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
                   data={pieData}
                   cx="50%"
                   cy="50%"
-                  innerRadius={60}
-                  outerRadius={100}
+                  innerRadius={50}
+                  outerRadius={80}
                   paddingAngle={2}
                   dataKey="value"
-                  label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                  label={({ percent }) => `${(percent * 100).toFixed(0)}%`}
                   labelLine={false}
                 >
                   {pieData.map((entry, index) => (
@@ -137,9 +137,9 @@ export function PaymentChart({ result, schedule, isGovernmentProgram, loanTermYe
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="h-[300px]">
+            <div className="h-[260px] sm:h-[300px]">
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={yearlyData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                <BarChart data={yearlyData} margin={{ top: 20, right: 10, left: 0, bottom: 5 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                   <XAxis 
                     dataKey="year" 
@@ -216,7 +216,7 @@ export function PaymentChart({ result, schedule, isGovernmentProgram, loanTermYe
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
               <div className="text-center p-4 bg-muted/30 rounded-lg">
                 <p className="text-sm text-muted-foreground mb-1">Комерційний кредит (18%)</p>
                 <p className="text-xl font-semibold">

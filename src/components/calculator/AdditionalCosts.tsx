@@ -267,7 +267,7 @@ export function AdditionalCosts({ values, onChange }: AdditionalCostsProps) {
     <TooltipProvider delayDuration={200}>
       <Card>
         <CardHeader className="pb-3">
-          <CardTitle className="flex items-center justify-between">
+          <CardTitle className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
             <div className="flex items-center text-lg">
               <Receipt className="h-5 w-5 text-primary mr-2" />
               {t('costs.title')}
@@ -287,7 +287,7 @@ export function AdditionalCosts({ values, onChange }: AdditionalCostsProps) {
         <CardContent className="space-y-5">
           {/* Курс НБУ */}
           <div className="p-2 bg-muted/30 rounded-lg border space-y-1.5">
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               <DollarSign className="h-4 w-4 text-primary shrink-0" />
               <Label className="text-xs text-muted-foreground whitespace-nowrap">{t('costs.nbuRate')}:</Label>
               <Input
@@ -296,7 +296,7 @@ export function AdditionalCosts({ values, onChange }: AdditionalCostsProps) {
                 onChange={(e) => handleRateChange(Number(e.target.value))}
                 step={0.01}
                 min={1}
-                className="h-7 w-28 text-sm"
+                className="h-7 w-24 text-sm"
               />
               <span className="text-xs text-muted-foreground">₴/$</span>
               <Button
@@ -324,7 +324,7 @@ export function AdditionalCosts({ values, onChange }: AdditionalCostsProps) {
               <Landmark className="h-3.5 w-3.5" />
               {t('costs.stateCharges')}
             </Label>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {costField(t('costs.pensionFund'), 'costs.pensionFundTip', 'pensionFundEnabled', 'pensionFundPercent', { step: 0.1, min: 0, max: 10, placeholder: '1', suffix: '%', preview: pensionFund })}
               {costField(t('costs.duty'), 'costs.dutyTip', 'dutyEnabled', 'dutyPercent', { step: 0.1, min: 0, max: 10, placeholder: '1', suffix: '%', preview: duty })}
               {costField(t('costs.incomeTax'), 'costs.incomeTaxTip', 'incomeTaxEnabled', 'incomeTaxPercent', { step: 0.1, min: 0, max: 30, placeholder: '5', suffix: '%', preview: incomeTax })}
@@ -338,7 +338,7 @@ export function AdditionalCosts({ values, onChange }: AdditionalCostsProps) {
               <Briefcase className="h-3.5 w-3.5" />
               {t('costs.services')}
             </Label>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {currencyCostField(
                 t('costs.notary'), 'costs.notaryTip', 'notaryEnabled', 'notaryCost',
                 notaryCurrency, notaryUsd, handleNotaryUsdChange, toggleNotaryCurrency,
@@ -358,7 +358,7 @@ export function AdditionalCosts({ values, onChange }: AdditionalCostsProps) {
               <Shield className="h-3.5 w-3.5" />
               {t('costs.bankInsurance')}
             </Label>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className={!isEnabled('insuranceEnabled') ? 'opacity-50' : ''}>
                 <Label className="text-xs text-muted-foreground flex items-center gap-1">
                   <Checkbox

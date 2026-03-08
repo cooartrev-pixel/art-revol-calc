@@ -31,7 +31,7 @@ const Programs = () => {
         </div>
 
         {/* Programs Grid */}
-        <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6 mb-12">
+        <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6 mb-12">
           {programs.map((program, index) => (
             <Card 
               key={program.id}
@@ -117,7 +117,7 @@ const Programs = () => {
         </div>
 
         {/* Compare & Calculator CTAs */}
-        <div className="grid md:grid-cols-2 gap-6 animate-fade-in">
+        <div className="grid sm:grid-cols-2 gap-4 sm:gap-6 animate-fade-in">
           <Card className="bg-gradient-to-r from-secondary/20 to-secondary/5 border-secondary/30">
             <CardContent className="py-8">
               <div className="flex flex-col items-center text-center gap-4">

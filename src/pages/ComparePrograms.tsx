@@ -156,7 +156,7 @@ const ComparePrograms = () => {
             <CardTitle className="text-lg">Оберіть програми для порівняння</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
+            <div className="grid grid-cols-1 min-[480px]:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
               {programs.map((program) => (
                 <label
                   key={program.id}
@@ -339,7 +339,7 @@ const ComparePrograms = () => {
                 <Scale className="h-5 w-5 text-primary" />
                 Швидкий висновок
               </h3>
-              <div className="grid md:grid-cols-3 gap-4">
+              <div className="grid sm:grid-cols-3 gap-3 sm:gap-4">
                 <div className="p-4 bg-card rounded-lg">
                   <p className="text-sm text-muted-foreground mb-1">Найнижча ставка</p>
                   <p className="font-semibold">

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { ChevronDown, ChevronUp, Download, FileSpreadsheet, HelpCircle } from "lucide-react";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import type { AmortizationRow } from "@/lib/mortgage-calculations";
@@ -55,18 +55,19 @@ export function AmortizationTable({ schedule, isGovernmentProgram, loanTermYears
 
   return (
     <Card>
-      <CardHeader className="flex flex-row items-center justify-between">
+      <CardHeader className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
         <CardTitle className="text-lg flex items-center gap-2">
           <FileSpreadsheet className="h-5 w-5" />
           {t('schedule.title')}
         </CardTitle>
-        <Button variant="outline" size="sm" onClick={exportToCSV}>
+        <Button variant="outline" size="sm" onClick={exportToCSV} className="self-start sm:self-auto">
           <Download className="h-4 w-4 mr-2" />
           {t('schedule.export')}
         </Button>
       </CardHeader>
       <CardContent>
         <ScrollArea className={isExpanded ? "h-[500px]" : ""}>
+          <div className="min-w-[640px]">
           <Table>
             <TableHeader>
               <TableRow>
@@ -201,6 +202,8 @@ export function AmortizationTable({ schedule, isGovernmentProgram, loanTermYears
               })}
             </TableBody>
           </Table>
+          </div>
+          <ScrollBar orientation="horizontal" />
         </ScrollArea>
         
         {schedule.length > 12 && (

@@ -148,7 +148,7 @@ export function ResultsDisplay({ result, isGovernmentProgram, input, schedule, c
                     {t('results.monthlyPayment')}
                     <HelpCircle className="h-3.5 w-3.5 opacity-70" />
                   </p>
-                  <p className="text-4xl md:text-5xl font-bold tracking-tight">
+                  <p className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight break-all">
                     {formatCurrency(result.monthlyPayment)}
                   </p>
                   <p className="text-primary-foreground/60 text-sm mt-1">
@@ -192,7 +192,7 @@ export function ResultsDisplay({ result, isGovernmentProgram, input, schedule, c
         </HoverCard>
 
         {/* Деталі */}
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 min-[480px]:grid-cols-2 gap-3 sm:gap-4">
           <HoverCard openDelay={150} closeDelay={100}>
             <HoverCardTrigger asChild>
               <Card className="transition-all duration-300 hover:shadow-lg hover:scale-[1.02] hover:-translate-y-1 cursor-help">
@@ -206,7 +206,7 @@ export function ResultsDisplay({ result, isGovernmentProgram, input, schedule, c
                         {t('results.loanAmount')}
                         <HelpCircle className="h-3 w-3 opacity-50" />
                       </p>
-                      <p className="text-lg font-semibold">{formatCurrency(result.loanAmount)}</p>
+                      <p className="text-base sm:text-lg font-semibold break-all">{formatCurrency(result.loanAmount)}</p>
                       <CurrencyAmount amount={result.loanAmount} usdRate={usdRate} eurRate={eurRate} showMain={false} />
                     </div>
                   </div>
@@ -234,7 +234,7 @@ export function ResultsDisplay({ result, isGovernmentProgram, input, schedule, c
                         {t('results.overpayment')}
                         <HelpCircle className="h-3 w-3 opacity-50" />
                       </p>
-                      <p className="text-lg font-semibold">{formatCurrency(result.totalInterest)}</p>
+                      <p className="text-base sm:text-lg font-semibold break-all">{formatCurrency(result.totalInterest)}</p>
                       <CurrencyAmount amount={result.totalInterest} usdRate={usdRate} eurRate={eurRate} showMain={false} />
                     </div>
                   </div>
@@ -262,7 +262,7 @@ export function ResultsDisplay({ result, isGovernmentProgram, input, schedule, c
                         {t('results.totalSum')}
                         <HelpCircle className="h-3 w-3 opacity-50" />
                       </p>
-                      <p className="text-lg font-semibold">{formatCurrency(result.totalPayment)}</p>
+                      <p className="text-base sm:text-lg font-semibold break-all">{formatCurrency(result.totalPayment)}</p>
                       <CurrencyAmount amount={result.totalPayment} usdRate={usdRate} eurRate={eurRate} showMain={false} />
                     </div>
                   </div>
@@ -290,7 +290,7 @@ export function ResultsDisplay({ result, isGovernmentProgram, input, schedule, c
                         {t('results.effectiveRate')}
                         <HelpCircle className="h-3 w-3 opacity-50" />
                       </p>
-                      <p className="text-lg font-semibold">{formatPercent(result.effectiveRate)}</p>
+                      <p className="text-base sm:text-lg font-semibold">{formatPercent(result.effectiveRate)}</p>
                     </div>
                   </div>
                 </CardContent>
