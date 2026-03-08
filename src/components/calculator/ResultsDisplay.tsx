@@ -30,18 +30,18 @@ interface ResultsDisplayProps {
   chartsContainerRef?: React.RefObject<HTMLDivElement>;
 }
 
-export function ResultsDisplay({ result, isGovernmentProgram, input, schedule }: ResultsDisplayProps) {
+export function ResultsDisplay({ result, isGovernmentProgram, input, schedule, chartsContainerRef }: ResultsDisplayProps) {
   const { t, language } = useLanguage();
   const { usd: usdRate, eur: eurRate } = useCurrencyRates();
   
-  const handleExportPDF = () => {
+  const handleExportPDF = async (options: PDFExportOptions) => {
     const downPaymentAmount = calculateDownPaymentAmount(
       input.propertyValue,
       input.downPayment,
       input.downPaymentType
     );
     
-    exportToPDF({
+    await exportToPDF({
       propertyValue: input.propertyValue,
       downPayment: downPaymentAmount,
       loanAmount: result.loanAmount,
@@ -53,6 +53,7 @@ export function ResultsDisplay({ result, isGovernmentProgram, input, schedule }:
       result,
       schedule,
       language,
+      options,
     });
   };
 
