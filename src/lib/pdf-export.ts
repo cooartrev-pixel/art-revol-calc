@@ -35,10 +35,6 @@ interface PDFExportData {
   options?: PDFExportOptions;
   currencyRates?: { usd: number; eur: number; source: string };
 }
-  schedule: AmortizationRow[];
-  language?: Language;
-  options?: PDFExportOptions;
-}
 
 // Theme colors
 const THEMES = {
