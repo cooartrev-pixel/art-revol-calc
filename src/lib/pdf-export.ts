@@ -345,11 +345,11 @@ export async function exportToPDF(data: PDFExportData): Promise<void> {
   
   // Results details table
   const resultsData = [
-    [t['pdf.totalPayment'], formatCurrency(data.result.totalPayment)],
-    [t['pdf.totalInterest'], formatCurrency(data.result.totalInterest)],
+    [t['pdf.totalPayment'], fmtAmount(data.result.totalPayment)],
+    [t['pdf.totalInterest'], fmtAmount(data.result.totalInterest)],
     [t['pdf.effectiveRate'], formatPercent(data.result.effectiveRate)],
-    [t['pdf.oneTimeCommission'], formatCurrency(data.result.oneTimeCommissionAmount)],
-    [t['pdf.totalMonthlyCommissions'], formatCurrency(data.result.totalMonthlyCommissions)],
+    [t['pdf.oneTimeCommission'], fmtAmount(data.result.oneTimeCommissionAmount)],
+    [t['pdf.totalMonthlyCommissions'], fmtAmount(data.result.totalMonthlyCommissions)],
   ];
 
   autoTable(doc, {
