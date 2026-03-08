@@ -6,9 +6,8 @@ import { useAuth } from "@/hooks/useAuth";
 import { useLanguage } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
 
-
 export function Header() {
-  const { user, isAdmin } = useAuth();
+  const { user, isAdmin, loading } = useAuth();
   const { t } = useLanguage();
 
   return (
@@ -24,22 +23,31 @@ export function Header() {
               <p className="text-sm text-muted-foreground">{t('header.agency')}</p>
             </div>
           </Link>
-          <div className="flex flex-wrap items-center gap-4 text-sm">
-            <a 
-              href="tel:+380991234567" 
-              className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+
+          <div className="flex flex-wrap items-center gap-3 text-sm">
+            <Button variant="outline" size="sm" asChild className="gap-1.5 shrink-0">
+              <Link to="/settings" aria-label={t('header.settings')} title={t('header.settings')}>
+                <Settings className="h-4 w-4" />
+                <span>{t('header.settings')}</span>
+              </Link>
+            </Button>
+
+            <a
+              href="tel:+380991234567"
+              className="hidden sm:flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
             >
               <Phone className="h-4 w-4" />
               +380 99 123 45 67
             </a>
-            <a 
-              href="mailto:info@revolution.ua" 
-              className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+            <a
+              href="mailto:info@revolution.ua"
+              className="hidden sm:flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
             >
               <Mail className="h-4 w-4" />
               info@revolution.ua
             </a>
-            {isAdmin && (
+
+            {!loading && isAdmin && (
               <Button variant="outline" size="sm" asChild>
                 <Link to="/admin">
                   <Shield className="h-4 w-4 mr-2" />
@@ -47,17 +55,13 @@ export function Header() {
                 </Link>
               </Button>
             )}
-            {!user && (
+
+            {!loading && !user && (
               <Button variant="ghost" size="sm" asChild>
                 <Link to="/auth">{t('header.login')}</Link>
               </Button>
             )}
-            <Button variant="outline" size="sm" asChild className="gap-1.5">
-              <Link to="/settings" aria-label={t('header.settings')} title={t('header.settings')}>
-                <Settings className="h-4 w-4" />
-                <span className="hidden lg:inline">{t('header.settings')}</span>
-              </Link>
-            </Button>
+
             <LanguageToggle />
             <ThemeToggle />
           </div>
