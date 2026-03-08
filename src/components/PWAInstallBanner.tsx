@@ -43,6 +43,13 @@ export const PWAInstallBanner = () => {
     return () => window.removeEventListener("pwa-prompt-ready", onReady);
   }, []);
 
+  // Auto-hide after 7 seconds if no interaction
+  useEffect(() => {
+    if (!visible) return;
+    const timer = setTimeout(() => setVisible(false), 7000);
+    return () => clearTimeout(timer);
+  }, [visible]);
+
   const handleInstall = useCallback(async () => {
     if (!deferredPrompt) return;
     deferredPrompt.prompt();
