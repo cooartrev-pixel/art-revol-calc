@@ -510,11 +510,11 @@ export async function exportToPDF(data: PDFExportData): Promise<void> {
     
     // Footer text
     doc.setFont(PDF_FONT_NAME, 'normal');
-    doc.setFontSize(7);
+    doc.setFontSize(fontSize.small);
     doc.setTextColor(...theme.textMuted);
     doc.text(t['pdf.footer'], pageWidth / 2, pageHeight - 9, { align: "center" });
     
-    doc.setFontSize(7);
+    doc.setFontSize(fontSize.small);
     doc.text(`${t['pdf.page']} ${i} ${t['pdf.of']} ${totalPages}`, pageWidth - margin, pageHeight - 9, { align: "right" });
     
     // Small logo icon in footer
