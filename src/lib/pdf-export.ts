@@ -293,22 +293,22 @@ export async function exportToPDF(data: PDFExportData): Promise<void> {
   checkPage(55);
   
   // Results header
-  doc.setFontSize(11);
+  doc.setFontSize(fontSize.section);
   doc.setTextColor(...theme.primary);
   doc.text(t['pdf.results'], margin, y);
   y += 4;
   
   // Main monthly payment card
-  const cardHeight = 22;
+  const cardHeight = isCompact ? 18 : 22;
   doc.setFillColor(...theme.primary);
   doc.roundedRect(margin, y, contentWidth, cardHeight, 3, 3, 'F');
   
-  doc.setFontSize(9);
+  doc.setFontSize(fontSize.body);
   doc.setTextColor(255, 255, 255);
-  doc.text(t['pdf.monthlyPayment'], margin + 5, y + 7);
+  doc.text(t['pdf.monthlyPayment'], margin + 5, y + (isCompact ? 6 : 7));
   
-  doc.setFontSize(18);
-  doc.text(formatCurrency(data.result.monthlyPayment), margin + 5, y + 17);
+  doc.setFontSize(fontSize.big);
+  doc.text(formatCurrency(data.result.monthlyPayment), margin + 5, y + (isCompact ? 14 : 17));
   
   if (data.isGovernmentProgram && data.result.savingsVsCommercial > 0) {
     doc.setFontSize(8);
