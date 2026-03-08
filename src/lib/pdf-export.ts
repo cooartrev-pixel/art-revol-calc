@@ -7,10 +7,15 @@ import { getTranslations, Language } from "./i18n";
 import { loadRobotoFont } from "./pdf-font";
 import logoSvg from "@/assets/logo-revolution.svg";
 
+export type PDFPageFormat = 'a4' | 'letter';
+export type PDFDensity = 'standard' | 'compact';
+
 export interface PDFExportOptions {
   theme: 'light' | 'dark';
   includeCharts: boolean;
   chartElements?: HTMLElement[];
+  pageFormat?: PDFPageFormat;
+  density?: PDFDensity;
 }
 
 interface PDFExportData {
