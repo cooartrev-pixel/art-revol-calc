@@ -252,10 +252,10 @@ export async function exportToPDF(data: PDFExportData): Promise<void> {
   y = 45;
   
   // ===== INPUT PARAMETERS =====
-  doc.setFontSize(11);
+  doc.setFontSize(fontSize.section);
   doc.setTextColor(...theme.primary);
   doc.text(t['pdf.inputParams'], margin, y);
-  y += 5;
+  y += sectionGap - 1;
   
   const inputData = [
     [t['pdf.propertyValue'], formatCurrency(data.propertyValue)],
