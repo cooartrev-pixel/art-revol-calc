@@ -9,6 +9,7 @@ import logoSvg from "@/assets/logo-revolution.svg";
 
 export type PDFPageFormat = 'a4' | 'letter';
 export type PDFDensity = 'standard' | 'compact';
+export type PDFCurrency = 'uah' | 'usd' | 'eur';
 
 export interface PDFExportOptions {
   theme: 'light' | 'dark';
@@ -16,6 +17,7 @@ export interface PDFExportOptions {
   chartElements?: HTMLElement[];
   pageFormat?: PDFPageFormat;
   density?: PDFDensity;
+  currency?: PDFCurrency;
 }
 
 interface PDFExportData {
