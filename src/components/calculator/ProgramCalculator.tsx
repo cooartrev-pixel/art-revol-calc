@@ -298,9 +298,6 @@ const ProgramCalculatorContent = ({ program }: ProgramCalculatorProps) => {
         </footer>
       </main>
 
-      {/* Floating Widgets */}
-      <TelegramWidget botUsername="reviipotek_bot" />
-      <CallbackWidget />
     </div>
   );
 };

@@ -372,9 +372,6 @@ const ComparePrograms = () => {
         </footer>
       </main>
 
-      {/* Floating Widgets */}
-      <TelegramWidget botUsername="reviipotek_bot" />
-      <CallbackWidget />
     </div>
   );
 };
