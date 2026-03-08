@@ -304,6 +304,26 @@ export function AreaLimitCalculator() {
           </div>
         </div>
 
+        {/* Region selector */}
+        <div className="space-y-2">
+          <Label className="text-sm font-medium flex items-center gap-1.5">
+            <Building2 className="h-4 w-4 text-muted-foreground" />
+            Регіон (гранична вартість м²)
+          </Label>
+          <Select value={region} onValueChange={(v) => setRegion(v as YeoselyaRegion)}>
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {Object.entries(YEOSELYA_PRICE_PER_SQM).map(([key, { label, pricePerSqm }]) => (
+                <SelectItem key={key} value={key}>
+                  {label} — {pricePerSqm.toLocaleString('uk-UA')} грн/м²
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
         <Separator />
 
         {/* Result */}
@@ -321,6 +341,20 @@ export function AreaLimitCalculator() {
               </span>
             </div>
           )}
+
+          {/* Max property value */}
+          <div className="flex items-center justify-between pt-1 border-t border-primary/10">
+            <span className="text-sm font-medium text-foreground">Гранична вартість нерухомості:</span>
+            <span className="text-xl font-bold text-primary">
+              {formatCurrency(getYeoselyaMaxPropertyValue(result.maxArea, region))}
+            </span>
+          </div>
+          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+            <Info className="h-3.5 w-3.5 text-primary" />
+            <span>
+              {result.maxArea.toFixed(2)} м² × {YEOSELYA_PRICE_PER_SQM[region].pricePerSqm.toLocaleString('uk-UA')} грн/м² ({YEOSELYA_PRICE_PER_SQM[region].label})
+            </span>
+          </div>
 
           {/* Breakdown */}
           <div className="space-y-1.5 pt-1">
