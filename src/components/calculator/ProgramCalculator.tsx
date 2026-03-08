@@ -234,7 +234,7 @@ const ProgramCalculatorContent = ({ program }: ProgramCalculatorProps) => {
 
               {!isSubsidyProgram && (
                 <>
-                  <TabsContent value="charts" className="mt-6 animate-fade-in">
+                  <TabsContent value="charts" className="mt-6 animate-fade-in" ref={chartsRef}>
                     <PaymentChart 
                       result={result} 
                       schedule={schedule}
