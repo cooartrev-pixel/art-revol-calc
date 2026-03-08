@@ -46,24 +46,25 @@ export const PWAInstallBanner = () => {
 
   // Auto-hide after 7 seconds if no interaction
   useEffect(() => {
-    if (!visible) return;
-    const timer = setTimeout(() => setVisible(false), 7000);
+    if (!visible || hiding) return;
+    const timer = setTimeout(() => hide(), 7000);
     return () => clearTimeout(timer);
-  }, [visible]);
+  }, [visible, hiding]);
+
+  const hide = useCallback((persist = false) => {
+    setHiding(true);
+    if (persist) localStorage.setItem(DISMISSED_KEY, String(Date.now()));
+    setTimeout(() => setVisible(false), 300); // match animation duration
+  }, []);
 
   const handleInstall = useCallback(async () => {
     if (!deferredPrompt) return;
     deferredPrompt.prompt();
     const { outcome } = await deferredPrompt.userChoice;
-    if (outcome === "accepted") setVisible(false);
+    if (outcome === "accepted") { setVisible(false); setHiding(false); }
     (window as any).__pwaInstallPrompt = null;
     setDeferredPrompt(null);
   }, [deferredPrompt]);
-
-  const handleDismiss = () => {
-    setVisible(false);
-    localStorage.setItem(DISMISSED_KEY, String(Date.now()));
-  };
 
   if (!visible) return null;
 
