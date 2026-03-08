@@ -201,7 +201,7 @@ export function AreaLimitCalculator() {
       toast.success("Скопійовано в буфер обміну!");
       setTimeout(() => setCopied(false), 2000);
     });
-  }, [familySize, propertyType, propertyAge, result, userArea, recommendations]);
+  }, [familySize, propertyType, propertyAge, result, userArea, recommendations, region]);
 
   return (
     <Card className="border-primary/20">
