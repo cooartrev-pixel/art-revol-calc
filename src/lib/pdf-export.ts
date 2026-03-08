@@ -7,10 +7,15 @@ import { getTranslations, Language } from "./i18n";
 import { loadRobotoFont } from "./pdf-font";
 import logoSvg from "@/assets/logo-revolution.svg";
 
+export type PDFPageFormat = 'a4' | 'letter';
+export type PDFDensity = 'standard' | 'compact';
+
 export interface PDFExportOptions {
   theme: 'light' | 'dark';
   includeCharts: boolean;
   chartElements?: HTMLElement[];
+  pageFormat?: PDFPageFormat;
+  density?: PDFDensity;
 }
 
 interface PDFExportData {
@@ -144,19 +149,33 @@ async function captureCharts(elements: HTMLElement[], themeMode: 'light' | 'dark
 export async function exportToPDF(data: PDFExportData): Promise<void> {
   const lang = data.language || 'uk';
   const t = getTranslations(lang);
-  const opts = data.options || { theme: 'light', includeCharts: false };
+  const opts = data.options || { theme: 'light', includeCharts: false, pageFormat: 'a4', density: 'standard' };
   const theme = THEMES[opts.theme];
+  const isCompact = opts.density === 'compact';
+  const fontSize = {
+    title: isCompact ? 14 : 16,
+    section: isCompact ? 10 : 11,
+    body: isCompact ? 7 : 8,
+    table: isCompact ? 6 : 7,
+    tableBody: isCompact ? 5.5 : 6.5,
+    small: isCompact ? 6 : 7,
+    big: isCompact ? 15 : 18,
+  };
+  const cellPad = isCompact
+    ? { top: 1, bottom: 1, left: 2, right: 2 }
+    : { top: 1.5, bottom: 1.5, left: 3, right: 3 };
+  const sectionGap = isCompact ? 4 : 6;
   
   const doc = new jsPDF({
     orientation: 'portrait',
     unit: 'mm',
-    format: 'a4',
+    format: opts.pageFormat || 'a4',
     compress: true,
     putOnlyUsedFonts: true,
   });
   const pageWidth = doc.internal.pageSize.getWidth();
   const pageHeight = doc.internal.pageSize.getHeight();
-  const margin = 12;
+  const margin = isCompact ? 10 : 12;
   const contentWidth = pageWidth - margin * 2;
   
   // Load and register Roboto font for Cyrillic (Unicode-safe)
@@ -210,7 +229,7 @@ export async function exportToPDF(data: PDFExportData): Promise<void> {
   
   // Title
   doc.setFont(PDF_FONT_NAME, 'normal');
-  doc.setFontSize(16);
+  doc.setFontSize(fontSize.title);
   doc.setTextColor(...theme.primary);
   const titleX = logoDataUrl ? margin + 33 : margin;
   doc.text(t['pdf.title'], titleX, 16);
@@ -233,10 +252,10 @@ export async function exportToPDF(data: PDFExportData): Promise<void> {
   y = 45;
   
   // ===== INPUT PARAMETERS =====
-  doc.setFontSize(11);
+  doc.setFontSize(fontSize.section);
   doc.setTextColor(...theme.primary);
   doc.text(t['pdf.inputParams'], margin, y);
-  y += 5;
+  y += sectionGap - 1;
   
   const inputData = [
     [t['pdf.propertyValue'], formatCurrency(data.propertyValue)],
@@ -253,10 +272,10 @@ export async function exportToPDF(data: PDFExportData): Promise<void> {
     body: inputData,
     theme: "plain",
     styles: { 
-      fontSize: 8, 
-      cellPadding: { top: 1.5, bottom: 1.5, left: 3, right: 3 },
+      fontSize: fontSize.body, 
+      cellPadding: cellPad,
       textColor: theme.text,
-      font: 'Roboto',
+      font: PDF_FONT_NAME,
     },
     columnStyles: {
       0: { fontStyle: "bold", cellWidth: 55, textColor: theme.textMuted },
@@ -268,37 +287,37 @@ export async function exportToPDF(data: PDFExportData): Promise<void> {
       }
     },
   });
-  y = (doc as any).lastAutoTable.finalY + 6;
+  y = (doc as any).lastAutoTable.finalY + sectionGap;
   
   // ===== RESULTS - Key metrics in a highlighted box =====
   checkPage(55);
   
   // Results header
-  doc.setFontSize(11);
+  doc.setFontSize(fontSize.section);
   doc.setTextColor(...theme.primary);
   doc.text(t['pdf.results'], margin, y);
   y += 4;
   
   // Main monthly payment card
-  const cardHeight = 22;
+  const cardHeight = isCompact ? 18 : 22;
   doc.setFillColor(...theme.primary);
   doc.roundedRect(margin, y, contentWidth, cardHeight, 3, 3, 'F');
   
-  doc.setFontSize(9);
+  doc.setFontSize(fontSize.body);
   doc.setTextColor(255, 255, 255);
-  doc.text(t['pdf.monthlyPayment'], margin + 5, y + 7);
+  doc.text(t['pdf.monthlyPayment'], margin + 5, y + (isCompact ? 6 : 7));
   
-  doc.setFontSize(18);
-  doc.text(formatCurrency(data.result.monthlyPayment), margin + 5, y + 17);
+  doc.setFontSize(fontSize.big);
+  doc.text(formatCurrency(data.result.monthlyPayment), margin + 5, y + (isCompact ? 14 : 17));
   
   if (data.isGovernmentProgram && data.result.savingsVsCommercial > 0) {
-    doc.setFontSize(8);
+    doc.setFontSize(fontSize.small);
     doc.setTextColor(200, 255, 200);
     const savingsText = `${lang === 'uk' ? 'Економія' : 'Savings'}: ${formatCurrency(data.result.savingsVsCommercial)}`;
-    doc.text(savingsText, pageWidth - margin - 5, y + 17, { align: 'right' });
+    doc.text(savingsText, pageWidth - margin - 5, y + (isCompact ? 14 : 17), { align: 'right' });
   }
   
-  y += cardHeight + 4;
+  y += cardHeight + (isCompact ? 3 : 4);
   
   // Results details table
   const resultsData = [
@@ -314,10 +333,10 @@ export async function exportToPDF(data: PDFExportData): Promise<void> {
     body: resultsData,
     theme: "plain",
     styles: { 
-      fontSize: 8, 
-      cellPadding: { top: 1.5, bottom: 1.5, left: 3, right: 3 },
+      fontSize: fontSize.body, 
+      cellPadding: cellPad,
       textColor: theme.text,
-      font: 'Roboto',
+      font: PDF_FONT_NAME,
     },
     columnStyles: {
       0: { fontStyle: "bold", cellWidth: 70, textColor: theme.textMuted },
@@ -325,17 +344,17 @@ export async function exportToPDF(data: PDFExportData): Promise<void> {
     },
     alternateRowStyles: { fillColor: theme.tableBg },
   });
-  y = (doc as any).lastAutoTable.finalY + 6;
+  y = (doc as any).lastAutoTable.finalY + sectionGap;
   
   // ===== ADDITIONAL COSTS =====
   const costs = data.result.additionalCosts;
   if (costs && costs.totalAdditional > 0) {
     checkPage(45);
     
-    doc.setFontSize(11);
+    doc.setFontSize(fontSize.section);
     doc.setTextColor(...theme.primary);
     doc.text(t['pdf.additionalCosts'], margin, y);
-    y += 5;
+    y += sectionGap - 1;
 
     const costItems: string[][] = [];
     if (costs.pensionFund > 0) costItems.push([t['costs.pensionFund'], formatCurrency(costs.pensionFund)]);
@@ -354,10 +373,10 @@ export async function exportToPDF(data: PDFExportData): Promise<void> {
       body: costItems,
       theme: "plain",
       styles: { 
-        fontSize: 8, 
-        cellPadding: { top: 1.5, bottom: 1.5, left: 3, right: 3 },
+        fontSize: fontSize.body, 
+        cellPadding: cellPad,
         textColor: theme.text,
-        font: 'Roboto',
+        font: PDF_FONT_NAME,
       },
       columnStyles: {
         0: { fontStyle: "bold", cellWidth: 70, textColor: theme.textMuted },
@@ -371,16 +390,16 @@ export async function exportToPDF(data: PDFExportData): Promise<void> {
         }
       },
     });
-    y = (doc as any).lastAutoTable.finalY + 6;
+    y = (doc as any).lastAutoTable.finalY + sectionGap;
   }
   
   // ===== BANK COMPARISON =====
   checkPage(60);
   
-  doc.setFontSize(11);
+  doc.setFontSize(fontSize.section);
   doc.setTextColor(...theme.primary);
   doc.text(t['pdf.bankComparison'], margin, y);
-  y += 5;
+  y += sectionGap - 1;
 
   const bankHeaders = [t['banks.name'], t['banks.rate3'], t['banks.rate7'], t['banks.minDownPayment'], t['banks.monthlyPayment']];
   const bankData = banks.map((bank) => {
@@ -401,49 +420,51 @@ export async function exportToPDF(data: PDFExportData): Promise<void> {
     body: bankData,
     theme: "striped",
     styles: { 
-      fontSize: 7, 
-      cellPadding: { top: 1.5, bottom: 1.5, left: 2, right: 2 },
+      fontSize: fontSize.table, 
+      cellPadding: cellPad,
       textColor: theme.text,
-      font: 'Roboto',
+      font: PDF_FONT_NAME,
     },
     headStyles: { 
       fillColor: theme.headerBg, 
       textColor: theme.headerText,
-      fontSize: 7,
+      fontSize: fontSize.table,
       fontStyle: 'bold',
     },
     alternateRowStyles: { fillColor: theme.tableBg },
     bodyStyles: { fillColor: theme.tableAlt },
   });
-  y = (doc as any).lastAutoTable.finalY + 6;
+  y = (doc as any).lastAutoTable.finalY + sectionGap;
   
   // ===== CHARTS =====
   if (chartImages.length > 0) {
+    const chartH = isCompact ? 60 : 80;
     for (const imgData of chartImages) {
-      checkPage(85);
+      checkPage(chartH + 5);
       
-      // Chart container with border
       doc.setDrawColor(...theme.border);
       doc.setLineWidth(0.3);
-      doc.roundedRect(margin, y, contentWidth, 80, 2, 2, 'S');
+      doc.roundedRect(margin, y, contentWidth, chartH, 2, 2, 'S');
       
       try {
-        doc.addImage(imgData, 'PNG', margin + 2, y + 2, contentWidth - 4, 76);
+        doc.addImage(imgData, 'PNG', margin + 2, y + 2, contentWidth - 4, chartH - 4);
       } catch { /* skip */ }
-      y += 84;
+      y += chartH + (isCompact ? 3 : 4);
     }
   }
   
   // ===== AMORTIZATION SCHEDULE =====
   checkPage(40);
   
-  doc.setFontSize(11);
+  doc.setFontSize(fontSize.section);
   doc.setTextColor(...theme.primary);
   doc.text(t['pdf.scheduleTitle'], margin, y);
-  y += 5;
+  y += sectionGap - 1;
+
+  const scheduleMonths = isCompact ? 12 : 24;
 
   const scheduleHeaders = [t['schedule.month'], t['schedule.principal'], t['schedule.interest'], t['schedule.payment'], t['schedule.balance']];
-  const scheduleData = data.schedule.slice(0, 24).map((row) => [
+  const scheduleData = data.schedule.slice(0, scheduleMonths).map((row) => [
     row.month.toString(),
     formatCurrency(row.principalPayment),
     formatCurrency(row.interestPayment),
@@ -457,15 +478,15 @@ export async function exportToPDF(data: PDFExportData): Promise<void> {
     body: scheduleData,
     theme: "striped",
     styles: { 
-      fontSize: 6.5, 
-      cellPadding: { top: 1, bottom: 1, left: 2, right: 2 },
+      fontSize: fontSize.tableBody, 
+      cellPadding: isCompact ? { top: 0.7, bottom: 0.7, left: 1.5, right: 1.5 } : { top: 1, bottom: 1, left: 2, right: 2 },
       textColor: theme.text,
-      font: 'Roboto',
+      font: PDF_FONT_NAME,
     },
     headStyles: { 
       fillColor: theme.headerBg, 
       textColor: theme.headerText,
-      fontSize: 7,
+      fontSize: fontSize.table,
       fontStyle: 'bold',
     },
     alternateRowStyles: { fillColor: theme.tableBg },
@@ -489,11 +510,11 @@ export async function exportToPDF(data: PDFExportData): Promise<void> {
     
     // Footer text
     doc.setFont(PDF_FONT_NAME, 'normal');
-    doc.setFontSize(7);
+    doc.setFontSize(fontSize.small);
     doc.setTextColor(...theme.textMuted);
     doc.text(t['pdf.footer'], pageWidth / 2, pageHeight - 9, { align: "center" });
     
-    doc.setFontSize(7);
+    doc.setFontSize(fontSize.small);
     doc.text(`${t['pdf.page']} ${i} ${t['pdf.of']} ${totalPages}`, pageWidth - margin, pageHeight - 9, { align: "right" });
     
     // Small logo icon in footer
