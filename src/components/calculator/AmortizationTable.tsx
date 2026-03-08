@@ -55,12 +55,12 @@ export function AmortizationTable({ schedule, isGovernmentProgram, loanTermYears
 
   return (
     <Card>
-      <CardHeader className="flex flex-row items-center justify-between">
+      <CardHeader className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
         <CardTitle className="text-lg flex items-center gap-2">
           <FileSpreadsheet className="h-5 w-5" />
           {t('schedule.title')}
         </CardTitle>
-        <Button variant="outline" size="sm" onClick={exportToCSV}>
+        <Button variant="outline" size="sm" onClick={exportToCSV} className="self-start sm:self-auto">
           <Download className="h-4 w-4 mr-2" />
           {t('schedule.export')}
         </Button>
