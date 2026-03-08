@@ -159,18 +159,10 @@ export function ResultsDisplay({ result, isGovernmentProgram, input, schedule, c
                   )}
                 </div>
                 <div className="mt-4 flex justify-center">
-                  <Button 
-                    variant="secondary" 
-                    size="sm" 
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleExportPDF();
-                    }}
-                    className="gap-2"
-                  >
-                    <FileDown className="h-4 w-4" />
-                    {t('results.exportPDF')}
-                  </Button>
+                  <PDFExportDialog 
+                    onExport={handleExportPDF}
+                    chartsContainerRef={chartsContainerRef}
+                  />
                 </div>
               </CardContent>
             </Card>
