@@ -332,7 +332,7 @@ export async function exportToPDF(data: PDFExportData): Promise<void> {
   doc.text(t['pdf.monthlyPayment'], margin + 5, y + (isCompact ? 6 : 7));
   
   doc.setFontSize(fontSize.big);
-  doc.text(formatCurrency(data.result.monthlyPayment), margin + 5, y + (isCompact ? 14 : 17));
+  doc.text(fmtAmount(data.result.monthlyPayment), margin + 5, y + (isCompact ? 14 : 17));
   
   if (data.isGovernmentProgram && data.result.savingsVsCommercial > 0) {
     doc.setFontSize(fontSize.small);
