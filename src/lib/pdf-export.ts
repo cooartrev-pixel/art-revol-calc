@@ -420,21 +420,21 @@ export async function exportToPDF(data: PDFExportData): Promise<void> {
     body: bankData,
     theme: "striped",
     styles: { 
-      fontSize: 7, 
-      cellPadding: { top: 1.5, bottom: 1.5, left: 2, right: 2 },
+      fontSize: fontSize.table, 
+      cellPadding: cellPad,
       textColor: theme.text,
-      font: 'Roboto',
+      font: PDF_FONT_NAME,
     },
     headStyles: { 
       fillColor: theme.headerBg, 
       textColor: theme.headerText,
-      fontSize: 7,
+      fontSize: fontSize.table,
       fontStyle: 'bold',
     },
     alternateRowStyles: { fillColor: theme.tableBg },
     bodyStyles: { fillColor: theme.tableAlt },
   });
-  y = (doc as any).lastAutoTable.finalY + 6;
+  y = (doc as any).lastAutoTable.finalY + sectionGap;
   
   // ===== CHARTS =====
   if (chartImages.length > 0) {
