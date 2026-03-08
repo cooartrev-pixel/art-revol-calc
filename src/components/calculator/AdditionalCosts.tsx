@@ -358,7 +358,7 @@ export function AdditionalCosts({ values, onChange }: AdditionalCostsProps) {
               <Shield className="h-3.5 w-3.5" />
               {t('costs.bankInsurance')}
             </Label>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className={!isEnabled('insuranceEnabled') ? 'opacity-50' : ''}>
                 <Label className="text-xs text-muted-foreground flex items-center gap-1">
                   <Checkbox
