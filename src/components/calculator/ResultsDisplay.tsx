@@ -5,7 +5,7 @@ import { TrendingUp, TrendingDown, Wallet, PiggyBank, Calculator, Percent, FileD
 import { useState } from "react";
 import type { MortgageResult, MortgageInput, AmortizationRow } from "@/lib/mortgage-calculations";
 import { formatCurrency, formatPercent, calculateDownPaymentAmount } from "@/lib/mortgage-calculations";
-import { exportToPDF, PDFExportOptions } from "@/lib/pdf-export";
+import type { PDFExportOptions } from "@/lib/pdf-export";
 import { useLanguage } from "@/lib/i18n";
 import {
   Tooltip,
@@ -35,6 +35,8 @@ export function ResultsDisplay({ result, isGovernmentProgram, input, schedule, c
   const { usd: usdRate, eur: eurRate } = useCurrencyRates();
   
   const handleExportPDF = async (options: PDFExportOptions) => {
+    const { exportToPDF } = await import("@/lib/pdf-export");
+
     const downPaymentAmount = calculateDownPaymentAmount(
       input.propertyValue,
       input.downPayment,

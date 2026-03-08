@@ -64,6 +64,25 @@ const THEMES = {
   },
 };
 
+const PDF_FONT_FILE = 'Roboto-Regular.ttf';
+const PDF_FONT_NAME = 'Roboto';
+
+async function registerUnicodeFont(doc: jsPDF): Promise<void> {
+  const fontBase64 = await loadRobotoFont();
+
+  const docWithVFS = doc as jsPDF & {
+    getFileFromVFS?: (fileName: string) => string | undefined;
+  };
+
+  if (!docWithVFS.getFileFromVFS?.(PDF_FONT_FILE)) {
+    doc.addFileToVFS(PDF_FONT_FILE, fontBase64);
+  }
+
+  doc.addFont(PDF_FONT_FILE, PDF_FONT_NAME, 'normal', 'Identity-H');
+  doc.addFont(PDF_FONT_FILE, PDF_FONT_NAME, 'bold', 'Identity-H');
+  doc.setFont(PDF_FONT_NAME, 'normal');
+}
+
 function calculateBankMonthlyPayment(loanAmount: number, loanTermYears: number, rate: number): number {
   const monthlyRate = rate / 100 / 12;
   const totalMonths = loanTermYears * 12;
@@ -102,15 +121,17 @@ async function loadLogoAsDataUrl(): Promise<string | null> {
   }
 }
 
-async function captureCharts(elements: HTMLElement[]): Promise<string[]> {
+async function captureCharts(elements: HTMLElement[], themeMode: 'light' | 'dark'): Promise<string[]> {
   const images: string[] = [];
+  const chartBackground = themeMode === 'dark' ? 'rgb(25, 25, 25)' : 'rgb(255, 255, 255)';
+
   for (const el of elements) {
     try {
       const canvas = await html2canvas(el, {
-        scale: 2,
+        scale: Math.max(2, window.devicePixelRatio || 1),
         useCORS: true,
         logging: false,
-        backgroundColor: null,
+        backgroundColor: chartBackground,
       });
       images.push(canvas.toDataURL('image/png'));
     } catch {
@@ -126,18 +147,21 @@ export async function exportToPDF(data: PDFExportData): Promise<void> {
   const opts = data.options || { theme: 'light', includeCharts: false };
   const theme = THEMES[opts.theme];
   
-  const doc = new jsPDF();
+  const doc = new jsPDF({
+    orientation: 'portrait',
+    unit: 'mm',
+    format: 'a4',
+    compress: true,
+    putOnlyUsedFonts: true,
+  });
   const pageWidth = doc.internal.pageSize.getWidth();
   const pageHeight = doc.internal.pageSize.getHeight();
   const margin = 12;
   const contentWidth = pageWidth - margin * 2;
   
-  // Load and register Roboto font for Cyrillic
+  // Load and register Roboto font for Cyrillic (Unicode-safe)
   try {
-    const fontBase64 = await loadRobotoFont();
-    doc.addFileToVFS('Roboto-Regular.ttf', fontBase64);
-    doc.addFont('Roboto-Regular.ttf', 'Roboto', 'normal');
-    doc.setFont('Roboto');
+    await registerUnicodeFont(doc);
   } catch (e) {
     console.warn('Failed to load Roboto font, using default', e);
   }
@@ -148,7 +172,7 @@ export async function exportToPDF(data: PDFExportData): Promise<void> {
   // Capture charts if requested
   let chartImages: string[] = [];
   if (opts.includeCharts && opts.chartElements?.length) {
-    chartImages = await captureCharts(opts.chartElements);
+    chartImages = await captureCharts(opts.chartElements, opts.theme);
   }
   
   let y = margin;
@@ -185,7 +209,7 @@ export async function exportToPDF(data: PDFExportData): Promise<void> {
   }
   
   // Title
-  doc.setFont('Roboto', 'normal');
+  doc.setFont(PDF_FONT_NAME, 'normal');
   doc.setFontSize(16);
   doc.setTextColor(...theme.primary);
   const titleX = logoDataUrl ? margin + 33 : margin;
@@ -464,7 +488,7 @@ export async function exportToPDF(data: PDFExportData): Promise<void> {
     doc.line(margin, pageHeight - 14, pageWidth - margin, pageHeight - 14);
     
     // Footer text
-    doc.setFont('Roboto', 'normal');
+    doc.setFont(PDF_FONT_NAME, 'normal');
     doc.setFontSize(7);
     doc.setTextColor(...theme.textMuted);
     doc.text(t['pdf.footer'], pageWidth / 2, pageHeight - 9, { align: "center" });
