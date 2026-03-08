@@ -121,15 +121,17 @@ async function loadLogoAsDataUrl(): Promise<string | null> {
   }
 }
 
-async function captureCharts(elements: HTMLElement[]): Promise<string[]> {
+async function captureCharts(elements: HTMLElement[], themeMode: 'light' | 'dark'): Promise<string[]> {
   const images: string[] = [];
+  const chartBackground = themeMode === 'dark' ? 'rgb(25, 25, 25)' : 'rgb(255, 255, 255)';
+
   for (const el of elements) {
     try {
       const canvas = await html2canvas(el, {
-        scale: 2,
+        scale: Math.max(2, window.devicePixelRatio || 1),
         useCORS: true,
         logging: false,
-        backgroundColor: null,
+        backgroundColor: chartBackground,
       });
       images.push(canvas.toDataURL('image/png'));
     } catch {
