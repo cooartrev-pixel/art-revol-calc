@@ -15,6 +15,7 @@ export const PWAInstallBanner = () => {
   const { language } = useLanguage();
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [visible, setVisible] = useState(false);
+  const [hiding, setHiding] = useState(false);
 
   useEffect(() => {
     // Don't show if already installed or dismissed recently
@@ -45,24 +46,25 @@ export const PWAInstallBanner = () => {
 
   // Auto-hide after 7 seconds if no interaction
   useEffect(() => {
-    if (!visible) return;
-    const timer = setTimeout(() => setVisible(false), 7000);
+    if (!visible || hiding) return;
+    const timer = setTimeout(() => hide(), 7000);
     return () => clearTimeout(timer);
-  }, [visible]);
+  }, [visible, hiding]);
+
+  const hide = useCallback((persist = false) => {
+    setHiding(true);
+    if (persist) localStorage.setItem(DISMISSED_KEY, String(Date.now()));
+    setTimeout(() => setVisible(false), 300); // match animation duration
+  }, []);
 
   const handleInstall = useCallback(async () => {
     if (!deferredPrompt) return;
     deferredPrompt.prompt();
     const { outcome } = await deferredPrompt.userChoice;
-    if (outcome === "accepted") setVisible(false);
+    if (outcome === "accepted") { setVisible(false); setHiding(false); }
     (window as any).__pwaInstallPrompt = null;
     setDeferredPrompt(null);
   }, [deferredPrompt]);
-
-  const handleDismiss = () => {
-    setVisible(false);
-    localStorage.setItem(DISMISSED_KEY, String(Date.now()));
-  };
 
   if (!visible) return null;
 
@@ -71,7 +73,7 @@ export const PWAInstallBanner = () => {
     : { cta: "Install", hint: "Add to home screen for quick access" };
 
   return (
-    <div className="fixed bottom-4 left-4 right-4 z-50 md:left-auto md:right-4 md:max-w-sm animate-slide-up">
+    <div className={`fixed bottom-4 left-4 right-4 z-50 md:left-auto md:right-4 md:max-w-sm ${hiding ? 'animate-slide-down' : 'animate-slide-up'}`}>
       <div className="flex items-center gap-3 rounded-xl border bg-card p-3 shadow-lg">
         <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
           <Download className="w-5 h-5 text-primary" />
@@ -89,7 +91,7 @@ export const PWAInstallBanner = () => {
               <Link to="/install">{text.cta}</Link>
             </Button>
           )}
-          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={handleDismiss}>
+          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => hide(true)}>
             <X className="h-4 w-4" />
           </Button>
         </div>
