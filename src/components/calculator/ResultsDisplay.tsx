@@ -192,7 +192,7 @@ export function ResultsDisplay({ result, isGovernmentProgram, input, schedule, c
         </HoverCard>
 
         {/* Деталі */}
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 xs:grid-cols-2 gap-3 sm:gap-4">
           <HoverCard openDelay={150} closeDelay={100}>
             <HoverCardTrigger asChild>
               <Card className="transition-all duration-300 hover:shadow-lg hover:scale-[1.02] hover:-translate-y-1 cursor-help">
