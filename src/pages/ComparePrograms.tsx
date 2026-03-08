@@ -156,7 +156,7 @@ const ComparePrograms = () => {
             <CardTitle className="text-lg">Оберіть програми для порівняння</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
+            <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
               {programs.map((program) => (
                 <label
                   key={program.id}
