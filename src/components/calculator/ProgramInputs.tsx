@@ -24,6 +24,7 @@ interface ProgramInputsProps {
 }
 
 export function ProgramInputs({ values, onChange, program }: ProgramInputsProps) {
+  const { usd: usdRate, eur: eurRate } = useCurrencyRates();
   const updateValue = <K extends keyof MortgageInput>(key: K, value: MortgageInput[K]) => {
     onChange({ ...values, [key]: value });
   };
