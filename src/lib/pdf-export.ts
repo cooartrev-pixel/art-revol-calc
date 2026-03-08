@@ -260,6 +260,14 @@ export async function exportToPDF(data: PDFExportData): Promise<void> {
   doc.setFontSize(8);
   doc.text(`${t['pdf.date']}: ${new Date().toLocaleDateString(dateLocale)}`, titleX, 28);
   
+  // Currency info
+  if (currency !== 'uah') {
+    doc.setFontSize(7);
+    doc.setTextColor(...theme.accent);
+    const currLabel = currency === 'usd' ? `USD (1$ = ${rates.usd.toFixed(2)} ₴)` : `EUR (1€ = ${rates.eur.toFixed(2)} ₴)`;
+    doc.text(`${lang === 'uk' ? 'Валюта' : 'Currency'}: ${currLabel} — ${rates.source}`, titleX, 33);
+  }
+  
   // Phone/contact on right
   doc.setFontSize(8);
   doc.setTextColor(...theme.textMuted);
