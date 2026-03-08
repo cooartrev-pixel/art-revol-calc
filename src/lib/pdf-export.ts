@@ -311,10 +311,10 @@ export async function exportToPDF(data: PDFExportData): Promise<void> {
   doc.text(formatCurrency(data.result.monthlyPayment), margin + 5, y + (isCompact ? 14 : 17));
   
   if (data.isGovernmentProgram && data.result.savingsVsCommercial > 0) {
-    doc.setFontSize(8);
+    doc.setFontSize(fontSize.small);
     doc.setTextColor(200, 255, 200);
     const savingsText = `${lang === 'uk' ? 'Економія' : 'Savings'}: ${formatCurrency(data.result.savingsVsCommercial)}`;
-    doc.text(savingsText, pageWidth - margin - 5, y + 17, { align: 'right' });
+    doc.text(savingsText, pageWidth - margin - 5, y + (isCompact ? 14 : 17), { align: 'right' });
   }
   
   y += cardHeight + 4;
