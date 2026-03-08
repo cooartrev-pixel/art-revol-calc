@@ -58,18 +58,6 @@ export function Header() {
                 <span className="hidden lg:inline">{t('header.settings')}</span>
               </Link>
             </Button>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button variant="outline" size="icon" asChild className="h-9 w-9">
-                  <Link to="/install">
-                    <Download className="h-4 w-4" />
-                  </Link>
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>{t('header.installApp')}</p>
-              </TooltipContent>
-            </Tooltip>
             <LanguageToggle />
             <ThemeToggle />
           </div>
