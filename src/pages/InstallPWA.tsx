@@ -1,9 +1,10 @@
 import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Download, Smartphone, Check, ArrowLeft, Share, MoreVertical, Monitor, Globe } from "lucide-react";
+import { Download, Smartphone, Check, ArrowLeft, Share, MoreVertical, Monitor, Globe, Copy, CheckCheck } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useLanguage } from "@/lib/i18n";
+import { toast } from "sonner";
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
@@ -27,6 +28,7 @@ const InstallPWA = () => {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [isInstalled, setIsInstalled] = useState(false);
   const [device] = useState<DeviceType>(detectDevice);
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     if (window.matchMedia("(display-mode: standalone)").matches) {
@@ -62,6 +64,26 @@ const InstallPWA = () => {
     setDeferredPrompt(null);
     (window as any).__pwaInstallPrompt = null;
   }, [deferredPrompt]);
+
+  const handleCopyLink = useCallback(async () => {
+    const url = window.location.origin;
+    try {
+      await navigator.clipboard.writeText(url);
+      setCopied(true);
+      toast.success(language === "uk" ? "Посилання скопійовано!" : "Link copied!");
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // Fallback
+      const input = document.createElement("input");
+      input.value = url;
+      document.body.appendChild(input);
+      input.select();
+      document.execCommand("copy");
+      document.body.removeChild(input);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  }, [language]);
 
   const texts = {
     uk: {
@@ -113,7 +135,10 @@ const InstallPWA = () => {
         "Натисніть іконку ⊕ в адресному рядку",
         "Або відкрийте меню (⋮) → «Встановити додаток»"
       ],
-      noPromptHint: "Якщо кнопка «Встановити» не з'являється — скористайтесь інструкцією вище"
+      noPromptHint: "Якщо кнопка «Встановити» не з'являється — скористайтесь інструкцією вище",
+      copyLink: "Скопіювати посилання",
+      copiedLink: "Посилання скопійовано!",
+      openInBrowser: "Відкрийте це посилання у браузері пристрою для встановлення"
     },
     en: {
       title: "Install App",
@@ -164,7 +189,10 @@ const InstallPWA = () => {
         "Click the ⊕ icon in the address bar",
         "Or open menu (⋮) → 'Install app'"
       ],
-      noPromptHint: "If the 'Install' button doesn't appear, follow the instructions above"
+      noPromptHint: "If the 'Install' button doesn't appear, follow the instructions above",
+      copyLink: "Copy link",
+      copiedLink: "Link copied!",
+      openInBrowser: "Open this link in your device browser to install"
     }
   };
 
@@ -239,17 +267,21 @@ const InstallPWA = () => {
 
               {renderDeviceInstructions()}
 
-              {deferredPrompt && (
+              {deferredPrompt ? (
                 <Button onClick={handleInstallClick} className="w-full" size="lg">
                   <Download className="w-5 h-5 mr-2" />
                   {t.installBtn}
                 </Button>
-              )}
-
-              {!deferredPrompt && device !== "ios" && (
-                <p className="text-xs text-center text-muted-foreground">
-                  {t.noPromptHint}
-                </p>
+              ) : (
+                <div className="space-y-3">
+                  <Button onClick={handleCopyLink} variant="secondary" className="w-full" size="lg">
+                    {copied ? <CheckCheck className="w-5 h-5 mr-2" /> : <Copy className="w-5 h-5 mr-2" />}
+                    {copied ? t.copiedLink : t.copyLink}
+                  </Button>
+                  <p className="text-xs text-center text-muted-foreground">
+                    {t.openInBrowser}
+                  </p>
+                </div>
               )}
             </>
           )}
