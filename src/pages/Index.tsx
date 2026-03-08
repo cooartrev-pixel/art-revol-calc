@@ -129,7 +129,7 @@ const Index = () => {
                 </AnimatedTabsTrigger>
               </AnimatedTabsList>
 
-              <AnimatedTabsContent value="charts" className="mt-6">
+              <AnimatedTabsContent value="charts" className="mt-6" ref={chartsRef}>
                 <PaymentChart 
                   result={result} 
                   schedule={schedule}
