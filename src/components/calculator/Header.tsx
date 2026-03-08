@@ -32,20 +32,6 @@ export function Header() {
               </Link>
             </Button>
 
-            <a
-              href="tel:+380991234567"
-              className="hidden sm:flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
-            >
-              <Phone className="h-4 w-4" />
-              +380 99 123 45 67
-            </a>
-            <a
-              href="mailto:info@revolution.ua"
-              className="hidden sm:flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
-            >
-              <Mail className="h-4 w-4" />
-              info@revolution.ua
-            </a>
 
             {!loading && isAdmin && (
               <Button variant="outline" size="sm" asChild>
