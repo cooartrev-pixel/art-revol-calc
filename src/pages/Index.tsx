@@ -100,6 +100,7 @@ const Index = () => {
                 isGovernmentProgram={input.isGovernmentProgram}
                 input={input}
                 schedule={schedule}
+                chartsContainerRef={chartsRef}
               />
             </div>
 
