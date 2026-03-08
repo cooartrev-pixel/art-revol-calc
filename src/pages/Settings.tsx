@@ -112,6 +112,25 @@ const Settings = () => {
             </div>
           </CardContent>
         </Card>
+
+        {/* Встановити додаток */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <Smartphone className="h-5 w-5 text-primary" />
+              {t('settings.installApp')}
+            </CardTitle>
+            <CardDescription>{t('settings.installAppDesc')}</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button variant="outline" asChild className="gap-2">
+              <Link to="/install">
+                <Download className="h-4 w-4" />
+                {t('settings.installAppBtn')}
+              </Link>
+            </Button>
+          </CardContent>
+        </Card>
       </main>
     </div>
   );
