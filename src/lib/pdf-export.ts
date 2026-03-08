@@ -464,7 +464,7 @@ export async function exportToPDF(data: PDFExportData): Promise<void> {
   const scheduleMonths = isCompact ? 12 : 24;
 
   const scheduleHeaders = [t['schedule.month'], t['schedule.principal'], t['schedule.interest'], t['schedule.payment'], t['schedule.balance']];
-  const scheduleData = data.schedule.slice(0, 24).map((row) => [
+  const scheduleData = data.schedule.slice(0, scheduleMonths).map((row) => [
     row.month.toString(),
     formatCurrency(row.principalPayment),
     formatCurrency(row.interestPayment),
