@@ -53,9 +53,16 @@ export function CalculatorInputs({ values, onChange }: CalculatorInputsProps) {
   const familySize = values.familySize ?? 1;
   const propertyType = values.propertyType ?? 'apartment';
   const propertyAge = values.propertyAge ?? 'secondary';
+  const region = values.region ?? 'kyiv';
   const areaLimits = values.isGovernmentProgram
     ? getYeoselyaAreaLimits(familySize, propertyType, propertyAge)
     : null;
+
+  // Гранична вартість нерухомості за ЄОселя
+  const maxPropertyValue = values.isGovernmentProgram && areaLimits
+    ? getYeoselyaMaxPropertyValue(areaLimits.maxArea, region)
+    : null;
+  const isOverLimit = maxPropertyValue !== null && values.propertyValue > maxPropertyValue;
 
   // Tooltips content
   const tooltips = {
