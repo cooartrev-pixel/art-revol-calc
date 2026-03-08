@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useLanguage } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
-import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 export function Header() {
   const { user, isAdmin } = useAuth();
@@ -52,34 +52,24 @@ export function Header() {
                 <Link to="/auth">{t('header.login')}</Link>
               </Button>
             )}
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button variant="outline" size="icon" asChild className="h-9 w-9">
-                    <Link to="/settings">
-                      <Settings className="h-4 w-4" />
-                    </Link>
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>{t('header.settings')}</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button variant="outline" size="icon" asChild className="h-9 w-9">
-                    <Link to="/install">
-                      <Download className="h-4 w-4" />
-                    </Link>
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>{t('header.installApp')}</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
+            <Button variant="outline" size="sm" asChild className="gap-1.5">
+              <Link to="/settings" aria-label={t('header.settings')} title={t('header.settings')}>
+                <Settings className="h-4 w-4" />
+                <span className="hidden lg:inline">{t('header.settings')}</span>
+              </Link>
+            </Button>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="outline" size="icon" asChild className="h-9 w-9">
+                  <Link to="/install">
+                    <Download className="h-4 w-4" />
+                  </Link>
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>{t('header.installApp')}</p>
+              </TooltipContent>
+            </Tooltip>
             <LanguageToggle />
             <ThemeToggle />
           </div>
