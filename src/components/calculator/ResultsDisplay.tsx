@@ -35,6 +35,8 @@ export function ResultsDisplay({ result, isGovernmentProgram, input, schedule, c
   const { usd: usdRate, eur: eurRate } = useCurrencyRates();
   
   const handleExportPDF = async (options: PDFExportOptions) => {
+    const { exportToPDF } = await import("@/lib/pdf-export");
+
     const downPaymentAmount = calculateDownPaymentAmount(
       input.propertyValue,
       input.downPayment,
