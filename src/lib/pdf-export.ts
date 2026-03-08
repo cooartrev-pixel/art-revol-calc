@@ -351,10 +351,10 @@ export async function exportToPDF(data: PDFExportData): Promise<void> {
   if (costs && costs.totalAdditional > 0) {
     checkPage(45);
     
-    doc.setFontSize(11);
+    doc.setFontSize(fontSize.section);
     doc.setTextColor(...theme.primary);
     doc.text(t['pdf.additionalCosts'], margin, y);
-    y += 5;
+    y += sectionGap - 1;
 
     const costItems: string[][] = [];
     if (costs.pensionFund > 0) costItems.push([t['costs.pensionFund'], formatCurrency(costs.pensionFund)]);
