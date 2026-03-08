@@ -182,6 +182,9 @@ export function AreaLimitCalculator() {
       text += `➕ Допуск +${result.allowedOverpercent}%\n`;
     }
     text += `✅ Максимальна площа: ${result.maxArea.toFixed(2)} м²\n`;
+    const maxValue = getYeoselyaMaxPropertyValue(result.maxArea, region);
+    const regionInfo = YEOSELYA_PRICE_PER_SQM[region];
+    text += `💰 Гранична вартість: ${formatCurrency(maxValue)} (${regionInfo.label}, ${regionInfo.pricePerSqm} грн/м²)\n`;
     
     if (userArea && userArea > 0) {
       const fits = userArea <= result.maxArea;
