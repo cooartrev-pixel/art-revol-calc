@@ -234,7 +234,7 @@ export function ResultsDisplay({ result, isGovernmentProgram, input, schedule, c
                         {t('results.overpayment')}
                         <HelpCircle className="h-3 w-3 opacity-50" />
                       </p>
-                      <p className="text-lg font-semibold">{formatCurrency(result.totalInterest)}</p>
+                      <p className="text-base sm:text-lg font-semibold break-all">{formatCurrency(result.totalInterest)}</p>
                       <CurrencyAmount amount={result.totalInterest} usdRate={usdRate} eurRate={eurRate} showMain={false} />
                     </div>
                   </div>
