@@ -64,6 +64,25 @@ const THEMES = {
   },
 };
 
+const PDF_FONT_FILE = 'Roboto-Regular.ttf';
+const PDF_FONT_NAME = 'Roboto';
+
+async function registerUnicodeFont(doc: jsPDF): Promise<void> {
+  const fontBase64 = await loadRobotoFont();
+
+  const docWithVFS = doc as jsPDF & {
+    getFileFromVFS?: (fileName: string) => string | undefined;
+  };
+
+  if (!docWithVFS.getFileFromVFS?.(PDF_FONT_FILE)) {
+    doc.addFileToVFS(PDF_FONT_FILE, fontBase64);
+  }
+
+  doc.addFont(PDF_FONT_FILE, PDF_FONT_NAME, 'normal', 'Identity-H');
+  doc.addFont(PDF_FONT_FILE, PDF_FONT_NAME, 'bold', 'Identity-H');
+  doc.setFont(PDF_FONT_NAME, 'normal');
+}
+
 function calculateBankMonthlyPayment(loanAmount: number, loanTermYears: number, rate: number): number {
   const monthlyRate = rate / 100 / 12;
   const totalMonths = loanTermYears * 12;
