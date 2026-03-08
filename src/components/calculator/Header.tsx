@@ -1,4 +1,4 @@
-import { Building, Phone, Mail, Shield, Settings } from "lucide-react";
+import { Building, Shield, Settings } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { LanguageToggle } from "@/components/LanguageToggle";
 import { Link } from "react-router-dom";
