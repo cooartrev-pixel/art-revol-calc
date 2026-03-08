@@ -351,9 +351,14 @@ export function AreaLimitCalculator() {
           {/* Max property value */}
           <div className="flex items-center justify-between pt-1 border-t border-primary/10">
             <span className="text-sm font-medium text-foreground">Гранична вартість нерухомості:</span>
-            <span className="text-xl font-bold text-primary">
-              {formatCurrency(getYeoselyaMaxPropertyValue(result.maxArea, region))}
-            </span>
+            <div className="text-right">
+              <span className="text-xl font-bold text-primary">
+                {formatCurrency(getYeoselyaMaxPropertyValue(result.maxArea, region))}
+              </span>
+              <div>
+                <CurrencyAmount amount={getYeoselyaMaxPropertyValue(result.maxArea, region)} usdRate={usdRate} eurRate={eurRate} showMain={false} size="sm" />
+              </div>
+            </div>
           </div>
           <div className="flex items-center gap-2 text-xs text-muted-foreground">
             <Info className="h-3.5 w-3.5 text-primary" />
