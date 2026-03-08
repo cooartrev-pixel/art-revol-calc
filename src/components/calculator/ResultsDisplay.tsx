@@ -262,7 +262,7 @@ export function ResultsDisplay({ result, isGovernmentProgram, input, schedule, c
                         {t('results.totalSum')}
                         <HelpCircle className="h-3 w-3 opacity-50" />
                       </p>
-                      <p className="text-lg font-semibold">{formatCurrency(result.totalPayment)}</p>
+                      <p className="text-base sm:text-lg font-semibold break-all">{formatCurrency(result.totalPayment)}</p>
                       <CurrencyAmount amount={result.totalPayment} usdRate={usdRate} eurRate={eurRate} showMain={false} />
                     </div>
                   </div>
