@@ -390,7 +390,7 @@ export async function exportToPDF(data: PDFExportData): Promise<void> {
         }
       },
     });
-    y = (doc as any).lastAutoTable.finalY + 6;
+    y = (doc as any).lastAutoTable.finalY + sectionGap;
   }
   
   // ===== BANK COMPARISON =====
