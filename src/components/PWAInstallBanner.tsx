@@ -73,7 +73,7 @@ export const PWAInstallBanner = () => {
     : { cta: "Install", hint: "Add to home screen for quick access" };
 
   return (
-    <div className="fixed bottom-4 left-4 right-4 z-50 md:left-auto md:right-4 md:max-w-sm animate-slide-up">
+    <div className={`fixed bottom-4 left-4 right-4 z-50 md:left-auto md:right-4 md:max-w-sm ${hiding ? 'animate-slide-down' : 'animate-slide-up'}`}>
       <div className="flex items-center gap-3 rounded-xl border bg-card p-3 shadow-lg">
         <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
           <Download className="w-5 h-5 text-primary" />
