@@ -43,8 +43,41 @@ export default defineConfig(({ mode }) => ({
         ]
       },
       workbox: {
-        globPatterns: ["**/*.{js,css,html,ico,png,svg,woff2}"],
+        // Don't precache index.html — always fetch fresh from network
+        globPatterns: ["**/*.{js,css,ico,png,svg,woff2}"],
+        // Clean old caches on SW activation
+        cleanupOutdatedCaches: true,
+        // Skip waiting to activate new SW immediately
+        skipWaiting: true,
+        clientsClaim: true,
+        // Navigation requests always go to network first
+        navigateFallback: "index.html",
+        navigateFallbackAllowlist: [/^\/(?!api)/],
         runtimeCaching: [
+          {
+            // HTML pages — always fetch fresh, fall back to cache
+            urlPattern: /\.html$/,
+            handler: "NetworkFirst",
+            options: {
+              cacheName: "html-cache",
+              expiration: {
+                maxEntries: 10,
+                maxAgeSeconds: 60 * 60 // 1 hour
+              }
+            }
+          },
+          {
+            // JS/CSS bundles — cache with short TTL
+            urlPattern: /\.(js|css)$/,
+            handler: "StaleWhileRevalidate",
+            options: {
+              cacheName: "assets-cache",
+              expiration: {
+                maxEntries: 50,
+                maxAgeSeconds: 60 * 60 * 24 // 1 day
+              }
+            }
+          },
           {
             urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
             handler: "CacheFirst",
