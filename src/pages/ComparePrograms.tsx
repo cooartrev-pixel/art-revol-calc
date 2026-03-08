@@ -339,7 +339,7 @@ const ComparePrograms = () => {
                 <Scale className="h-5 w-5 text-primary" />
                 Швидкий висновок
               </h3>
-              <div className="grid md:grid-cols-3 gap-4">
+              <div className="grid sm:grid-cols-3 gap-3 sm:gap-4">
                 <div className="p-4 bg-card rounded-lg">
                   <p className="text-sm text-muted-foreground mb-1">Найнижча ставка</p>
                   <p className="font-semibold">

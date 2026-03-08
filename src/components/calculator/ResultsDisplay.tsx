@@ -290,7 +290,7 @@ export function ResultsDisplay({ result, isGovernmentProgram, input, schedule, c
                         {t('results.effectiveRate')}
                         <HelpCircle className="h-3 w-3 opacity-50" />
                       </p>
-                      <p className="text-lg font-semibold">{formatPercent(result.effectiveRate)}</p>
+                      <p className="text-base sm:text-lg font-semibold">{formatPercent(result.effectiveRate)}</p>
                     </div>
                   </div>
                 </CardContent>

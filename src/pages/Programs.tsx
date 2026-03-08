@@ -31,7 +31,7 @@ const Programs = () => {
         </div>
 
         {/* Programs Grid */}
-        <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6 mb-12">
+        <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6 mb-12">
           {programs.map((program, index) => (
             <Card 
               key={program.id}

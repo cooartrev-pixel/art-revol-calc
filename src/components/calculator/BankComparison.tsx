@@ -106,21 +106,22 @@ export function BankComparison({
       {/* Офіційне посилання */}
       <Card className="border-government bg-government/5">
         <CardContent className="pt-6">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div className="flex items-start gap-3">
-              <div className="p-2 rounded-lg bg-government/20">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
+            <div className="flex items-start gap-3 min-w-0">
+              <div className="p-2 rounded-lg bg-government/20 shrink-0">
                 <Info className="h-5 w-5 text-government" />
               </div>
-              <div>
-                <h3 className="font-semibold text-foreground">Офіційна інформація про програму "ЄОселя"</h3>
-                <p className="text-sm text-muted-foreground mt-1">
+              <div className="min-w-0">
+                <h3 className="font-semibold text-foreground text-sm sm:text-base">Офіційна інформація про програму "ЄОселя"</h3>
+                <p className="text-xs sm:text-sm text-muted-foreground mt-1">
                   Актуальні умови, вимоги та перелік банків-учасників
                 </p>
               </div>
             </div>
             <Button 
               asChild 
-              className="bg-government hover:bg-government/90 text-government-foreground shrink-0"
+              size="sm"
+              className="bg-government hover:bg-government/90 text-government-foreground shrink-0 self-start sm:self-auto"
             >
               <a href={OFFICIAL_YEOSELYA_URL} target="_blank" rel="noopener noreferrer">
                 <ExternalLink className="h-4 w-4 mr-2" />

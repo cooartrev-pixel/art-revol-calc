@@ -216,7 +216,7 @@ export function PaymentChart({ result, schedule, isGovernmentProgram, loanTermYe
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
               <div className="text-center p-4 bg-muted/30 rounded-lg">
                 <p className="text-sm text-muted-foreground mb-1">Комерційний кредит (18%)</p>
                 <p className="text-xl font-semibold">

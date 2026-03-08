@@ -267,7 +267,7 @@ export function AdditionalCosts({ values, onChange }: AdditionalCostsProps) {
     <TooltipProvider delayDuration={200}>
       <Card>
         <CardHeader className="pb-3">
-          <CardTitle className="flex items-center justify-between">
+          <CardTitle className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
             <div className="flex items-center text-lg">
               <Receipt className="h-5 w-5 text-primary mr-2" />
               {t('costs.title')}
