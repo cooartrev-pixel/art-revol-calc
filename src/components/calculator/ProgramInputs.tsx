@@ -8,6 +8,8 @@ import { Badge } from "@/components/ui/badge";
 import { Home, Percent, Calendar, Building2, HelpCircle } from "lucide-react";
 import type { MortgageInput } from "@/lib/mortgage-calculations";
 import { calculateDownPaymentAmount, formatCurrency } from "@/lib/mortgage-calculations";
+import { useCurrencyRates } from "@/hooks/useCurrencyRates";
+import { CurrencyAmount } from "./CurrencyAmount";
 import type { GovernmentProgram } from "@/lib/programs-data";
 import {
   HoverCard,
@@ -22,6 +24,7 @@ interface ProgramInputsProps {
 }
 
 export function ProgramInputs({ values, onChange, program }: ProgramInputsProps) {
+  const { usd: usdRate, eur: eurRate } = useCurrencyRates();
   const updateValue = <K extends keyof MortgageInput>(key: K, value: MortgageInput[K]) => {
     onChange({ ...values, [key]: value });
   };
@@ -112,6 +115,11 @@ export function ProgramInputs({ values, onChange, program }: ProgramInputsProps)
             />
             <span className="text-muted-foreground whitespace-nowrap">грн</span>
           </div>
+          {values.propertyValue > 0 && (
+            <div className="text-xs text-muted-foreground">
+              <CurrencyAmount amount={values.propertyValue} usdRate={usdRate} eurRate={eurRate} showMain={false} size="md" />
+            </div>
+          )}
           <Slider
             value={[values.propertyValue]}
             onValueChange={([value]) => updateValue('propertyValue', value)}
@@ -187,12 +195,22 @@ export function ProgramInputs({ values, onChange, program }: ProgramInputsProps)
               </TabsContent>
             </Tabs>
             
-            <div className="p-3 bg-muted/30 rounded-lg">
+            <div className="p-3 bg-muted/30 rounded-lg space-y-1">
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">Перший внесок:</span>
+                <span className="font-semibold text-primary">
+                  {formatCurrency(calculateDownPaymentAmount(values.propertyValue, values.downPayment, values.downPaymentType))}
+                  <CurrencyAmount amount={calculateDownPaymentAmount(values.propertyValue, values.downPayment, values.downPaymentType)} usdRate={usdRate} eurRate={eurRate} showMain={false} />
+                </span>
+              </div>
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Сума кредиту:</span>
-                <span className="font-semibold">{formatCurrency(Math.max(0, loanAmount))}</span>
+                <span className="font-semibold">
+                  {formatCurrency(Math.max(0, loanAmount))}
+                  <CurrencyAmount amount={Math.max(0, loanAmount)} usdRate={usdRate} eurRate={eurRate} showMain={false} />
+                </span>
               </div>
-              <div className="flex justify-between text-sm mt-1">
+              <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Внесок:</span>
                 <span className="font-medium">{downPaymentPercent.toFixed(1)}%</span>
               </div>
