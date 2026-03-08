@@ -182,9 +182,6 @@ const Index = () => {
         </footer>
       </main>
 
-      {/* Floating Widgets */}
-      <TelegramWidget botUsername="reviipotek_bot" />
-      <CallbackWidget />
     </div>
   );
 };
