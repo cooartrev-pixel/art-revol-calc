@@ -9,6 +9,7 @@ import logoSvg from "@/assets/logo-revolution.svg";
 
 export type PDFPageFormat = 'a4' | 'letter';
 export type PDFDensity = 'standard' | 'compact';
+export type PDFCurrency = 'uah' | 'usd' | 'eur';
 
 export interface PDFExportOptions {
   theme: 'light' | 'dark';
@@ -16,6 +17,7 @@ export interface PDFExportOptions {
   chartElements?: HTMLElement[];
   pageFormat?: PDFPageFormat;
   density?: PDFDensity;
+  currency?: PDFCurrency;
 }
 
 interface PDFExportData {
@@ -31,6 +33,7 @@ interface PDFExportData {
   schedule: AmortizationRow[];
   language?: Language;
   options?: PDFExportOptions;
+  currencyRates?: { usd: number; eur: number; source: string };
 }
 
 // Theme colors
@@ -149,9 +152,22 @@ async function captureCharts(elements: HTMLElement[], themeMode: 'light' | 'dark
 export async function exportToPDF(data: PDFExportData): Promise<void> {
   const lang = data.language || 'uk';
   const t = getTranslations(lang);
-  const opts = data.options || { theme: 'light', includeCharts: false, pageFormat: 'a4', density: 'standard' };
+  const opts = data.options || { theme: 'light', includeCharts: false, pageFormat: 'a4', density: 'standard', currency: 'uah' };
   const theme = THEMES[opts.theme];
   const isCompact = opts.density === 'compact';
+  const currency = opts.currency || 'uah';
+  const rates = data.currencyRates || { usd: 41.5, eur: 45, source: 'НБУ' };
+
+  // Currency-aware amount formatter
+  const fmtAmount = (amount: number): string => {
+    const fmt = (n: number) => new Intl.NumberFormat('uk-UA', { maximumFractionDigits: 0 }).format(Math.round(n));
+    switch (currency) {
+      case 'usd': return '$' + fmt(amount / rates.usd);
+      case 'eur': return '€' + fmt(amount / rates.eur);
+      default: return formatCurrency(amount);
+    }
+  };
+
   const fontSize = {
     title: isCompact ? 14 : 16,
     section: isCompact ? 10 : 11,
@@ -244,6 +260,14 @@ export async function exportToPDF(data: PDFExportData): Promise<void> {
   doc.setFontSize(8);
   doc.text(`${t['pdf.date']}: ${new Date().toLocaleDateString(dateLocale)}`, titleX, 28);
   
+  // Currency info
+  if (currency !== 'uah') {
+    doc.setFontSize(7);
+    doc.setTextColor(...theme.accent);
+    const currLabel = currency === 'usd' ? `USD (1$ = ${rates.usd.toFixed(2)} ₴)` : `EUR (1€ = ${rates.eur.toFixed(2)} ₴)`;
+    doc.text(`${lang === 'uk' ? 'Валюта' : 'Currency'}: ${currLabel} — ${rates.source}`, titleX, 33);
+  }
+  
   // Phone/contact on right
   doc.setFontSize(8);
   doc.setTextColor(...theme.textMuted);
@@ -258,9 +282,9 @@ export async function exportToPDF(data: PDFExportData): Promise<void> {
   y += sectionGap - 1;
   
   const inputData = [
-    [t['pdf.propertyValue'], formatCurrency(data.propertyValue)],
-    [t['pdf.downPayment'], formatCurrency(data.downPayment)],
-    [t['pdf.loanAmount'], formatCurrency(data.loanAmount)],
+    [t['pdf.propertyValue'], fmtAmount(data.propertyValue)],
+    [t['pdf.downPayment'], fmtAmount(data.downPayment)],
+    [t['pdf.loanAmount'], fmtAmount(data.loanAmount)],
     [t['pdf.loanTerm'], `${data.loanTermYears} ${t['pdf.yearsSuffix']}`],
     [t['pdf.annualRate'], formatPercent(data.interestRate)],
     [t['pdf.paymentType'], data.paymentType === "annuity" ? t['pdf.annuity'] : t['pdf.classic']],
@@ -308,12 +332,12 @@ export async function exportToPDF(data: PDFExportData): Promise<void> {
   doc.text(t['pdf.monthlyPayment'], margin + 5, y + (isCompact ? 6 : 7));
   
   doc.setFontSize(fontSize.big);
-  doc.text(formatCurrency(data.result.monthlyPayment), margin + 5, y + (isCompact ? 14 : 17));
+  doc.text(fmtAmount(data.result.monthlyPayment), margin + 5, y + (isCompact ? 14 : 17));
   
   if (data.isGovernmentProgram && data.result.savingsVsCommercial > 0) {
     doc.setFontSize(fontSize.small);
     doc.setTextColor(200, 255, 200);
-    const savingsText = `${lang === 'uk' ? 'Економія' : 'Savings'}: ${formatCurrency(data.result.savingsVsCommercial)}`;
+    const savingsText = `${lang === 'uk' ? 'Економія' : 'Savings'}: ${fmtAmount(data.result.savingsVsCommercial)}`;
     doc.text(savingsText, pageWidth - margin - 5, y + (isCompact ? 14 : 17), { align: 'right' });
   }
   
@@ -321,11 +345,11 @@ export async function exportToPDF(data: PDFExportData): Promise<void> {
   
   // Results details table
   const resultsData = [
-    [t['pdf.totalPayment'], formatCurrency(data.result.totalPayment)],
-    [t['pdf.totalInterest'], formatCurrency(data.result.totalInterest)],
+    [t['pdf.totalPayment'], fmtAmount(data.result.totalPayment)],
+    [t['pdf.totalInterest'], fmtAmount(data.result.totalInterest)],
     [t['pdf.effectiveRate'], formatPercent(data.result.effectiveRate)],
-    [t['pdf.oneTimeCommission'], formatCurrency(data.result.oneTimeCommissionAmount)],
-    [t['pdf.totalMonthlyCommissions'], formatCurrency(data.result.totalMonthlyCommissions)],
+    [t['pdf.oneTimeCommission'], fmtAmount(data.result.oneTimeCommissionAmount)],
+    [t['pdf.totalMonthlyCommissions'], fmtAmount(data.result.totalMonthlyCommissions)],
   ];
 
   autoTable(doc, {
@@ -357,16 +381,16 @@ export async function exportToPDF(data: PDFExportData): Promise<void> {
     y += sectionGap - 1;
 
     const costItems: string[][] = [];
-    if (costs.pensionFund > 0) costItems.push([t['costs.pensionFund'], formatCurrency(costs.pensionFund)]);
-    if (costs.duty > 0) costItems.push([t['costs.duty'], formatCurrency(costs.duty)]);
-    if (costs.incomeTax > 0) costItems.push([t['costs.incomeTax'], formatCurrency(costs.incomeTax)]);
-    if (costs.militaryTax > 0) costItems.push([t['costs.militaryTax'], formatCurrency(costs.militaryTax)]);
-    if (costs.notary > 0) costItems.push([t['costs.notary'], formatCurrency(costs.notary)]);
-    if (costs.appraisal > 0) costItems.push([t['costs.appraisal'], formatCurrency(costs.appraisal)]);
-    if (costs.insuranceTotal > 0) costItems.push([t['costs.insuranceTotal'], formatCurrency(costs.insuranceTotal)]);
-    if (costs.agencyCommission > 0) costItems.push([t['costs.agencyCommission'], formatCurrency(costs.agencyCommission)]);
-    costItems.push([t['costs.totalAdditional'], formatCurrency(costs.totalAdditional)]);
-    costItems.push([t['pdf.grandTotal'], formatCurrency(data.result.grandTotal)]);
+    if (costs.pensionFund > 0) costItems.push([t['costs.pensionFund'], fmtAmount(costs.pensionFund)]);
+    if (costs.duty > 0) costItems.push([t['costs.duty'], fmtAmount(costs.duty)]);
+    if (costs.incomeTax > 0) costItems.push([t['costs.incomeTax'], fmtAmount(costs.incomeTax)]);
+    if (costs.militaryTax > 0) costItems.push([t['costs.militaryTax'], fmtAmount(costs.militaryTax)]);
+    if (costs.notary > 0) costItems.push([t['costs.notary'], fmtAmount(costs.notary)]);
+    if (costs.appraisal > 0) costItems.push([t['costs.appraisal'], fmtAmount(costs.appraisal)]);
+    if (costs.insuranceTotal > 0) costItems.push([t['costs.insuranceTotal'], fmtAmount(costs.insuranceTotal)]);
+    if (costs.agencyCommission > 0) costItems.push([t['costs.agencyCommission'], fmtAmount(costs.agencyCommission)]);
+    costItems.push([t['costs.totalAdditional'], fmtAmount(costs.totalAdditional)]);
+    costItems.push([t['pdf.grandTotal'], fmtAmount(data.result.grandTotal)]);
 
     autoTable(doc, {
       startY: y,
@@ -410,7 +434,7 @@ export async function exportToPDF(data: PDFExportData): Promise<void> {
       bank.rates.privileged === 3 ? t['banks.yes'] : t['banks.no'],
       bank.rates.standard === 7 ? t['banks.yes'] : t['banks.no'],
       `${bank.minDownPayment}%`,
-      formatCurrency(mp),
+      fmtAmount(mp),
     ];
   });
 
@@ -466,10 +490,10 @@ export async function exportToPDF(data: PDFExportData): Promise<void> {
   const scheduleHeaders = [t['schedule.month'], t['schedule.principal'], t['schedule.interest'], t['schedule.payment'], t['schedule.balance']];
   const scheduleData = data.schedule.slice(0, scheduleMonths).map((row) => [
     row.month.toString(),
-    formatCurrency(row.principalPayment),
-    formatCurrency(row.interestPayment),
-    formatCurrency(row.totalPayment),
-    formatCurrency(row.closingBalance),
+    fmtAmount(row.principalPayment),
+    fmtAmount(row.interestPayment),
+    fmtAmount(row.totalPayment),
+    fmtAmount(row.closingBalance),
   ]);
 
   autoTable(doc, {
