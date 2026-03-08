@@ -136,6 +136,9 @@ const translations = {
     'settings.syncNow': 'Оновити курси',
     'settings.activeRate': 'Активний курс',
     'settings.rateNote': 'Обраний курс буде використовуватись у всіх розрахунках та конвертаціях додатку.',
+    'settings.installApp': 'Встановити додаток',
+    'settings.installAppDesc': 'Встановіть калькулятор на ваш пристрій для швидкого доступу',
+    'settings.installAppBtn': 'Перейти до встановлення',
 
     // Property currency inputs
     'input.propertyValueUsd': 'або введіть в $',
