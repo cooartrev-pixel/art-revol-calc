@@ -43,6 +43,13 @@ export function ResultsDisplay({ result, isGovernmentProgram, input, schedule, c
       input.downPaymentType
     );
     
+    const rateSourceLabel = (() => {
+      try {
+        const src = localStorage.getItem('currency_rate_source') || 'nbu';
+        return src === 'universalbank' ? 'Універсалбанк (продаж)' : 'НБУ';
+      } catch { return 'НБУ'; }
+    })();
+    
     await exportToPDF({
       propertyValue: input.propertyValue,
       downPayment: downPaymentAmount,
@@ -56,6 +63,7 @@ export function ResultsDisplay({ result, isGovernmentProgram, input, schedule, c
       schedule,
       language,
       options,
+      currencyRates: { usd: usdRate, eur: eurRate, source: rateSourceLabel },
     });
   };
 
