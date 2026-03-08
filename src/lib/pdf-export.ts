@@ -490,10 +490,10 @@ export async function exportToPDF(data: PDFExportData): Promise<void> {
   const scheduleHeaders = [t['schedule.month'], t['schedule.principal'], t['schedule.interest'], t['schedule.payment'], t['schedule.balance']];
   const scheduleData = data.schedule.slice(0, scheduleMonths).map((row) => [
     row.month.toString(),
-    formatCurrency(row.principalPayment),
-    formatCurrency(row.interestPayment),
-    formatCurrency(row.totalPayment),
-    formatCurrency(row.closingBalance),
+    fmtAmount(row.principalPayment),
+    fmtAmount(row.interestPayment),
+    fmtAmount(row.totalPayment),
+    fmtAmount(row.closingBalance),
   ]);
 
   autoTable(doc, {
