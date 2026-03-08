@@ -1,3 +1,11 @@
+// Регіональні ліміти вартості 1 м² (грн) за ЄОселя
+export type YeoselyaRegion = 'kyiv' | 'kyiv_oblast';
+
+export const YEOSELYA_PRICE_PER_SQM: Record<YeoselyaRegion, { label: string; pricePerSqm: number }> = {
+  kyiv: { label: 'Київ', pricePerSqm: 66178 },
+  kyiv_oblast: { label: 'Київська обл.', pricePerSqm: 56553 },
+};
+
 export interface MortgageInput {
   propertyValue: number;
   downPayment: number;
@@ -14,6 +22,7 @@ export interface MortgageInput {
   propertyType?: 'apartment' | 'house';
   propertyAge?: 'new' | 'secondary';
   isYouth?: boolean;
+  region?: YeoselyaRegion;
   // Додаткові витрати
   pensionFundPercent?: number;
   pensionFundEnabled?: boolean;
