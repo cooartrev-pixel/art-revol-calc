@@ -5,7 +5,7 @@ import { TrendingUp, TrendingDown, Wallet, PiggyBank, Calculator, Percent, FileD
 import { useState } from "react";
 import type { MortgageResult, MortgageInput, AmortizationRow } from "@/lib/mortgage-calculations";
 import { formatCurrency, formatPercent, calculateDownPaymentAmount } from "@/lib/mortgage-calculations";
-import { exportToPDF } from "@/lib/pdf-export";
+import { exportToPDF, PDFExportOptions } from "@/lib/pdf-export";
 import { useLanguage } from "@/lib/i18n";
 import {
   Tooltip,
@@ -20,12 +20,14 @@ import {
 } from "@/components/ui/hover-card";
 import { useCurrencyRates } from "@/hooks/useCurrencyRates";
 import { CurrencyAmount } from "./CurrencyAmount";
+import { PDFExportDialog } from "./PDFExportDialog";
 
 interface ResultsDisplayProps {
   result: MortgageResult;
   isGovernmentProgram: boolean;
   input: MortgageInput;
   schedule: AmortizationRow[];
+  chartsContainerRef?: React.RefObject<HTMLDivElement>;
 }
 
 export function ResultsDisplay({ result, isGovernmentProgram, input, schedule }: ResultsDisplayProps) {
