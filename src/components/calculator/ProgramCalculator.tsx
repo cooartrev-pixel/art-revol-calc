@@ -14,8 +14,6 @@ import { AmortizationTable } from "@/components/calculator/AmortizationTable";
 import { ProgramAIAssistant } from "@/components/calculator/ProgramAIAssistant";
 import { BankComparison } from "@/components/calculator/BankComparison";
 import { ConsultationForm } from "@/components/calculator/ConsultationForm";
-import { TelegramWidget } from "@/components/widgets/TelegramWidget";
-import { CallbackWidget } from "@/components/widgets/CallbackWidget";
 import { useLanguage } from "@/lib/i18n";
 import { 
   calculateMortgage, 
