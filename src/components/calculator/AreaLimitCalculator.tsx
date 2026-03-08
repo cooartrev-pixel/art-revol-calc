@@ -102,6 +102,7 @@ function getAreaBreakdown(familySize: number, propertyType: "apartment" | "house
 }
 
 export function AreaLimitCalculator() {
+  const { usd: usdRate, eur: eurRate } = useCurrencyRates();
   const [familySize, setFamilySize] = useState(1);
   const [propertyType, setPropertyType] = useState<"apartment" | "house">("apartment");
   const [propertyAge, setPropertyAge] = useState<"new" | "secondary">("secondary");
