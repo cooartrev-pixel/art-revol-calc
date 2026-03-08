@@ -15,6 +15,7 @@ export const PWAInstallBanner = () => {
   const { language } = useLanguage();
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [visible, setVisible] = useState(false);
+  const [hiding, setHiding] = useState(false);
 
   useEffect(() => {
     // Don't show if already installed or dismissed recently
