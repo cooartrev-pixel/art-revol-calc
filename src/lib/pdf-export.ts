@@ -381,16 +381,16 @@ export async function exportToPDF(data: PDFExportData): Promise<void> {
     y += sectionGap - 1;
 
     const costItems: string[][] = [];
-    if (costs.pensionFund > 0) costItems.push([t['costs.pensionFund'], formatCurrency(costs.pensionFund)]);
-    if (costs.duty > 0) costItems.push([t['costs.duty'], formatCurrency(costs.duty)]);
-    if (costs.incomeTax > 0) costItems.push([t['costs.incomeTax'], formatCurrency(costs.incomeTax)]);
-    if (costs.militaryTax > 0) costItems.push([t['costs.militaryTax'], formatCurrency(costs.militaryTax)]);
-    if (costs.notary > 0) costItems.push([t['costs.notary'], formatCurrency(costs.notary)]);
-    if (costs.appraisal > 0) costItems.push([t['costs.appraisal'], formatCurrency(costs.appraisal)]);
-    if (costs.insuranceTotal > 0) costItems.push([t['costs.insuranceTotal'], formatCurrency(costs.insuranceTotal)]);
-    if (costs.agencyCommission > 0) costItems.push([t['costs.agencyCommission'], formatCurrency(costs.agencyCommission)]);
-    costItems.push([t['costs.totalAdditional'], formatCurrency(costs.totalAdditional)]);
-    costItems.push([t['pdf.grandTotal'], formatCurrency(data.result.grandTotal)]);
+    if (costs.pensionFund > 0) costItems.push([t['costs.pensionFund'], fmtAmount(costs.pensionFund)]);
+    if (costs.duty > 0) costItems.push([t['costs.duty'], fmtAmount(costs.duty)]);
+    if (costs.incomeTax > 0) costItems.push([t['costs.incomeTax'], fmtAmount(costs.incomeTax)]);
+    if (costs.militaryTax > 0) costItems.push([t['costs.militaryTax'], fmtAmount(costs.militaryTax)]);
+    if (costs.notary > 0) costItems.push([t['costs.notary'], fmtAmount(costs.notary)]);
+    if (costs.appraisal > 0) costItems.push([t['costs.appraisal'], fmtAmount(costs.appraisal)]);
+    if (costs.insuranceTotal > 0) costItems.push([t['costs.insuranceTotal'], fmtAmount(costs.insuranceTotal)]);
+    if (costs.agencyCommission > 0) costItems.push([t['costs.agencyCommission'], fmtAmount(costs.agencyCommission)]);
+    costItems.push([t['costs.totalAdditional'], fmtAmount(costs.totalAdditional)]);
+    costItems.push([t['pdf.grandTotal'], fmtAmount(data.result.grandTotal)]);
 
     autoTable(doc, {
       startY: y,
