@@ -267,17 +267,21 @@ const InstallPWA = () => {
 
               {renderDeviceInstructions()}
 
-              {deferredPrompt && (
+              {deferredPrompt ? (
                 <Button onClick={handleInstallClick} className="w-full" size="lg">
                   <Download className="w-5 h-5 mr-2" />
                   {t.installBtn}
                 </Button>
-              )}
-
-              {!deferredPrompt && device !== "ios" && (
-                <p className="text-xs text-center text-muted-foreground">
-                  {t.noPromptHint}
-                </p>
+              ) : (
+                <div className="space-y-3">
+                  <Button onClick={handleCopyLink} variant="secondary" className="w-full" size="lg">
+                    {copied ? <CheckCheck className="w-5 h-5 mr-2" /> : <Copy className="w-5 h-5 mr-2" />}
+                    {copied ? t.copiedLink : t.copyLink}
+                  </Button>
+                  <p className="text-xs text-center text-muted-foreground">
+                    {t.openInBrowser}
+                  </p>
+                </div>
               )}
             </>
           )}
