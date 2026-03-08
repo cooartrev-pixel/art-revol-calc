@@ -209,7 +209,7 @@ export async function exportToPDF(data: PDFExportData): Promise<void> {
   }
   
   // Title
-  doc.setFont('Roboto', 'normal');
+  doc.setFont(PDF_FONT_NAME, 'normal');
   doc.setFontSize(16);
   doc.setTextColor(...theme.primary);
   const titleX = logoDataUrl ? margin + 33 : margin;
