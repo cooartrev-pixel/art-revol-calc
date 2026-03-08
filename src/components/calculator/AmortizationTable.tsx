@@ -202,6 +202,8 @@ export function AmortizationTable({ schedule, isGovernmentProgram, loanTermYears
               })}
             </TableBody>
           </Table>
+          </div>
+          <ScrollBar orientation="horizontal" />
         </ScrollArea>
         
         {schedule.length > 12 && (
