@@ -324,7 +324,7 @@ export function AdditionalCosts({ values, onChange }: AdditionalCostsProps) {
               <Landmark className="h-3.5 w-3.5" />
               {t('costs.stateCharges')}
             </Label>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {costField(t('costs.pensionFund'), 'costs.pensionFundTip', 'pensionFundEnabled', 'pensionFundPercent', { step: 0.1, min: 0, max: 10, placeholder: '1', suffix: '%', preview: pensionFund })}
               {costField(t('costs.duty'), 'costs.dutyTip', 'dutyEnabled', 'dutyPercent', { step: 0.1, min: 0, max: 10, placeholder: '1', suffix: '%', preview: duty })}
               {costField(t('costs.incomeTax'), 'costs.incomeTaxTip', 'incomeTaxEnabled', 'incomeTaxPercent', { step: 0.1, min: 0, max: 30, placeholder: '5', suffix: '%', preview: incomeTax })}
