@@ -27,7 +27,8 @@ import {
   Check,
 } from "lucide-react";
 import { toast } from "sonner";
-import { getYeoselyaAreaLimits, formatCurrency } from "@/lib/mortgage-calculations";
+import { getYeoselyaAreaLimits, getYeoselyaMaxPropertyValue, YEOSELYA_PRICE_PER_SQM, formatCurrency, type YeoselyaRegion } from "@/lib/mortgage-calculations";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface AreaResult {
   baseMaxArea: number;
