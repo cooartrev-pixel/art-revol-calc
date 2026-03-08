@@ -206,7 +206,7 @@ export function ResultsDisplay({ result, isGovernmentProgram, input, schedule, c
                         {t('results.loanAmount')}
                         <HelpCircle className="h-3 w-3 opacity-50" />
                       </p>
-                      <p className="text-lg font-semibold">{formatCurrency(result.loanAmount)}</p>
+                      <p className="text-base sm:text-lg font-semibold break-all">{formatCurrency(result.loanAmount)}</p>
                       <CurrencyAmount amount={result.loanAmount} usdRate={usdRate} eurRate={eurRate} showMain={false} />
                     </div>
                   </div>
