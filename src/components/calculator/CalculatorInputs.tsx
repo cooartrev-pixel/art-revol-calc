@@ -229,6 +229,17 @@ export function CalculatorInputs({ values, onChange }: CalculatorInputsProps) {
             <span>{t('input.min')}</span>
             <span>{t('input.max')}</span>
           </div>
+
+          {isOverLimit && maxPropertyValue !== null && (
+            <Alert variant="destructive" className="mt-3">
+              <AlertTriangle className="h-4 w-4" />
+              <AlertDescription className="text-xs leading-relaxed">
+                {language === 'uk'
+                  ? `Вартість перевищує граничну за ЄОселя. Максимум для ${YEOSELYA_PRICE_PER_SQM[region].label}: ${formatCurrency(maxPropertyValue)} (${areaLimits!.maxArea.toFixed(2)} м² × ${YEOSELYA_PRICE_PER_SQM[region].pricePerSqm} грн/м²). Рекомендуємо зменшити вартість або обрати менший об'єкт.`
+                  : `Value exceeds YeOselya limit. Maximum for ${YEOSELYA_PRICE_PER_SQM[region].label}: ${formatCurrency(maxPropertyValue)}. Consider reducing the price or choosing a smaller property.`}
+              </AlertDescription>
+            </Alert>
+          )}
         </CardContent>
       </Card>
 
