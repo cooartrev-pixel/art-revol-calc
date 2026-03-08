@@ -4,10 +4,10 @@ import App from "./App.tsx";
 import "./index.css";
 
 // Capture beforeinstallprompt globally so it's never missed
-window.__pwaInstallPrompt = null;
+(window as any).__pwaInstallPrompt = null;
 window.addEventListener("beforeinstallprompt", (e) => {
   e.preventDefault();
-  window.__pwaInstallPrompt = e;
+  (window as any).__pwaInstallPrompt = e;
   window.dispatchEvent(new CustomEvent("pwa-prompt-ready"));
 });
 
