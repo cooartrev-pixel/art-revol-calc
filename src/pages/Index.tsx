@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef } from "react";
 import { BarChart3, Table, Bot, Building2, MessageSquare } from "lucide-react";
 import { Header } from "@/components/calculator/Header";
 import { CalculatorInputs } from "@/components/calculator/CalculatorInputs";
@@ -54,6 +54,7 @@ const defaultInput: MortgageInput = {
 const Index = () => {
   const { t } = useLanguage();
   const [input, setInput] = useState<MortgageInput>(defaultInput);
+  const chartsRef = useRef<HTMLDivElement>(null);
 
   const result = useMemo(() => calculateMortgage(input), [input]);
   const schedule = useMemo(() => generateAmortizationSchedule(input), [input]);
@@ -100,6 +101,7 @@ const Index = () => {
                 isGovernmentProgram={input.isGovernmentProgram}
                 input={input}
                 schedule={schedule}
+                chartsContainerRef={chartsRef}
               />
             </div>
 
@@ -128,7 +130,7 @@ const Index = () => {
                 </AnimatedTabsTrigger>
               </AnimatedTabsList>
 
-              <AnimatedTabsContent value="charts" className="mt-6">
+              <AnimatedTabsContent value="charts" className="mt-6" ref={chartsRef}>
                 <PaymentChart 
                   result={result} 
                   schedule={schedule}

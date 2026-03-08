@@ -5,7 +5,7 @@ import { TrendingUp, TrendingDown, Wallet, PiggyBank, Calculator, Percent, FileD
 import { useState } from "react";
 import type { MortgageResult, MortgageInput, AmortizationRow } from "@/lib/mortgage-calculations";
 import { formatCurrency, formatPercent, calculateDownPaymentAmount } from "@/lib/mortgage-calculations";
-import { exportToPDF } from "@/lib/pdf-export";
+import { exportToPDF, PDFExportOptions } from "@/lib/pdf-export";
 import { useLanguage } from "@/lib/i18n";
 import {
   Tooltip,
@@ -20,26 +20,28 @@ import {
 } from "@/components/ui/hover-card";
 import { useCurrencyRates } from "@/hooks/useCurrencyRates";
 import { CurrencyAmount } from "./CurrencyAmount";
+import { PDFExportDialog } from "./PDFExportDialog";
 
 interface ResultsDisplayProps {
   result: MortgageResult;
   isGovernmentProgram: boolean;
   input: MortgageInput;
   schedule: AmortizationRow[];
+  chartsContainerRef?: React.RefObject<HTMLDivElement>;
 }
 
-export function ResultsDisplay({ result, isGovernmentProgram, input, schedule }: ResultsDisplayProps) {
+export function ResultsDisplay({ result, isGovernmentProgram, input, schedule, chartsContainerRef }: ResultsDisplayProps) {
   const { t, language } = useLanguage();
   const { usd: usdRate, eur: eurRate } = useCurrencyRates();
   
-  const handleExportPDF = () => {
+  const handleExportPDF = async (options: PDFExportOptions) => {
     const downPaymentAmount = calculateDownPaymentAmount(
       input.propertyValue,
       input.downPayment,
       input.downPaymentType
     );
     
-    exportToPDF({
+    await exportToPDF({
       propertyValue: input.propertyValue,
       downPayment: downPaymentAmount,
       loanAmount: result.loanAmount,
@@ -51,6 +53,7 @@ export function ResultsDisplay({ result, isGovernmentProgram, input, schedule }:
       result,
       schedule,
       language,
+      options,
     });
   };
 
@@ -156,18 +159,10 @@ export function ResultsDisplay({ result, isGovernmentProgram, input, schedule }:
                   )}
                 </div>
                 <div className="mt-4 flex justify-center">
-                  <Button 
-                    variant="secondary" 
-                    size="sm" 
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleExportPDF();
-                    }}
-                    className="gap-2"
-                  >
-                    <FileDown className="h-4 w-4" />
-                    {t('results.exportPDF')}
-                  </Button>
+                  <PDFExportDialog 
+                    onExport={handleExportPDF}
+                    chartsContainerRef={chartsContainerRef}
+                  />
                 </div>
               </CardContent>
             </Card>

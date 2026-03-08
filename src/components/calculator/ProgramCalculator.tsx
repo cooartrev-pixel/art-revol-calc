@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -52,6 +52,7 @@ const ProgramCalculatorContent = ({ program }: ProgramCalculatorProps) => {
   };
 
   const [input, setInput] = useState<MortgageInput>(getDefaultInput);
+  const chartsRef = useRef<HTMLDivElement>(null);
 
   const result = useMemo(() => calculateMortgage(input), [input]);
   const schedule = useMemo(() => generateAmortizationSchedule(input), [input]);
@@ -176,6 +177,7 @@ const ProgramCalculatorContent = ({ program }: ProgramCalculatorProps) => {
                   isGovernmentProgram={true}
                   input={input}
                   schedule={schedule}
+                  chartsContainerRef={chartsRef}
                 />
               </div>
             )}
@@ -232,7 +234,7 @@ const ProgramCalculatorContent = ({ program }: ProgramCalculatorProps) => {
 
               {!isSubsidyProgram && (
                 <>
-                  <TabsContent value="charts" className="mt-6 animate-fade-in">
+                  <TabsContent value="charts" className="mt-6 animate-fade-in" ref={chartsRef}>
                     <PaymentChart 
                       result={result} 
                       schedule={schedule}
