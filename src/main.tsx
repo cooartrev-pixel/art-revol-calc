@@ -11,18 +11,20 @@ window.addEventListener("beforeinstallprompt", (e) => {
   window.dispatchEvent(new CustomEvent("pwa-prompt-ready"));
 });
 
-// Clear all stale caches on startup to prevent UI inconsistencies
-async function clearStaleCaches() {
+// Clear ALL caches on startup to prevent stale UI
+async function clearAllCaches() {
   if ('caches' in window) {
     const cacheNames = await caches.keys();
-    const staleCaches = cacheNames.filter(
-      name => name.startsWith('workbox-') || name.startsWith('sw-')
-    );
-    await Promise.all(staleCaches.map(name => caches.delete(name)));
+    await Promise.all(cacheNames.map(name => caches.delete(name)));
+  }
+  // Unregister stale service workers
+  if ('serviceWorker' in navigator) {
+    const registrations = await navigator.serviceWorker.getRegistrations();
+    await Promise.all(registrations.map(r => r.unregister()));
   }
 }
 
-clearStaleCaches();
+clearAllCaches();
 
 const updateSW = registerSW({
   immediate: true,
