@@ -438,18 +438,18 @@ export async function exportToPDF(data: PDFExportData): Promise<void> {
   
   // ===== CHARTS =====
   if (chartImages.length > 0) {
+    const chartH = isCompact ? 60 : 80;
     for (const imgData of chartImages) {
-      checkPage(85);
+      checkPage(chartH + 5);
       
-      // Chart container with border
       doc.setDrawColor(...theme.border);
       doc.setLineWidth(0.3);
-      doc.roundedRect(margin, y, contentWidth, 80, 2, 2, 'S');
+      doc.roundedRect(margin, y, contentWidth, chartH, 2, 2, 'S');
       
       try {
-        doc.addImage(imgData, 'PNG', margin + 2, y + 2, contentWidth - 4, 76);
+        doc.addImage(imgData, 'PNG', margin + 2, y + 2, contentWidth - 4, chartH - 4);
       } catch { /* skip */ }
-      y += 84;
+      y += chartH + (isCompact ? 3 : 4);
     }
   }
   
