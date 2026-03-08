@@ -54,6 +54,7 @@ const defaultInput: MortgageInput = {
 const Index = () => {
   const { t } = useLanguage();
   const [input, setInput] = useState<MortgageInput>(defaultInput);
+  const chartsRef = useRef<HTMLDivElement>(null);
 
   const result = useMemo(() => calculateMortgage(input), [input]);
   const schedule = useMemo(() => generateAmortizationSchedule(input), [input]);
