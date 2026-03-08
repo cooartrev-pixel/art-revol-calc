@@ -115,6 +115,11 @@ export function ProgramInputs({ values, onChange, program }: ProgramInputsProps)
             />
             <span className="text-muted-foreground whitespace-nowrap">грн</span>
           </div>
+          {values.propertyValue > 0 && (
+            <div className="text-xs text-muted-foreground">
+              <CurrencyAmount amount={values.propertyValue} usdRate={usdRate} eurRate={eurRate} showMain={false} size="md" />
+            </div>
+          )}
           <Slider
             value={[values.propertyValue]}
             onValueChange={([value]) => updateValue('propertyValue', value)}
