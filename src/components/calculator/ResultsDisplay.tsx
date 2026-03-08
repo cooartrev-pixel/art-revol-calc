@@ -148,7 +148,7 @@ export function ResultsDisplay({ result, isGovernmentProgram, input, schedule, c
                     {t('results.monthlyPayment')}
                     <HelpCircle className="h-3.5 w-3.5 opacity-70" />
                   </p>
-                  <p className="text-4xl md:text-5xl font-bold tracking-tight">
+                  <p className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight break-all">
                     {formatCurrency(result.monthlyPayment)}
                   </p>
                   <p className="text-primary-foreground/60 text-sm mt-1">
