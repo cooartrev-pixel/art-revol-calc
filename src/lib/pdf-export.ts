@@ -147,18 +147,21 @@ export async function exportToPDF(data: PDFExportData): Promise<void> {
   const opts = data.options || { theme: 'light', includeCharts: false };
   const theme = THEMES[opts.theme];
   
-  const doc = new jsPDF();
+  const doc = new jsPDF({
+    orientation: 'portrait',
+    unit: 'mm',
+    format: 'a4',
+    compress: true,
+    putOnlyUsedFonts: true,
+  });
   const pageWidth = doc.internal.pageSize.getWidth();
   const pageHeight = doc.internal.pageSize.getHeight();
   const margin = 12;
   const contentWidth = pageWidth - margin * 2;
   
-  // Load and register Roboto font for Cyrillic
+  // Load and register Roboto font for Cyrillic (Unicode-safe)
   try {
-    const fontBase64 = await loadRobotoFont();
-    doc.addFileToVFS('Roboto-Regular.ttf', fontBase64);
-    doc.addFont('Roboto-Regular.ttf', 'Roboto', 'normal');
-    doc.setFont('Roboto');
+    await registerUnicodeFont(doc);
   } catch (e) {
     console.warn('Failed to load Roboto font, using default', e);
   }
@@ -169,7 +172,7 @@ export async function exportToPDF(data: PDFExportData): Promise<void> {
   // Capture charts if requested
   let chartImages: string[] = [];
   if (opts.includeCharts && opts.chartElements?.length) {
-    chartImages = await captureCharts(opts.chartElements);
+    chartImages = await captureCharts(opts.chartElements, opts.theme);
   }
   
   let y = margin;
