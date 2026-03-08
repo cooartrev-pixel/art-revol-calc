@@ -3,7 +3,8 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Settings as SettingsIcon, DollarSign, RefreshCw, Building, Landmark } from "lucide-react";
+import { Settings as SettingsIcon, DollarSign, RefreshCw, Building, Landmark, Download, Smartphone } from "lucide-react";
+import { Link } from "react-router-dom";
 import { Header } from "@/components/calculator/Header";
 import { useCurrencyRates, type RateSource } from "@/hooks/useCurrencyRates";
 import { useLanguage } from "@/lib/i18n";
@@ -109,6 +110,25 @@ const Settings = () => {
               </p>
               <p className="text-[10px] text-muted-foreground mt-1">{t('settings.rateNote')}</p>
             </div>
+          </CardContent>
+        </Card>
+
+        {/* Встановити додаток */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <Smartphone className="h-5 w-5 text-primary" />
+              {t('settings.installApp')}
+            </CardTitle>
+            <CardDescription>{t('settings.installAppDesc')}</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button variant="outline" asChild className="gap-2">
+              <Link to="/install">
+                <Download className="h-4 w-4" />
+                {t('settings.installAppBtn')}
+              </Link>
+            </Button>
           </CardContent>
         </Card>
       </main>
