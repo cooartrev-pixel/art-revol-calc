@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef } from "react";
 import { BarChart3, Table, Bot, Building2, MessageSquare } from "lucide-react";
 import { Header } from "@/components/calculator/Header";
 import { CalculatorInputs } from "@/components/calculator/CalculatorInputs";
