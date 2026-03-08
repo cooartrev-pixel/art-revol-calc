@@ -52,6 +52,7 @@ const ProgramCalculatorContent = ({ program }: ProgramCalculatorProps) => {
   };
 
   const [input, setInput] = useState<MortgageInput>(getDefaultInput);
+  const chartsRef = useRef<HTMLDivElement>(null);
 
   const result = useMemo(() => calculateMortgage(input), [input]);
   const schedule = useMemo(() => generateAmortizationSchedule(input), [input]);
