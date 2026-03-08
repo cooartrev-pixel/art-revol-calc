@@ -14,6 +14,7 @@ import Admin from "./pages/Admin";
 import InstallPWA from "./pages/InstallPWA";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
+import { FloatingSettingsButton } from "./components/FloatingSettingsButton";
 
 // App configuration
 const queryClient = new QueryClient();
@@ -38,6 +39,7 @@ const App = () => (
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>
+              <FloatingSettingsButton />
             </BrowserRouter>
           </TooltipProvider>
         </AuthProvider>
