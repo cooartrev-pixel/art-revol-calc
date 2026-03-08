@@ -287,7 +287,7 @@ export function AdditionalCosts({ values, onChange }: AdditionalCostsProps) {
         <CardContent className="space-y-5">
           {/* Курс НБУ */}
           <div className="p-2 bg-muted/30 rounded-lg border space-y-1.5">
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               <DollarSign className="h-4 w-4 text-primary shrink-0" />
               <Label className="text-xs text-muted-foreground whitespace-nowrap">{t('costs.nbuRate')}:</Label>
               <Input
@@ -296,7 +296,7 @@ export function AdditionalCosts({ values, onChange }: AdditionalCostsProps) {
                 onChange={(e) => handleRateChange(Number(e.target.value))}
                 step={0.01}
                 min={1}
-                className="h-7 w-28 text-sm"
+                className="h-7 w-24 text-sm"
               />
               <span className="text-xs text-muted-foreground">₴/$</span>
               <Button
