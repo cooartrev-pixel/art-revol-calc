@@ -10,7 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Home, Percent, Calendar, Building2, Flag, HelpCircle, Users, AlertTriangle, Info, DollarSign, Euro } from "lucide-react";
 import type { MortgageInput } from "@/lib/mortgage-calculations";
-import { calculateDownPaymentAmount, formatCurrency, checkYeoselyaEligibility, getYeoselyaAreaLimits } from "@/lib/mortgage-calculations";
+import { calculateDownPaymentAmount, formatCurrency, checkYeoselyaEligibility, getYeoselyaAreaLimits, getYeoselyaMaxPropertyValue, YEOSELYA_PRICE_PER_SQM } from "@/lib/mortgage-calculations";
 import { useLanguage } from "@/lib/i18n";
 import { useCurrencyRates } from "@/hooks/useCurrencyRates";
 import { CurrencyAmount } from "./CurrencyAmount";
