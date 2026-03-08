@@ -177,6 +177,7 @@ const ProgramCalculatorContent = ({ program }: ProgramCalculatorProps) => {
                   isGovernmentProgram={true}
                   input={input}
                   schedule={schedule}
+                  chartsContainerRef={chartsRef}
                 />
               </div>
             )}
