@@ -27,7 +27,8 @@ import {
   Check,
 } from "lucide-react";
 import { toast } from "sonner";
-import { getYeoselyaAreaLimits, formatCurrency } from "@/lib/mortgage-calculations";
+import { getYeoselyaAreaLimits, getYeoselyaMaxPropertyValue, YEOSELYA_PRICE_PER_SQM, formatCurrency, type YeoselyaRegion } from "@/lib/mortgage-calculations";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface AreaResult {
   baseMaxArea: number;
@@ -104,6 +105,7 @@ export function AreaLimitCalculator() {
   const [propertyAge, setPropertyAge] = useState<"new" | "secondary">("secondary");
   const [userArea, setUserArea] = useState<number | "">("");
   const [copied, setCopied] = useState(false);
+  const [region, setRegion] = useState<YeoselyaRegion>('kyiv');
 
   const result = useMemo(() => {
     const limits = getYeoselyaAreaLimits(familySize, propertyType, propertyAge);
@@ -180,6 +182,9 @@ export function AreaLimitCalculator() {
       text += `➕ Допуск +${result.allowedOverpercent}%\n`;
     }
     text += `✅ Максимальна площа: ${result.maxArea.toFixed(2)} м²\n`;
+    const maxValue = getYeoselyaMaxPropertyValue(result.maxArea, region);
+    const regionInfo = YEOSELYA_PRICE_PER_SQM[region];
+    text += `💰 Гранична вартість: ${formatCurrency(maxValue)} (${regionInfo.label}, ${regionInfo.pricePerSqm} грн/м²)\n`;
     
     if (userArea && userArea > 0) {
       const fits = userArea <= result.maxArea;
@@ -196,7 +201,7 @@ export function AreaLimitCalculator() {
       toast.success("Скопійовано в буфер обміну!");
       setTimeout(() => setCopied(false), 2000);
     });
-  }, [familySize, propertyType, propertyAge, result, userArea, recommendations]);
+  }, [familySize, propertyType, propertyAge, result, userArea, recommendations, region]);
 
   return (
     <Card className="border-primary/20">
@@ -302,6 +307,26 @@ export function AreaLimitCalculator() {
           </div>
         </div>
 
+        {/* Region selector */}
+        <div className="space-y-2">
+          <Label className="text-sm font-medium flex items-center gap-1.5">
+            <Building2 className="h-4 w-4 text-muted-foreground" />
+            Регіон (гранична вартість м²)
+          </Label>
+          <Select value={region} onValueChange={(v) => setRegion(v as YeoselyaRegion)}>
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {Object.entries(YEOSELYA_PRICE_PER_SQM).map(([key, { label, pricePerSqm }]) => (
+                <SelectItem key={key} value={key}>
+                  {label} — {pricePerSqm.toLocaleString('uk-UA')} грн/м²
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
         <Separator />
 
         {/* Result */}
@@ -319,6 +344,20 @@ export function AreaLimitCalculator() {
               </span>
             </div>
           )}
+
+          {/* Max property value */}
+          <div className="flex items-center justify-between pt-1 border-t border-primary/10">
+            <span className="text-sm font-medium text-foreground">Гранична вартість нерухомості:</span>
+            <span className="text-xl font-bold text-primary">
+              {formatCurrency(getYeoselyaMaxPropertyValue(result.maxArea, region))}
+            </span>
+          </div>
+          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+            <Info className="h-3.5 w-3.5 text-primary" />
+            <span>
+              {result.maxArea.toFixed(2)} м² × {YEOSELYA_PRICE_PER_SQM[region].pricePerSqm.toLocaleString('uk-UA')} грн/м² ({YEOSELYA_PRICE_PER_SQM[region].label})
+            </span>
+          </div>
 
           {/* Breakdown */}
           <div className="space-y-1.5 pt-1">
@@ -410,15 +449,15 @@ export function AreaLimitCalculator() {
           {areaCheck && !areaCheck.fits && (
             <Alert className="py-2 border-destructive/30 bg-destructive/5">
               <AlertDescription className="text-xs text-destructive/90">
-                Площа {areaCheck.area} м² перевищує ліміт на {(areaCheck.area - result.maxArea).toFixed(1)} м².
-                Різницю доведеться покрити збільшенням першого внеску або обрати менший об'єкт.
+                Площа {areaCheck.area} м² перевищує ліміт на {(areaCheck.area - result.maxArea).toFixed(2)} м².
+                Необхідно обрати менший об'єкт — доплата не можлива.
               </AlertDescription>
             </Alert>
           )}
           {areaCheck && areaCheck.fits && !areaCheck.fitsBase && result.allowedOverpercent > 0 && (
             <Alert className="py-2 border-primary/30 bg-primary/5">
               <AlertDescription className="text-xs text-primary/80">
-                Площа вписується завдяки 10% допуску для новобудов. Базовий ліміт — {result.baseMaxArea.toFixed(1)} м².
+                Площа вписується завдяки 10% допуску для новобудов. Базовий ліміт — {result.baseMaxArea.toFixed(2)} м².
               </AlertDescription>
             </Alert>
           )}

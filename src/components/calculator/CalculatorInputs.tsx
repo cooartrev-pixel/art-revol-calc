@@ -10,7 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Home, Percent, Calendar, Building2, Flag, HelpCircle, Users, AlertTriangle, Info, DollarSign, Euro } from "lucide-react";
 import type { MortgageInput } from "@/lib/mortgage-calculations";
-import { calculateDownPaymentAmount, formatCurrency, checkYeoselyaEligibility, getYeoselyaAreaLimits } from "@/lib/mortgage-calculations";
+import { calculateDownPaymentAmount, formatCurrency, checkYeoselyaEligibility, getYeoselyaAreaLimits, getYeoselyaMaxPropertyValue, YEOSELYA_PRICE_PER_SQM } from "@/lib/mortgage-calculations";
 import { useLanguage } from "@/lib/i18n";
 import { useCurrencyRates } from "@/hooks/useCurrencyRates";
 import { CurrencyAmount } from "./CurrencyAmount";
@@ -472,15 +472,15 @@ export function CalculatorInputs({ values, onChange }: CalculatorInputsProps) {
                 <span className="text-sm text-muted-foreground">{t('input.persons')}</span>
                 {areaLimits && (
                   <Badge variant="outline" className="ml-auto text-xs">
-                    max {areaLimits.maxArea.toFixed(1)} м²
+                    max {areaLimits.maxArea.toFixed(2)} м²
                   </Badge>
                 )}
               </div>
               {areaLimits && (
                 <p className="text-xs text-muted-foreground mt-1">
                   {t('input.areaLimitInfo', {
-                    base: String(areaLimits.baseMaxArea.toFixed(1)),
-                    max: String(areaLimits.maxArea.toFixed(1)),
+                    base: String(areaLimits.baseMaxArea.toFixed(2)),
+                    max: String(areaLimits.maxArea.toFixed(2)),
                     overage: String(areaLimits.allowedOverpercent)
                   })}
                 </p>

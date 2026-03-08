@@ -376,7 +376,7 @@ export function AdditionalCosts({ values, onChange }: AdditionalCostsProps) {
                     onChange={(e) => updateValue('insurancePercent', Number(e.target.value))}
                     step={0.05}
                     min={0}
-                    max={5}
+                    max={1.25}
                     placeholder="0.25"
                     className="h-9"
                     disabled={!isEnabled('insuranceEnabled')}
