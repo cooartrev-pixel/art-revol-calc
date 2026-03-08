@@ -344,7 +344,7 @@ export async function exportToPDF(data: PDFExportData): Promise<void> {
     },
     alternateRowStyles: { fillColor: theme.tableBg },
   });
-  y = (doc as any).lastAutoTable.finalY + 6;
+  y = (doc as any).lastAutoTable.finalY + sectionGap;
   
   // ===== ADDITIONAL COSTS =====
   const costs = data.result.additionalCosts;
