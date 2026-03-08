@@ -152,9 +152,22 @@ async function captureCharts(elements: HTMLElement[], themeMode: 'light' | 'dark
 export async function exportToPDF(data: PDFExportData): Promise<void> {
   const lang = data.language || 'uk';
   const t = getTranslations(lang);
-  const opts = data.options || { theme: 'light', includeCharts: false, pageFormat: 'a4', density: 'standard' };
+  const opts = data.options || { theme: 'light', includeCharts: false, pageFormat: 'a4', density: 'standard', currency: 'uah' };
   const theme = THEMES[opts.theme];
   const isCompact = opts.density === 'compact';
+  const currency = opts.currency || 'uah';
+  const rates = data.currencyRates || { usd: 41.5, eur: 45, source: 'НБУ' };
+
+  // Currency-aware amount formatter
+  const fmtAmount = (amount: number): string => {
+    const fmt = (n: number) => new Intl.NumberFormat('uk-UA', { maximumFractionDigits: 0 }).format(Math.round(n));
+    switch (currency) {
+      case 'usd': return '$' + fmt(amount / rates.usd);
+      case 'eur': return '€' + fmt(amount / rates.eur);
+      default: return formatCurrency(amount);
+    }
+  };
+
   const fontSize = {
     title: isCompact ? 14 : 16,
     section: isCompact ? 10 : 11,
