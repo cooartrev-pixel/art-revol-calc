@@ -149,19 +149,33 @@ async function captureCharts(elements: HTMLElement[], themeMode: 'light' | 'dark
 export async function exportToPDF(data: PDFExportData): Promise<void> {
   const lang = data.language || 'uk';
   const t = getTranslations(lang);
-  const opts = data.options || { theme: 'light', includeCharts: false };
+  const opts = data.options || { theme: 'light', includeCharts: false, pageFormat: 'a4', density: 'standard' };
   const theme = THEMES[opts.theme];
+  const isCompact = opts.density === 'compact';
+  const fontSize = {
+    title: isCompact ? 14 : 16,
+    section: isCompact ? 10 : 11,
+    body: isCompact ? 7 : 8,
+    table: isCompact ? 6 : 7,
+    tableBody: isCompact ? 5.5 : 6.5,
+    small: isCompact ? 6 : 7,
+    big: isCompact ? 15 : 18,
+  };
+  const cellPad = isCompact
+    ? { top: 1, bottom: 1, left: 2, right: 2 }
+    : { top: 1.5, bottom: 1.5, left: 3, right: 3 };
+  const sectionGap = isCompact ? 4 : 6;
   
   const doc = new jsPDF({
     orientation: 'portrait',
     unit: 'mm',
-    format: 'a4',
+    format: opts.pageFormat || 'a4',
     compress: true,
     putOnlyUsedFonts: true,
   });
   const pageWidth = doc.internal.pageSize.getWidth();
   const pageHeight = doc.internal.pageSize.getHeight();
-  const margin = 12;
+  const margin = isCompact ? 10 : 12;
   const contentWidth = pageWidth - margin * 2;
   
   // Load and register Roboto font for Cyrillic (Unicode-safe)
