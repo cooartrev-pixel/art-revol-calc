@@ -65,6 +65,26 @@ const InstallPWA = () => {
     (window as any).__pwaInstallPrompt = null;
   }, [deferredPrompt]);
 
+  const handleCopyLink = useCallback(async () => {
+    const url = window.location.origin;
+    try {
+      await navigator.clipboard.writeText(url);
+      setCopied(true);
+      toast.success(language === "uk" ? "Посилання скопійовано!" : "Link copied!");
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // Fallback
+      const input = document.createElement("input");
+      input.value = url;
+      document.body.appendChild(input);
+      input.select();
+      document.execCommand("copy");
+      document.body.removeChild(input);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  }, [language]);
+
   const texts = {
     uk: {
       title: "Встановити додаток",
