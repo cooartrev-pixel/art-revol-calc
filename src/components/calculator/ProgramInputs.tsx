@@ -8,6 +8,8 @@ import { Badge } from "@/components/ui/badge";
 import { Home, Percent, Calendar, Building2, HelpCircle } from "lucide-react";
 import type { MortgageInput } from "@/lib/mortgage-calculations";
 import { calculateDownPaymentAmount, formatCurrency } from "@/lib/mortgage-calculations";
+import { useCurrencyRates } from "@/hooks/useCurrencyRates";
+import { CurrencyAmount } from "./CurrencyAmount";
 import type { GovernmentProgram } from "@/lib/programs-data";
 import {
   HoverCard,
