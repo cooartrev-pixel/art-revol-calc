@@ -396,10 +396,10 @@ export async function exportToPDF(data: PDFExportData): Promise<void> {
   // ===== BANK COMPARISON =====
   checkPage(60);
   
-  doc.setFontSize(11);
+  doc.setFontSize(fontSize.section);
   doc.setTextColor(...theme.primary);
   doc.text(t['pdf.bankComparison'], margin, y);
-  y += 5;
+  y += sectionGap - 1;
 
   const bankHeaders = [t['banks.name'], t['banks.rate3'], t['banks.rate7'], t['banks.minDownPayment'], t['banks.monthlyPayment']];
   const bankData = banks.map((bank) => {
