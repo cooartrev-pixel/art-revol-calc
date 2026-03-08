@@ -446,15 +446,15 @@ export function AreaLimitCalculator() {
           {areaCheck && !areaCheck.fits && (
             <Alert className="py-2 border-destructive/30 bg-destructive/5">
               <AlertDescription className="text-xs text-destructive/90">
-                Площа {areaCheck.area} м² перевищує ліміт на {(areaCheck.area - result.maxArea).toFixed(1)} м².
-                Різницю доведеться покрити збільшенням першого внеску або обрати менший об'єкт.
+                Площа {areaCheck.area} м² перевищує ліміт на {(areaCheck.area - result.maxArea).toFixed(2)} м².
+                Необхідно обрати менший об'єкт — доплата не можлива.
               </AlertDescription>
             </Alert>
           )}
           {areaCheck && areaCheck.fits && !areaCheck.fitsBase && result.allowedOverpercent > 0 && (
             <Alert className="py-2 border-primary/30 bg-primary/5">
               <AlertDescription className="text-xs text-primary/80">
-                Площа вписується завдяки 10% допуску для новобудов. Базовий ліміт — {result.baseMaxArea.toFixed(1)} м².
+                Площа вписується завдяки 10% допуску для новобудов. Базовий ліміт — {result.baseMaxArea.toFixed(2)} м².
               </AlertDescription>
             </Alert>
           )}
