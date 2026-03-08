@@ -29,6 +29,8 @@ import {
 import { toast } from "sonner";
 import { getYeoselyaAreaLimits, getYeoselyaMaxPropertyValue, YEOSELYA_PRICE_PER_SQM, formatCurrency, type YeoselyaRegion } from "@/lib/mortgage-calculations";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useCurrencyRates } from "@/hooks/useCurrencyRates";
+import { CurrencyAmount } from "./CurrencyAmount";
 
 interface AreaResult {
   baseMaxArea: number;
