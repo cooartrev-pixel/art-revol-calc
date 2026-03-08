@@ -333,10 +333,10 @@ export async function exportToPDF(data: PDFExportData): Promise<void> {
     body: resultsData,
     theme: "plain",
     styles: { 
-      fontSize: 8, 
-      cellPadding: { top: 1.5, bottom: 1.5, left: 3, right: 3 },
+      fontSize: fontSize.body, 
+      cellPadding: cellPad,
       textColor: theme.text,
-      font: 'Roboto',
+      font: PDF_FONT_NAME,
     },
     columnStyles: {
       0: { fontStyle: "bold", cellWidth: 70, textColor: theme.textMuted },
