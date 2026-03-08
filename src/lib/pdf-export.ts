@@ -317,7 +317,7 @@ export async function exportToPDF(data: PDFExportData): Promise<void> {
     doc.text(savingsText, pageWidth - margin - 5, y + (isCompact ? 14 : 17), { align: 'right' });
   }
   
-  y += cardHeight + 4;
+  y += cardHeight + (isCompact ? 3 : 4);
   
   // Results details table
   const resultsData = [
