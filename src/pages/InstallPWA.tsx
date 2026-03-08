@@ -169,7 +169,10 @@ const InstallPWA = () => {
         "Click the ⊕ icon in the address bar",
         "Or open menu (⋮) → 'Install app'"
       ],
-      noPromptHint: "If the 'Install' button doesn't appear, follow the instructions above"
+      noPromptHint: "If the 'Install' button doesn't appear, follow the instructions above",
+      copyLink: "Copy link",
+      copiedLink: "Link copied!",
+      openInBrowser: "Open this link in your device browser to install"
     }
   };
 
