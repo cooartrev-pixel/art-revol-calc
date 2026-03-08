@@ -105,6 +105,7 @@ export function AreaLimitCalculator() {
   const [propertyAge, setPropertyAge] = useState<"new" | "secondary">("secondary");
   const [userArea, setUserArea] = useState<number | "">("");
   const [copied, setCopied] = useState(false);
+  const [region, setRegion] = useState<YeoselyaRegion>('kyiv');
 
   const result = useMemo(() => {
     const limits = getYeoselyaAreaLimits(familySize, propertyType, propertyAge);

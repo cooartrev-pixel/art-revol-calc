@@ -77,21 +77,37 @@ export interface YeoselyaEligibilityResult {
   maxAllowedLoan: number;
 }
 
+// Розрахунок граничної вартості нерухомості за ЄОселя (площа × ціна/м²)
+export function getYeoselyaMaxPropertyValue(
+  maxArea: number,
+  region: YeoselyaRegion = 'kyiv'
+): number {
+  const { pricePerSqm } = YEOSELYA_PRICE_PER_SQM[region];
+  return Math.round(maxArea * pricePerSqm);
+}
+
 // Перевірка відповідності умовам ЄОселя
 export function checkYeoselyaEligibility(input: MortgageInput): YeoselyaEligibilityResult {
   const warnings: string[] = [];
-  let maxAllowedLoan = 4000000; // типовий ліміт банків
 
   if (!input.isGovernmentProgram) {
-    return { eligible: true, warnings: [], maxAllowedArea: Infinity, maxAllowedLoan };
+    return { eligible: true, warnings: [], maxAllowedArea: Infinity, maxAllowedLoan: Infinity };
   }
 
   const familySize = input.familySize ?? 1;
   const propertyType = input.propertyType ?? 'apartment';
   const propertyAge = input.propertyAge ?? 'secondary';
   const isYouth = input.isYouth ?? false;
+  const region = input.region ?? 'kyiv';
 
   const { maxArea, baseMaxArea, allowedOverpercent } = getYeoselyaAreaLimits(familySize, propertyType, propertyAge);
+  const maxAllowedLoan = getYeoselyaMaxPropertyValue(maxArea, region);
+
+  // Перевірка вартості нерухомості відносно ліміту
+  if (input.propertyValue > maxAllowedLoan) {
+    const regionInfo = YEOSELYA_PRICE_PER_SQM[region];
+    warnings.push(`Вартість нерухомості перевищує граничну ${formatCurrency(maxAllowedLoan)} (${regionInfo.label}, ${maxArea.toFixed(2)} м² × ${regionInfo.pricePerSqm} грн/м²)`);
+  }
 
   // Перевірка мінімального внеску
   const downPaymentPercent = input.downPaymentType === 'percent'
