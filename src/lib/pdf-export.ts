@@ -282,9 +282,9 @@ export async function exportToPDF(data: PDFExportData): Promise<void> {
   y += sectionGap - 1;
   
   const inputData = [
-    [t['pdf.propertyValue'], formatCurrency(data.propertyValue)],
-    [t['pdf.downPayment'], formatCurrency(data.downPayment)],
-    [t['pdf.loanAmount'], formatCurrency(data.loanAmount)],
+    [t['pdf.propertyValue'], fmtAmount(data.propertyValue)],
+    [t['pdf.downPayment'], fmtAmount(data.downPayment)],
+    [t['pdf.loanAmount'], fmtAmount(data.loanAmount)],
     [t['pdf.loanTerm'], `${data.loanTermYears} ${t['pdf.yearsSuffix']}`],
     [t['pdf.annualRate'], formatPercent(data.interestRate)],
     [t['pdf.paymentType'], data.paymentType === "annuity" ? t['pdf.annuity'] : t['pdf.classic']],
