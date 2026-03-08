@@ -29,6 +29,8 @@ import {
 import { toast } from "sonner";
 import { getYeoselyaAreaLimits, getYeoselyaMaxPropertyValue, YEOSELYA_PRICE_PER_SQM, formatCurrency, type YeoselyaRegion } from "@/lib/mortgage-calculations";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useCurrencyRates } from "@/hooks/useCurrencyRates";
+import { CurrencyAmount } from "./CurrencyAmount";
 
 interface AreaResult {
   baseMaxArea: number;
@@ -100,6 +102,7 @@ function getAreaBreakdown(familySize: number, propertyType: "apartment" | "house
 }
 
 export function AreaLimitCalculator() {
+  const { usd: usdRate, eur: eurRate } = useCurrencyRates();
   const [familySize, setFamilySize] = useState(1);
   const [propertyType, setPropertyType] = useState<"apartment" | "house">("apartment");
   const [propertyAge, setPropertyAge] = useState<"new" | "secondary">("secondary");
@@ -348,9 +351,14 @@ export function AreaLimitCalculator() {
           {/* Max property value */}
           <div className="flex items-center justify-between pt-1 border-t border-primary/10">
             <span className="text-sm font-medium text-foreground">Гранична вартість нерухомості:</span>
-            <span className="text-xl font-bold text-primary">
-              {formatCurrency(getYeoselyaMaxPropertyValue(result.maxArea, region))}
-            </span>
+            <div className="text-right">
+              <span className="text-xl font-bold text-primary">
+                {formatCurrency(getYeoselyaMaxPropertyValue(result.maxArea, region))}
+              </span>
+              <div>
+                <CurrencyAmount amount={getYeoselyaMaxPropertyValue(result.maxArea, region)} usdRate={usdRate} eurRate={eurRate} showMain={false} size="sm" />
+              </div>
+            </div>
           </div>
           <div className="flex items-center gap-2 text-xs text-muted-foreground">
             <Info className="h-3.5 w-3.5 text-primary" />
