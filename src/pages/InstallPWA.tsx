@@ -1,9 +1,10 @@
 import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Download, Smartphone, Check, ArrowLeft, Share, MoreVertical, Monitor, Globe } from "lucide-react";
+import { Download, Smartphone, Check, ArrowLeft, Share, MoreVertical, Monitor, Globe, Copy, CheckCheck } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useLanguage } from "@/lib/i18n";
+import { toast } from "sonner";
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
