@@ -128,13 +128,13 @@ export function AdditionalCosts({ values, onChange }: AdditionalCostsProps) {
     setAppraisalUsd(200);
     onChange({
       ...values,
-      pensionFundPercent: 1, pensionFundEnabled: true,
+      pensionFundPercent: 1, pensionFundEnabled: !values.isFirstTimeBuyer,
       dutyPercent: 1, dutyEnabled: true,
       incomeTaxPercent: 5, incomeTaxEnabled: true,
       militaryTaxPercent: 5, militaryTaxEnabled: true,
       notaryCost: Math.round(800 * usdRate), notaryEnabled: true,
       appraisalCost: Math.round(200 * usdRate), appraisalEnabled: true,
-      insurancePercent: 0.25, insuranceEnabled: true,
+      insurancePercent: values.warRiskInsurance ? 1.25 : 0.25, insuranceEnabled: true,
       agencyCommissionPercent: 5, agencyCommissionEnabled: true,
     });
   };
@@ -152,6 +152,8 @@ export function AdditionalCosts({ values, onChange }: AdditionalCostsProps) {
       appraisalCost: 0, appraisalEnabled: false,
       insurancePercent: 0, insuranceEnabled: false,
       agencyCommissionPercent: 0, agencyCommissionEnabled: false,
+      isFirstTimeBuyer: false,
+      warRiskInsurance: false,
     });
   };
 
