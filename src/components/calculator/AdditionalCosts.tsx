@@ -381,6 +381,25 @@ export function AdditionalCosts({ values, onChange }: AdditionalCostsProps) {
               <Shield className="h-3.5 w-3.5" />
               {t('costs.bankInsurance')}
             </Label>
+
+            {/* Toggle: Воєнні ризики */}
+            <div className="flex items-center justify-between p-2.5 rounded-lg border border-destructive/20 bg-destructive/5">
+              <div>
+                <Label className="font-medium text-sm">⚠️ Воєнні ризики</Label>
+                <p className="text-xs text-muted-foreground">Страхування зростає з 0.25% до 1.25%</p>
+              </div>
+              <Switch
+                checked={values.warRiskInsurance ?? false}
+                onCheckedChange={(checked) => {
+                  onChange({
+                    ...values,
+                    warRiskInsurance: checked,
+                    insurancePercent: checked ? 1.25 : 0.25,
+                  });
+                }}
+              />
+            </div>
+
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className={!isEnabled('insuranceEnabled') ? 'opacity-50' : ''}>
                 <Label className="text-xs text-muted-foreground flex items-center gap-1">
@@ -390,6 +409,7 @@ export function AdditionalCosts({ values, onChange }: AdditionalCostsProps) {
                     className="h-3.5 w-3.5"
                   />
                   {t('costs.insurance')}
+                  {values.warRiskInsurance && <Badge variant="destructive" className="text-[10px] px-1 py-0 ml-1">war</Badge>}
                   <CostTooltip tipKey="costs.insuranceTip" />
                 </Label>
                 <div className="flex items-center gap-2 mt-1">
@@ -399,7 +419,7 @@ export function AdditionalCosts({ values, onChange }: AdditionalCostsProps) {
                     onChange={(e) => updateValue('insurancePercent', Number(e.target.value))}
                     step={0.05}
                     min={0}
-                    max={1.25}
+                    max={2}
                     placeholder="0.25"
                     className="h-9"
                     disabled={!isEnabled('insuranceEnabled')}
