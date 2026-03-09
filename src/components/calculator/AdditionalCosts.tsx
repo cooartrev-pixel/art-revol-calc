@@ -320,6 +320,25 @@ export function AdditionalCosts({ values, onChange }: AdditionalCostsProps) {
             )}
           </div>
 
+          {/* Toggle: Перший покупець */}
+          <div className="flex items-center justify-between p-3 rounded-lg bg-muted/30 border">
+            <div>
+              <Label className="font-medium text-sm">🏠 Перший покупець</Label>
+              <p className="text-xs text-muted-foreground">Пенсійний фонд = 0% для першого придбання</p>
+            </div>
+            <Switch
+              checked={values.isFirstTimeBuyer ?? false}
+              onCheckedChange={(checked) => {
+                onChange({
+                  ...values,
+                  isFirstTimeBuyer: checked,
+                  pensionFundEnabled: !checked,
+                  pensionFundPercent: checked ? 0 : (values.pensionFundPercent || 1),
+                });
+              }}
+            />
+          </div>
+
           {/* Державні збори */}
           <div className="space-y-3">
             <Label className="text-sm font-medium flex items-center gap-1.5 text-muted-foreground">
@@ -327,7 +346,9 @@ export function AdditionalCosts({ values, onChange }: AdditionalCostsProps) {
               {t('costs.stateCharges')}
             </Label>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {costField(t('costs.pensionFund'), 'costs.pensionFundTip', 'pensionFundEnabled', 'pensionFundPercent', { step: 0.1, min: 0, max: 10, placeholder: '1', suffix: '%', preview: pensionFund })}
+              <div className={values.isFirstTimeBuyer ? 'opacity-40 pointer-events-none' : ''}>
+                {costField(t('costs.pensionFund'), 'costs.pensionFundTip', 'pensionFundEnabled', 'pensionFundPercent', { step: 0.1, min: 0, max: 10, placeholder: '1', suffix: '%', preview: pensionFund })}
+              </div>
               {costField(t('costs.duty'), 'costs.dutyTip', 'dutyEnabled', 'dutyPercent', { step: 0.1, min: 0, max: 10, placeholder: '1', suffix: '%', preview: duty })}
               {costField(t('costs.incomeTax'), 'costs.incomeTaxTip', 'incomeTaxEnabled', 'incomeTaxPercent', { step: 0.1, min: 0, max: 30, placeholder: '5', suffix: '%', preview: incomeTax })}
               {costField(t('costs.militaryTax'), 'costs.militaryTaxTip', 'militaryTaxEnabled', 'militaryTaxPercent', { step: 0.1, min: 0, max: 10, placeholder: '5', suffix: '%', preview: militaryTax })}
