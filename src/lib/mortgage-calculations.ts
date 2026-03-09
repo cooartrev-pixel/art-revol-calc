@@ -40,6 +40,9 @@ export interface MortgageInput {
   insuranceEnabled?: boolean;
   agencyCommissionPercent?: number;
   agencyCommissionEnabled?: boolean;
+  // Нові поля
+  isFirstTimeBuyer?: boolean;
+  warRiskInsurance?: boolean;
 }
 
 // Обмеження площі ЄОселя (актуальні з 9 лютого 2025)
