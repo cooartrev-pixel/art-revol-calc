@@ -31,6 +31,7 @@ interface CalculatorInputsProps {
 export function CalculatorInputs({ values, onChange }: CalculatorInputsProps) {
   const { t, language } = useLanguage();
   const { usd: usdRate, eur: eurRate, rateSource } = useCurrencyRates();
+  const { data: bankTariffs, isLoading: tariffsLoading } = useBankTariffs();
   const [propertyUsd, setPropertyUsd] = useState<number | ''>('');
   const [propertyEur, setPropertyEur] = useState<number | ''>('');
   

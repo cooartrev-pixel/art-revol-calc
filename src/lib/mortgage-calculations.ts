@@ -43,6 +43,7 @@ export interface MortgageInput {
   // Нові поля
   isFirstTimeBuyer?: boolean;
   warRiskInsurance?: boolean;
+  selectedBankId?: string;
 }
 
 // Обмеження площі ЄОселя (актуальні з 9 лютого 2025)
