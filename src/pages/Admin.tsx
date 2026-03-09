@@ -220,7 +220,9 @@ export default function Admin() {
         </div>
       </header>
 
-      <main className="container mx-auto px-4 py-6">
+      <main className="container mx-auto px-4 py-6 space-y-6">
+        {/* Bank Tariffs CRUD */}
+        <BankTariffsCrud />
         <Card className="mb-6">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
