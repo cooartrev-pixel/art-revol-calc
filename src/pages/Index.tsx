@@ -46,6 +46,8 @@ const defaultInput: MortgageInput = {
   appraisalCost: 0, appraisalEnabled: true,
   insurancePercent: 0, insuranceEnabled: true,
   agencyCommissionPercent: 0, agencyCommissionEnabled: false,
+  isFirstTimeBuyer: false,
+  warRiskInsurance: false,
   region: 'kyiv',
 };
 

@@ -6,19 +6,10 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
@@ -26,6 +17,7 @@ import { Calculator, LogOut, Search, ArrowLeft, Filter, RefreshCw, Download, Fil
 import { Link } from 'react-router-dom';
 import { format } from 'date-fns';
 import { uk } from 'date-fns/locale';
+import { BankTariffsCrud } from '@/components/admin/BankTariffsCrud';
 
 interface ConsultationRequest {
   id: string;
@@ -228,7 +220,9 @@ export default function Admin() {
         </div>
       </header>
 
-      <main className="container mx-auto px-4 py-6">
+      <main className="container mx-auto px-4 py-6 space-y-6">
+        {/* Bank Tariffs CRUD */}
+        <BankTariffsCrud />
         <Card className="mb-6">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">

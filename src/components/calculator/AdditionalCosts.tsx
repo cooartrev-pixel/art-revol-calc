@@ -4,6 +4,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Badge } from "@/components/ui/badge";
+import { Switch } from "@/components/ui/switch";
 import { Receipt, Landmark, Briefcase, Shield, Building, RotateCcw, Sparkles, HelpCircle, DollarSign, RefreshCw } from "lucide-react";
 import type { MortgageInput } from "@/lib/mortgage-calculations";
 import { formatCurrency } from "@/lib/mortgage-calculations";
@@ -128,13 +130,13 @@ export function AdditionalCosts({ values, onChange }: AdditionalCostsProps) {
     setAppraisalUsd(200);
     onChange({
       ...values,
-      pensionFundPercent: 1, pensionFundEnabled: true,
+      pensionFundPercent: 1, pensionFundEnabled: !values.isFirstTimeBuyer,
       dutyPercent: 1, dutyEnabled: true,
       incomeTaxPercent: 5, incomeTaxEnabled: true,
       militaryTaxPercent: 5, militaryTaxEnabled: true,
       notaryCost: Math.round(800 * usdRate), notaryEnabled: true,
       appraisalCost: Math.round(200 * usdRate), appraisalEnabled: true,
-      insurancePercent: 0.25, insuranceEnabled: true,
+      insurancePercent: values.warRiskInsurance ? 1.25 : 0.25, insuranceEnabled: true,
       agencyCommissionPercent: 5, agencyCommissionEnabled: true,
     });
   };
@@ -152,6 +154,8 @@ export function AdditionalCosts({ values, onChange }: AdditionalCostsProps) {
       appraisalCost: 0, appraisalEnabled: false,
       insurancePercent: 0, insuranceEnabled: false,
       agencyCommissionPercent: 0, agencyCommissionEnabled: false,
+      isFirstTimeBuyer: false,
+      warRiskInsurance: false,
     });
   };
 
@@ -318,6 +322,25 @@ export function AdditionalCosts({ values, onChange }: AdditionalCostsProps) {
             )}
           </div>
 
+          {/* Toggle: Перший покупець */}
+          <div className="flex items-center justify-between p-3 rounded-lg bg-muted/30 border">
+            <div>
+              <Label className="font-medium text-sm">🏠 Перший покупець</Label>
+              <p className="text-xs text-muted-foreground">Пенсійний фонд = 0% для першого придбання</p>
+            </div>
+            <Switch
+              checked={values.isFirstTimeBuyer ?? false}
+              onCheckedChange={(checked) => {
+                onChange({
+                  ...values,
+                  isFirstTimeBuyer: checked,
+                  pensionFundEnabled: !checked,
+                  pensionFundPercent: checked ? 0 : (values.pensionFundPercent || 1),
+                });
+              }}
+            />
+          </div>
+
           {/* Державні збори */}
           <div className="space-y-3">
             <Label className="text-sm font-medium flex items-center gap-1.5 text-muted-foreground">
@@ -325,7 +348,9 @@ export function AdditionalCosts({ values, onChange }: AdditionalCostsProps) {
               {t('costs.stateCharges')}
             </Label>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {costField(t('costs.pensionFund'), 'costs.pensionFundTip', 'pensionFundEnabled', 'pensionFundPercent', { step: 0.1, min: 0, max: 10, placeholder: '1', suffix: '%', preview: pensionFund })}
+              <div className={values.isFirstTimeBuyer ? 'opacity-40 pointer-events-none' : ''}>
+                {costField(t('costs.pensionFund'), 'costs.pensionFundTip', 'pensionFundEnabled', 'pensionFundPercent', { step: 0.1, min: 0, max: 10, placeholder: '1', suffix: '%', preview: pensionFund })}
+              </div>
               {costField(t('costs.duty'), 'costs.dutyTip', 'dutyEnabled', 'dutyPercent', { step: 0.1, min: 0, max: 10, placeholder: '1', suffix: '%', preview: duty })}
               {costField(t('costs.incomeTax'), 'costs.incomeTaxTip', 'incomeTaxEnabled', 'incomeTaxPercent', { step: 0.1, min: 0, max: 30, placeholder: '5', suffix: '%', preview: incomeTax })}
               {costField(t('costs.militaryTax'), 'costs.militaryTaxTip', 'militaryTaxEnabled', 'militaryTaxPercent', { step: 0.1, min: 0, max: 10, placeholder: '5', suffix: '%', preview: militaryTax })}
@@ -358,6 +383,25 @@ export function AdditionalCosts({ values, onChange }: AdditionalCostsProps) {
               <Shield className="h-3.5 w-3.5" />
               {t('costs.bankInsurance')}
             </Label>
+
+            {/* Toggle: Воєнні ризики */}
+            <div className="flex items-center justify-between p-2.5 rounded-lg border border-destructive/20 bg-destructive/5">
+              <div>
+                <Label className="font-medium text-sm">⚠️ Воєнні ризики</Label>
+                <p className="text-xs text-muted-foreground">Страхування зростає з 0.25% до 1.25%</p>
+              </div>
+              <Switch
+                checked={values.warRiskInsurance ?? false}
+                onCheckedChange={(checked) => {
+                  onChange({
+                    ...values,
+                    warRiskInsurance: checked,
+                    insurancePercent: checked ? 1.25 : 0.25,
+                  });
+                }}
+              />
+            </div>
+
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className={!isEnabled('insuranceEnabled') ? 'opacity-50' : ''}>
                 <Label className="text-xs text-muted-foreground flex items-center gap-1">
@@ -367,6 +411,7 @@ export function AdditionalCosts({ values, onChange }: AdditionalCostsProps) {
                     className="h-3.5 w-3.5"
                   />
                   {t('costs.insurance')}
+                  {values.warRiskInsurance && <Badge variant="destructive" className="text-[10px] px-1 py-0 ml-1">war</Badge>}
                   <CostTooltip tipKey="costs.insuranceTip" />
                 </Label>
                 <div className="flex items-center gap-2 mt-1">
@@ -376,7 +421,7 @@ export function AdditionalCosts({ values, onChange }: AdditionalCostsProps) {
                     onChange={(e) => updateValue('insurancePercent', Number(e.target.value))}
                     step={0.05}
                     min={0}
-                    max={1.25}
+                    max={2}
                     placeholder="0.25"
                     className="h-9"
                     disabled={!isEnabled('insuranceEnabled')}
