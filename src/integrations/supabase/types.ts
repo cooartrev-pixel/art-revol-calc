@@ -14,6 +14,69 @@ export type Database = {
   }
   public: {
     Tables: {
+      bank_tariffs: {
+        Row: {
+          account_opening_fee: number
+          appraisal_avg_cost: number
+          bank_id: string
+          bank_name: string
+          created_at: string
+          id: string
+          is_active: boolean
+          issuance_commission_pct: number
+          max_loan_amount: number
+          max_term_years: number
+          min_down_payment_new_build_pct: number
+          min_down_payment_pct: number
+          processing_time: string
+          property_insurance_pct: number
+          transfer_fee: number
+          updated_at: string
+          war_risk_insurance_pct: number
+          website_url: string | null
+        }
+        Insert: {
+          account_opening_fee?: number
+          appraisal_avg_cost?: number
+          bank_id: string
+          bank_name: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          issuance_commission_pct?: number
+          max_loan_amount?: number
+          max_term_years?: number
+          min_down_payment_new_build_pct?: number
+          min_down_payment_pct?: number
+          processing_time?: string
+          property_insurance_pct?: number
+          transfer_fee?: number
+          updated_at?: string
+          war_risk_insurance_pct?: number
+          website_url?: string | null
+        }
+        Update: {
+          account_opening_fee?: number
+          appraisal_avg_cost?: number
+          bank_id?: string
+          bank_name?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          issuance_commission_pct?: number
+          max_loan_amount?: number
+          max_term_years?: number
+          min_down_payment_new_build_pct?: number
+          min_down_payment_pct?: number
+          processing_time?: string
+          property_insurance_pct?: number
+          transfer_fee?: number
+          updated_at?: string
+          war_risk_insurance_pct?: number
+          website_url?: string | null
+        }
+        Relationships: []
+      }
       consultation_requests: {
         Row: {
           created_at: string
