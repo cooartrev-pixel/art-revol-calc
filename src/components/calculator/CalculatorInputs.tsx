@@ -8,11 +8,13 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Home, Percent, Calendar, Building2, Flag, HelpCircle, Users, AlertTriangle, Info, DollarSign, Euro } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Home, Percent, Calendar, Building2, Flag, HelpCircle, Users, AlertTriangle, Info, DollarSign, Euro, Loader2 } from "lucide-react";
 import type { MortgageInput } from "@/lib/mortgage-calculations";
 import { calculateDownPaymentAmount, formatCurrency, checkYeoselyaEligibility, getYeoselyaAreaLimits, getYeoselyaMaxPropertyValue, YEOSELYA_PRICE_PER_SQM } from "@/lib/mortgage-calculations";
 import { useLanguage } from "@/lib/i18n";
 import { useCurrencyRates } from "@/hooks/useCurrencyRates";
+import { useBankTariffs } from "@/hooks/useBankTariffs";
 import { CurrencyAmount } from "./CurrencyAmount";
 import {
   HoverCard,
