@@ -8,11 +8,13 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Home, Percent, Calendar, Building2, Flag, HelpCircle, Users, AlertTriangle, Info, DollarSign, Euro } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Home, Percent, Calendar, Building2, Flag, HelpCircle, Users, AlertTriangle, Info, DollarSign, Euro, Loader2 } from "lucide-react";
 import type { MortgageInput } from "@/lib/mortgage-calculations";
 import { calculateDownPaymentAmount, formatCurrency, checkYeoselyaEligibility, getYeoselyaAreaLimits, getYeoselyaMaxPropertyValue, YEOSELYA_PRICE_PER_SQM } from "@/lib/mortgage-calculations";
 import { useLanguage } from "@/lib/i18n";
 import { useCurrencyRates } from "@/hooks/useCurrencyRates";
+import { useBankTariffs } from "@/hooks/useBankTariffs";
 import { CurrencyAmount } from "./CurrencyAmount";
 import {
   HoverCard,
@@ -29,6 +31,7 @@ interface CalculatorInputsProps {
 export function CalculatorInputs({ values, onChange }: CalculatorInputsProps) {
   const { t, language } = useLanguage();
   const { usd: usdRate, eur: eurRate, rateSource } = useCurrencyRates();
+  const { data: bankTariffs, isLoading: tariffsLoading } = useBankTariffs();
   const [propertyUsd, setPropertyUsd] = useState<number | ''>('');
   const [propertyEur, setPropertyEur] = useState<number | ''>('');
   
@@ -614,7 +617,7 @@ export function CalculatorInputs({ values, onChange }: CalculatorInputsProps) {
         </CardContent>
       </Card>
 
-      {/* Комісії */}
+      {/* Банк та Комісії */}
       <Card>
         <CardHeader className="pb-3">
           <CardTitle className="flex items-center text-lg">
@@ -624,6 +627,60 @@ export function CalculatorInputs({ values, onChange }: CalculatorInputsProps) {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
+          {/* Вибір банку */}
+          <div>
+            <Label className="text-sm text-muted-foreground">
+              {language === 'uk' ? 'Оберіть банк' : 'Select Bank'}
+            </Label>
+            <Select
+              value={values.selectedBankId ?? 'manual'}
+              onValueChange={(bankId) => {
+                if (bankId === 'manual') {
+                  onChange({ ...values, selectedBankId: undefined });
+                  return;
+                }
+                const tariff = bankTariffs?.find((b) => b.bank_id === bankId);
+                if (!tariff) return;
+                onChange({
+                  ...values,
+                  selectedBankId: bankId,
+                  oneTimeCommission: Number(tariff.issuance_commission_pct),
+                  monthlyCommission: 0,
+                  insurancePercent: values.warRiskInsurance
+                    ? Number(tariff.war_risk_insurance_pct)
+                    : Number(tariff.property_insurance_pct),
+                  insuranceEnabled: true,
+                  appraisalCost: Number(tariff.appraisal_avg_cost),
+                  appraisalEnabled: true,
+                });
+              }}
+            >
+              <SelectTrigger className="mt-1.5">
+                <SelectValue placeholder={language === 'uk' ? 'Вручну' : 'Manual'} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="manual">
+                  {language === 'uk' ? '✏️ Вручну' : '✏️ Manual'}
+                </SelectItem>
+                {tariffsLoading && (
+                  <div className="flex items-center gap-2 p-2 text-sm text-muted-foreground">
+                    <Loader2 className="h-4 w-4 animate-spin" /> Завантаження...
+                  </div>
+                )}
+                {bankTariffs?.map((bank) => (
+                  <SelectItem key={bank.bank_id} value={bank.bank_id}>
+                    {bank.bank_name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {values.selectedBankId && bankTariffs && (
+              <p className="text-xs text-muted-foreground mt-1.5">
+                {language === 'uk' ? '📌 Комісії та страхування заповнені з тарифів банку' : '📌 Fees auto-filled from bank tariffs'}
+              </p>
+            )}
+          </div>
+
           <div>
             <Label className="text-sm text-muted-foreground">{t('input.oneTimeCommission')}</Label>
             <div className="flex items-center gap-4 mt-2">
