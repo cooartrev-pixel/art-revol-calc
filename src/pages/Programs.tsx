@@ -39,21 +39,22 @@ const Programs = () => {
               </CardHeader>
               
               <CardContent>
-                <div className="flex gap-2.5">
+                <div className="flex gap-2">
                   <Button 
                     asChild 
-                    className="flex-1 h-11 rounded-lg font-medium text-sm shadow-sm transition-all duration-200 hover:shadow-md"
+                    size="sm"
+                    className="flex-1 rounded-lg font-medium text-xs shadow-sm transition-all duration-200 hover:shadow-md"
                   >
                     <Link to={`/calculator/${program.id}`}>
-                      <Calculator className="h-4 w-4 mr-2" />
+                      <Calculator className="h-3.5 w-3.5 mr-1.5" />
                       Калькулятор
                     </Link>
                   </Button>
                   <Button 
                     variant="outline" 
-                    size="icon" 
+                    size="sm"
                     asChild
-                    className="h-11 w-11 rounded-lg border-border/80 text-muted-foreground hover:text-primary hover:border-primary/40 hover:bg-primary/5 transition-all duration-200"
+                    className="w-8 h-8 p-0 rounded-lg border-border/80 text-muted-foreground hover:text-primary hover:border-primary/40 hover:bg-primary/5 transition-all duration-200"
                   >
                     <a 
                       href={program.officialUrl} 
@@ -61,7 +62,7 @@ const Programs = () => {
                       rel="noopener noreferrer"
                       title="Офіційний сайт"
                     >
-                      <ExternalLink className="h-4 w-4" />
+                      <ExternalLink className="h-3.5 w-3.5" />
                     </a>
                   </Button>
                 </div>
