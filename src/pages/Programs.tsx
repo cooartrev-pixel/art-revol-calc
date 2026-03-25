@@ -1,8 +1,7 @@
 import { Link } from "react-router-dom";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Calculator, ExternalLink, CheckCircle2, Scale } from "lucide-react";
+import { ArrowRight, Calculator, ExternalLink, Scale } from "lucide-react";
 import { Header } from "@/components/calculator/Header";
 import { LegislativeUpdates } from "@/components/LegislativeUpdates";
 import { InstructionGuide } from "@/components/InstructionGuide";
