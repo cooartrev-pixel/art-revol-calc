@@ -31,23 +31,30 @@ const Programs = () => {
           {programs.map((program, index) => (
             <Card 
               key={program.id}
-              className="group relative overflow-hidden transition-all duration-300 hover:shadow-xl hover:scale-[1.02] hover:-translate-y-1 animate-fade-in"
+              className="group relative overflow-hidden transition-all duration-300 hover:shadow-xl hover:scale-[1.02] hover:-translate-y-1 animate-fade-in border-border/60"
               style={{ animationDelay: `${index * 100}ms` }}
             >
-              <CardHeader className="pb-4">
-                <CardTitle className="text-xl leading-tight">{program.name}</CardTitle>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-lg font-semibold leading-tight tracking-tight">{program.name}</CardTitle>
               </CardHeader>
               
-              <CardContent className="space-y-4">
-                {/* Actions */}
-                <div className="flex gap-2">
-                  <Button asChild className="flex-1">
+              <CardContent>
+                <div className="flex gap-2.5">
+                  <Button 
+                    asChild 
+                    className="flex-1 h-11 rounded-lg font-medium text-sm shadow-sm transition-all duration-200 hover:shadow-md"
+                  >
                     <Link to={`/calculator/${program.id}`}>
                       <Calculator className="h-4 w-4 mr-2" />
                       Калькулятор
                     </Link>
                   </Button>
-                  <Button variant="outline" size="icon" asChild>
+                  <Button 
+                    variant="outline" 
+                    size="icon" 
+                    asChild
+                    className="h-11 w-11 rounded-lg border-border/80 text-muted-foreground hover:text-primary hover:border-primary/40 hover:bg-primary/5 transition-all duration-200"
+                  >
                     <a 
                       href={program.officialUrl} 
                       target="_blank" 
@@ -60,7 +67,6 @@ const Programs = () => {
                 </div>
               </CardContent>
               
-              {/* Hover gradient overlay */}
               <div className="absolute inset-0 bg-gradient-to-t from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
             </Card>
           ))}
