@@ -1,8 +1,7 @@
 import { Link } from "react-router-dom";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Calculator, ExternalLink, CheckCircle2, Scale } from "lucide-react";
+import { ArrowRight, Calculator, ExternalLink, Scale } from "lucide-react";
 import { Header } from "@/components/calculator/Header";
 import { LegislativeUpdates } from "@/components/LegislativeUpdates";
 import { InstructionGuide } from "@/components/InstructionGuide";
@@ -36,43 +35,12 @@ const Programs = () => {
               style={{ animationDelay: `${index * 100}ms` }}
             >
               <CardHeader className="pb-4">
-                <div className="flex items-start justify-between mb-2">
-                  <span className="text-4xl">{program.icon}</span>
-                  <Badge variant="outline" className="text-xs">
-                    {program.rates.standard === 0 
-                      ? 'Безоплатно' 
-                      : `від ${program.rates.privileged || program.rates.standard}%`
-                    }
-                  </Badge>
-                </div>
                 <CardTitle className="text-xl leading-tight">{program.name}</CardTitle>
-                <CardDescription className="text-sm line-clamp-2">
-                  {program.description}
-                </CardDescription>
               </CardHeader>
               
               <CardContent className="space-y-4">
-                {/* Key Benefits */}
-                <div className="space-y-2">
-                  {program.benefits.slice(0, 3).map((benefit, i) => (
-                    <div key={i} className="flex items-start gap-2 text-sm">
-                      <CheckCircle2 className="h-4 w-4 text-success shrink-0 mt-0.5" />
-                      <span className="text-muted-foreground">{benefit}</span>
-                    </div>
-                  ))}
-                </div>
-
-                {/* Eligibility Preview */}
-                <div className="p-3 bg-muted/30 rounded-lg">
-                  <p className="text-xs font-medium mb-1 text-muted-foreground">Хто може скористатись:</p>
-                  <p className="text-sm line-clamp-2">
-                    {program.eligibility.slice(0, 2).join(', ')}
-                    {program.eligibility.length > 2 && '...'}
-                  </p>
-                </div>
-
                 {/* Actions */}
-                <div className="flex gap-2 pt-2">
+                <div className="flex gap-2">
                   <Button asChild className="flex-1">
                     <Link to={`/calculator/${program.id}`}>
                       <Calculator className="h-4 w-4 mr-2" />
